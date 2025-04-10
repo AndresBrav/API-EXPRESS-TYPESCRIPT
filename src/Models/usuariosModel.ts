@@ -14,7 +14,7 @@ export interface UsuariosInstance
     UsuariosAttributes {}           // permite acceder directamente a username, edad, password
 
 // Define el modelo con los tipos específicos
-const Usuarios = db.define<UsuariosInstance>('Usuarios', {
+const User = db.define<UsuariosInstance>('User', {
   username: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -29,4 +29,4 @@ const Usuarios = db.define<UsuariosInstance>('Usuarios', {
   },
 });
 
-export default Usuarios;
+export default User;
