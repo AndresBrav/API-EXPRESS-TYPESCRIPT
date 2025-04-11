@@ -2,11 +2,68 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";  // Asegúrate de importar jsonwebtoken
 // import cors from "cors";
 import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken";  // Importa verifyToken
-import Usuarios from "../Models/modelUser"
-import { Usuario } from "../interfaces/Usuario";
+import User,{UsuariosInstance} from "../Models/modelUser"
 
+import { Usuario } from "../interfaces/Usuario";
+import { obtenerUsuarios,obtenerUnUsuario,existeUsuario,eliminarUnUsuario } from "../Services/usuarioServices";
 // import { obtenerTodosLosUsuarios, consultarDetalleUsuario, aniadirUsuario, actualizarUsuario, borrarUsuario } from '../Services/usuarioServices'
 
+
+const CobtenerUsuarios = async(req: AuthenticatedRequest, res: Response) => {
+    console.log("estamos obteniendo .....")
+    const listaUsuarios = await obtenerUsuarios(req)
+    console.log(!listaUsuarios)
+    if(listaUsuarios.length===0){
+        res.send("no tienes permisos para acceder a los usuarios")
+    }
+    else{
+        res.send(listaUsuarios);
+    }
+    
+}
+
+const CobtenerUnUsuario = async (req: AuthenticatedRequest, res: Response) => {
+    // const data = req.body
+    const { id } = req.params
+
+    const user:UsuariosInstance = await obtenerUnUsuario(id)
+
+    const existe = await existeUsuario(id)
+    console.log(`el usuario existe ? ${existe}`);
+    try {
+        if (existe) {
+            res.json(user);
+        }
+        else {
+            res.json(
+                { msg: `el usuario con id:${id} no existe` }
+            )
+        }
+    }
+    catch (error) {
+        res.send(error)
+        //res.end();
+    }
+
+};
+
+const CeliminarUnUsuario = async (req: AuthenticatedRequest, res: Response) => {
+    const {id} = req.params
+    const seelimino =await eliminarUnUsuario(id)
+
+    if(seelimino){
+        res.json({
+            msg: `Se eliminó el usuario con ID ${id}`
+        });
+    }else{
+        res.json({
+            msg: `no existe  el usuario con ID ${id}`
+        });
+    }
+
+    
+
+};
 
 // const consultarUsuarios = async (req: AuthenticatedRequest, res: Response) => {
 //     try {
@@ -157,36 +214,8 @@ import { Usuario } from "../interfaces/Usuario";
 // };
 
 
-const verificarLogin = async (usuario: Usuario): Promise<boolean> => {
 
-    // Usa la interfaz para tipar el resultado de findAll
-    const usuariosBD = await Usuarios.findAll({
-        attributes: ["login", "clave"],
-        raw: true
-    });
-
-    // Convierte explícitamente a unknown y luego a Usuario[]
-    const usuarios = usuariosBD as unknown as Usuario[];
-
-    const UsuarioALogear: Usuario = usuario;
-    console.log("El usuario que se va a logear es:");
-    console.log(UsuarioALogear);
-
-    let registro: boolean = false;
-
-
-    for (let i = 0; i < usuariosBD.length; i++) {
-        if (
-            usuarios[i].login === UsuarioALogear.login &&
-            usuarios[i].clave === UsuarioALogear.clave
-        ) {
-            registro = true;
-        }
-    }
-
-    return registro; // 🔁 esto hace internamente un `resolve(registro)`
-};
 
 
 // Exportar las funciones para usarlas en las rutas
-export { /*consultarUsuarios, consultarDetalle, ingresar, actualizar, borrar,RegistrarLogin*/ verificarLogin };
+export {CobtenerUsuarios,CobtenerUnUsuario,CeliminarUnUsuario /*consultarUsuarios, consultarDetalle, ingresar, actualizar, borrar,RegistrarLogin*/  };

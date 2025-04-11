@@ -1,13 +1,23 @@
 import express, { Request, Response, Router } from 'express';
-import { /*consultarUsuarios, consultarDetalle, ingresar, actualizar, borrar, RegistrarLogin,*/ verificarLogin } from '../Controllers/usuariosController'; // Asegúrate de importar las funciones from '../Controllers/usuariosController'
+import { /*consultarUsuarios, consultarDetalle, ingresar, actualizar, borrar, RegistrarLogin,*/ CobtenerUsuarios, CobtenerUnUsuario, CeliminarUnUsuario } from '../Controllers/usuariosController'; // Asegúrate de importar las funciones from '../Controllers/usuariosController'
 import jwt from "jsonwebtoken";  // Asegúrate de importar jsonwebtoken
 // import cors from "cors";
-
 import { Usuario } from '../interfaces/Usuario';
 import { loginUser } from '../Controllers/auth';
 import validToken, { AuthenticatedRequest } from '../Middlewares/tokenValidator';
 
-const router: Router = express.Router();
+const rutasUsuarios: Router = express.Router();
+
+rutasUsuarios.get('/getUsers', [validToken], CobtenerUsuarios);
+
+rutasUsuarios.get('/getUsers/:id', [validToken], CobtenerUnUsuario);
+
+rutasUsuarios.delete('/delUsers/:id', [validToken], CeliminarUnUsuario);
+
+// rutasUsuarios.post('/', [validToken], CaniadirUsuario);
+
+// rutasUsuarios.put('/:id', [validToken], CactualizarUnUsuario);
+
 
 // router.get('/consultar', verifyToken, consultarUsuarios);
 
@@ -47,11 +57,11 @@ const router: Router = express.Router();
 
 }); */
 
-router.post("/login/iniciar", loginUser)
+rutasUsuarios.post("/login/iniciar", loginUser)
 
 
 // Ruta protegida que requiere token
-router.get("/protected/usuario", validToken, (req: AuthenticatedRequest, res: Response): void => {
+rutasUsuarios.get("/protected/usuario", validToken, (req: AuthenticatedRequest, res: Response): void => {
     res.send(`Acceso permitido a la ruta protegida. El username del usuario es: ${req.DatosToken?.u}`);
 });
 
@@ -67,4 +77,4 @@ router.get("/protected/usuario", validToken, (req: AuthenticatedRequest, res: Re
 //     res.send(`El id del usuario es: ${password}, El username es: ${username}`);
 // });
 
-export default router;
+export default rutasUsuarios;

@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 dotenv.config(); // ¡Esto carga el archivo .env!
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
-import UsuariosRoutes from '../Routes/usuariosRoutes';
+import UserRoutes from '../Routes/usuariosRoutes';
 import morgan from 'morgan';
 // actualizado
 
@@ -17,7 +17,7 @@ class ApiServer {
 
   constructor() {
     this.app = express();
-    this.usuariosPath = "/usuarios";
+    this.usuariosPath = "/users";
     this.middlewares();  // Llama a la función middleware
     this.routes();       // Registra las rutas
     this.dbConnet(); //conexion a la base de datos
@@ -32,7 +32,7 @@ class ApiServer {
   }
 
   public routes(): void {
-    this.app.use(this.usuariosPath, UsuariosRoutes);
+    this.app.use(this.usuariosPath, UserRoutes);
   }
 
   public escuchar(): void {
