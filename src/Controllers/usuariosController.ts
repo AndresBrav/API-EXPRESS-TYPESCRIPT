@@ -5,7 +5,7 @@ import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken"; 
 import User,{UsuariosInstance} from "../Models/modelUser"
 
 import { Usuario } from "../interfaces/Usuario";
-import { obtenerUsuarios,obtenerUnUsuario,existeUsuario,eliminarUnUsuario } from "../Services/usuarioServices";
+import { obtenerUsuarios,obtenerUnUsuario,existeUsuario,eliminarUnUsuario,aniadirUsuario } from "../Services/usuarioServices";
 // import { obtenerTodosLosUsuarios, consultarDetalleUsuario, aniadirUsuario, actualizarUsuario, borrarUsuario } from '../Services/usuarioServices'
 
 
@@ -61,7 +61,25 @@ const CeliminarUnUsuario = async (req: AuthenticatedRequest, res: Response) => {
         });
     }
 
-    
+};
+
+const CaniadirUsuario = async (req: AuthenticatedRequest, res: Response) => {
+    const { login, clave, sts, tipo } = req.body;
+    const user = { login, clave, sts, tipo } 
+
+    const seaniadio = await aniadirUsuario(user)
+
+    if(seaniadio){
+        res.json({
+            msg: "Usuario fue agregado con éxito",
+            
+        });
+    }
+    else{
+        res.json({
+            msg: "no se añadio"
+        })
+    }
 
 };
 
@@ -218,4 +236,4 @@ const CeliminarUnUsuario = async (req: AuthenticatedRequest, res: Response) => {
 
 
 // Exportar las funciones para usarlas en las rutas
-export {CobtenerUsuarios,CobtenerUnUsuario,CeliminarUnUsuario /*consultarUsuarios, consultarDetalle, ingresar, actualizar, borrar,RegistrarLogin*/  };
+export {CobtenerUsuarios,CobtenerUnUsuario,CeliminarUnUsuario,CaniadirUsuario /*consultarUsuarios, consultarDetalle, ingresar, actualizar, borrar,RegistrarLogin*/  };

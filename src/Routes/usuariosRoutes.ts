@@ -1,5 +1,5 @@
 import express, { Request, Response, Router } from 'express';
-import { /*consultarUsuarios, consultarDetalle, ingresar, actualizar, borrar, RegistrarLogin,*/ CobtenerUsuarios, CobtenerUnUsuario, CeliminarUnUsuario } from '../Controllers/usuariosController'; // Asegúrate de importar las funciones from '../Controllers/usuariosController'
+import { /*consultarUsuarios, consultarDetalle, ingresar, actualizar, borrar, RegistrarLogin,*/ CobtenerUsuarios, CobtenerUnUsuario, CeliminarUnUsuario, CaniadirUsuario } from '../Controllers/usuariosController'; // Asegúrate de importar las funciones from '../Controllers/usuariosController'
 import jwt from "jsonwebtoken";  // Asegúrate de importar jsonwebtoken
 // import cors from "cors";
 import { Usuario } from '../interfaces/Usuario';
@@ -14,7 +14,7 @@ rutasUsuarios.get('/getUsers/:id', [validToken], CobtenerUnUsuario);
 
 rutasUsuarios.delete('/delUsers/:id', [validToken], CeliminarUnUsuario);
 
-// rutasUsuarios.post('/', [validToken], CaniadirUsuario);
+rutasUsuarios.post('/addUser', [validToken], CaniadirUsuario);
 
 // rutasUsuarios.put('/:id', [validToken], CactualizarUnUsuario);
 

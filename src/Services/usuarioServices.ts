@@ -5,6 +5,8 @@ import User,{UsuariosInstance} from '../Models/modelUser';
 
 import { isString, isNumero } from '../Validations/validaciones';
 
+import bcrypt from 'bcrypt'
+
 import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken"; 
 
 export const obtenerUsuarios = async (req: AuthenticatedRequest):Promise<UsuariosInstance[]> => {
@@ -58,6 +60,24 @@ export const eliminarUnUsuario = async (id): Promise<boolean> => {
         return false
     }
     
+}
+
+
+export const aniadirUsuario = async (user):Promise<boolean> => {
+
+    //const { body } = req;
+    //await User.create(body);
+    // Hashear la clave antes de guardarla
+    const claveencriptada = bcrypt.hashSync(user.clave, 10);
+
+    // Crear usuario con clave hasheada
+    const nuevoUsuario = await User.create({
+        login: user.login,
+        clave: claveencriptada,  // Clave encriptada
+        sts: user.sts,
+        tipo: user.tipo
+    });
+    return true
 }
 
 // import User, { UsuariosInstance } from '../Models/modelUser'; // Asegúrate de que esta ruta sea correcta
