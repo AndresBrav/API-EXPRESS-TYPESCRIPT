@@ -1,6 +1,6 @@
 export interface Usuario {
-    username: string;
-    password: string;
+    login: string;
+    clave: string;
 }
 
 export interface UsuarioActualizado {

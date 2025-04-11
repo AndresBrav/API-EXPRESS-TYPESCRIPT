@@ -6,15 +6,15 @@ import { UsuarioActualizado } from '../interfaces/Usuario';
 import { isString, isNumero } from '../Validations/validaciones';
 
 
-import User, { UsuariosInstance } from '../Models/usuariosModel'; // Asegúrate de que esta ruta sea correcta
+// import User, { UsuariosInstance } from '../Models/modelUser'; // Asegúrate de que esta ruta sea correcta
 
-export const obtenerTodosLosUsuarios = async (): Promise<UsuariosInstance[]> => {
-  const usuarios = await User.findAll();
-  if (!usuarios || usuarios.length === 0) {
-    throw new Error('No se encontraron usuarios');
-  }
-  return usuarios;
-};
+// export const obtenerTodosLosUsuarios = async (): Promise<UsuariosInstance[]> => {
+//   const usuarios = await User.findAll();
+//   if (!usuarios || usuarios.length === 0) {
+//     throw new Error('No se encontraron usuarios');
+//   }
+//   return usuarios;
+// };
 
 // export const obtenerTodosLosUsuarios = async (): Promise<any> => {
 //     const usuarios = await Usuarios.findAll();
@@ -24,7 +24,7 @@ export const obtenerTodosLosUsuarios = async (): Promise<UsuariosInstance[]> => 
 //     return usuarios;
 // }
 
-export const consultarDetalleUsuario = async (id: string): Promise<UsuariosInstance> => {
+/* export const consultarDetalleUsuario = async (id: string): Promise<UsuariosInstance> => {
 
     // console.log("el parametro que se paso es "+isString(id))
     const tipoID = isString(id);
@@ -102,4 +102,4 @@ export const borrarUsuario = async (id: string): Promise<boolean> => {
         resultado=true;
     }
     return resultado;
-}
+} */
