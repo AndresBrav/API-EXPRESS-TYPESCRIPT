@@ -5,7 +5,7 @@ import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken"; 
 import User,{UsuariosInstance} from "../Models/modelUser"
 
 import { Usuario } from "../interfaces/Usuario";
-import { obtenerUsuarios,obtenerUnUsuario,existeUsuario,eliminarUnUsuario,aniadirUsuario,SactualizarUnUsuario } from "../Services/usuarioServices";
+import { obtenerUsuarios,obtenerUnUsuario,existeUsuario,eliminarUnUsuario,aniadirUsuario,SactualizarUnUsuario } from "../Services/servicesUsers";
 // import { obtenerTodosLosUsuarios, consultarDetalleUsuario, aniadirUsuario, actualizarUsuario, borrarUsuario } from '../Services/usuarioServices'
 import bcrypt from 'bcrypt'
 
