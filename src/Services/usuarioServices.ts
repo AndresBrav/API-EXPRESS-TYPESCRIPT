@@ -80,100 +80,21 @@ export const aniadirUsuario = async (user):Promise<boolean> => {
     return true
 }
 
-// import User, { UsuariosInstance } from '../Models/modelUser'; // Asegúrate de que esta ruta sea correcta
+export const SactualizarUnUsuario = async (id:string,login:string,clave:string,sts:string,tipo:string):Promise<boolean> => {
+    // const { login, clave, sts, tipo } = req.body;
+    const claveencriptada = bcrypt.hashSync(clave, 10);
+    const carro = await User.findByPk(id);
 
-// export const obtenerTodosLosUsuarios = async (): Promise<UsuariosInstance[]> => {
-//   const usuarios = await User.findAll();
-//   if (!usuarios || usuarios.length === 0) {
-//     throw new Error('No se encontraron usuarios');
-//   }
-//   return usuarios;
-// };
-
-// export const obtenerTodosLosUsuarios = async (): Promise<any> => {
-//     const usuarios = await Usuarios.findAll();
-//     if (!usuarios || usuarios.length === 0) {
-//         throw new Error('No se encontraron usuarios');
-//     }
-//     return usuarios;
-// }
-
-/* export const consultarDetalleUsuario = async (id: string): Promise<UsuariosInstance> => {
-
-    // console.log("el parametro que se paso es "+isString(id))
-    const tipoID = isString(id);
-
-    if (tipoID) {
-        const usuario:UsuariosInstance = await User.findByPk(id)
-        return usuario;
-    }
-    else {
-        throw new Error("pasa el tipo de dato correcto")
-    }
-}
-
-
-
-export const aniadirUsuario = async (username: any, edad: any, password: any): Promise<boolean> => {
-    if (isNumero(edad) && isString(username) && isString(password)) {
-        const usuarioA:UsuarioActualizado ={username,edad,password}
-        // const usuario = {
-        //     username,
-        //     edad,
-        //     password
-        // };
-        await User.create(usuarioA)
+    if (carro) {
+        await carro.update({
+            login: login,
+            clave: claveencriptada,  // Clave encriptada
+            sts: sts,
+            tipo: tipo
+        });
         return true;
     }
-    else {
+    else{
         return false;
     }
 }
-
-
-export const actualizarUsuario = async (username: any, edad: any, password: any, id: string): Promise<boolean> => {
-    const usuario = await User.findByPk(id);
-    
-    if (!usuario) {
-        throw new Error("Usuario no encontrado");
-    }
-
-    // Verificar si los tres parámetros son undefined
-    if (username === undefined && edad === undefined && password === undefined) {
-        throw new Error("No se proporcionaron campos para actualizar");
-    }
-
-    const usuarioActualizado: UsuarioActualizado = {};
-
-
-
-    // Verificar si no es undefined antes de agregar al objeto
-    if (username !== undefined && isString(username)) {
-        usuarioActualizado.username = username;
-    }
-
-    if (edad !== undefined && isNumero(edad)) {
-        usuarioActualizado.edad = edad;
-    }
-
-    if (password !== undefined && isString(password)) {
-        usuarioActualizado.password = password;
-    }
-
-    // Actualizamos el usuario con los campos que no son undefined
-    await usuario.update(usuarioActualizado);
-    return true;
-}
-
-export const borrarUsuario = async (id: string): Promise<boolean> => {
-    let resultado:boolean = false;
-    const usuario = await User.findByPk(id)
-    console.log("vamos a eliminar el usuario.........")
-
-    if (usuario !== null) {
-        console.log(usuario)
-        await usuario.destroy();
-        resultado=true;
-    }
-    return resultado;
-} */
