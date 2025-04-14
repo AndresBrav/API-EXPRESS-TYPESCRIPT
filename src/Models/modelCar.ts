@@ -1,8 +1,21 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
 import db from '../db/conexion';
 
+interface CarsAttributes {
+    id?: number,
+    nombre?: string,
+    descripcion?: string,
+    precio?: number,
+    stock?: number,
+    user_id?: number
+}
+
+export interface CarsInterface
+    extends Model<CarsAttributes>,
+    CarsAttributes { }
+
 // define crea o usa
-const Car = db.define("Car", {
+const Car = db.define<CarsInterface>("Car", {
     nombre: {
         type: DataTypes.STRING
     },
