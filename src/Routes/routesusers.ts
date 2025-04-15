@@ -18,7 +18,7 @@ rutasUsuarios.post('/addUser', [validToken], CaniadirUsuario);
 
 rutasUsuarios.put('/update/:id', [validToken], CactualizarUnUsuario);
 
-rutasUsuarios.post("/login/iniciar", loginUser)
+// rutasUsuarios.post("/login/iniciar", loginUser)
 
 
 /* // Ruta protegida que requiere token

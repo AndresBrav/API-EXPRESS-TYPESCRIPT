@@ -4,6 +4,7 @@ import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import UserRoutes from '../Routes/routesusers';
 import CarsRoutes from '../Routes/routescars'
+import LoginRoutes from '../Routes/auth'
 import morgan from 'morgan';
 // actualizado
 
@@ -15,12 +16,14 @@ class ApiServer {
   private usersPath: string;
   private carsPaht:string
   private app: Application;
+  private loginPath:string;
   
 
   constructor() {
     this.app = express();
     this.usersPath = "/users";
     this.carsPaht="/cars";
+    this.loginPath="/api/auth"
     this.middlewares();  // Llama a la función middleware
     this.routes();       // Registra las rutas
     this.dbConnet(); //conexion a la base de datos
@@ -35,6 +38,7 @@ class ApiServer {
   }
 
   public routes(): void {
+    this.app.use(this.loginPath,LoginRoutes)
     this.app.use(this.usersPath, UserRoutes);
     this.app.use(this.carsPaht,CarsRoutes)
   }
