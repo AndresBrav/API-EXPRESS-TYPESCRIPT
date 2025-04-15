@@ -350,3 +350,42 @@ export const obtenerBase64 = async (nombreArchivo:string):Promise<string> => {
 
   })
 }
+
+export const convertirBase64toFileUpdate = async (base64Data:string, nombreArchivo:string, extension:string):Promise<string> => {
+  return new Promise((resolve, reject) => {
+      try {
+          if (!base64Data || !nombreArchivo || !extension) {
+              return reject("Base64, nombre de archivo o extensión no proporcionados.");
+          }
+
+          // Crear la carpeta 'ArchivosConvertidosDeBase64' si no existe
+          const folderPath = path.join(__dirname, "../ArchivosConvertidosDeBase64");
+          if (!fs.existsSync(folderPath)) {
+              fs.mkdirSync(folderPath);
+          }
+
+          // Ruta del archivo con nombre y extensión
+          let filePath = path.join(folderPath, `${nombreArchivo}.${extension}`);
+          let i = 1;
+
+          // Verificar si el archivo ya existe y cambiar el nombre si es necesario
+          while (fs.existsSync(filePath)) {
+              filePath = path.join(folderPath, `${nombreArchivo}${i}.${extension}`);
+              i++;
+          }
+
+          // Convertir base64 a buffer
+          const buffer = Buffer.from(base64Data, "base64");
+
+          // Escribir el archivo
+          fs.writeFile(filePath, buffer, (err) => {
+              if (err) return reject("Error al guardar el archivo: " + err);
+              console.log("Archivo guardado en:", filePath);
+              resolve(filePath);
+          });
+
+      } catch (error) {
+          reject("Error en el proceso: " + error);
+      }
+  });
+};

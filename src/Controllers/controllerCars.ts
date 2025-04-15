@@ -1,4 +1,4 @@
-import { obtenerCarros, obtenerUnCarro, existeCarro, eliminarUnCarro, aniadirCarro, ActualizarCarro, guardarArchivosCarros, guardarArchivoUnCarroFile, subirListaServidor, obtenerBase64 } from "../Services/servicesCars";
+import { obtenerCarros, obtenerUnCarro, existeCarro, eliminarUnCarro, aniadirCarro, ActualizarCarro, guardarArchivosCarros, guardarArchivoUnCarroFile, subirListaServidor, obtenerBase64, convertirBase64toFileUpdate } from "../Services/servicesCars";
 import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken";
 import { Request, Response } from "express";
 import User from "../Models/modelUser";
@@ -193,6 +193,20 @@ const CdevolverArchivoBase64 = async (req: AuthenticatedRequest, res: Response) 
     }
 }
 
+const CconvertirBase64toFile = async (req: AuthenticatedRequest, res: Response) => {
+    const {base64Data,nombreArchivo,extension} = req.body
+    //const {base64Data,nombreArchivo} = req.body
+    try {
+        await convertirBase64toFileUpdate(base64Data, nombreArchivo, extension);
+        //await convertirBase64toFile(base64Data, nombreArchivo);
+        res.json(
+            {msg: "El archivo se convirtio correctamente"}
+        )
+    } catch (error) {
+        res.status(500).json({ success: false, message: error });
+    }
+}
 
 
-export { Cobtenercarros, Cobteneruncarro, CeliminarCarro, CaniadirCarro, CactualizarCarro, CguardarArchivo, CguardarUnArchivo, CsubirServidor, CdevolverArchivoBase64 }
+
+export { Cobtenercarros, Cobteneruncarro, CeliminarCarro, CaniadirCarro, CactualizarCarro, CguardarArchivo, CguardarUnArchivo, CsubirServidor, CdevolverArchivoBase64, CconvertirBase64toFile }
