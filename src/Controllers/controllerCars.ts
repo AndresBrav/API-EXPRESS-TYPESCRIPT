@@ -2,12 +2,12 @@ import { obtenerCarros, obtenerUnCarro, existeCarro, eliminarUnCarro, aniadirCar
 import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken";
 import { Request, Response } from "express";
 import User from "../Models/modelUser";
-import Car from "../Models/modelCar";
+import Car,{CarsInterface} from "../Models/modelCar";
 
 const Cobtenercarros = async (req: AuthenticatedRequest, res: Response) => {
 
     /*const listaCarros = await Carro.findAll();*/
-    const listaCarros = await obtenerCarros(req)
+    const listaCarros:CarsInterface[] = await obtenerCarros(req)
 
     res.send(listaCarros);
 };
@@ -16,9 +16,9 @@ const Cobteneruncarro = async (req: AuthenticatedRequest, res: Response) => {
     // const data = req.body
     const { id } = req.params
 
-    const carro = await obtenerUnCarro(id);
+    const carro:CarsInterface = await obtenerUnCarro(id);
 
-    const existe = await existeCarro(id)
+    const existe:boolean = await existeCarro(id)
     console.log(`el carro existe ? ${existe}`);
     try {
         if (existe) {
@@ -59,7 +59,7 @@ const CaniadirCarro = async (req: AuthenticatedRequest, res: Response) => {
     //console.log("recuperado de usrt ", req.usrT.u);
     const loginusuario = req.DatosToken?.u  //con el que inicio sesion
 
-    const resultado = await aniadirCarro(nombre, descripcion, precio, stock, loginusuario)
+    const resultado:CarsInterface = await aniadirCarro(nombre, descripcion, precio, stock, loginusuario)
     // console.log(resultado)
     res.json({
         msg: "auto añadido exitosamente",

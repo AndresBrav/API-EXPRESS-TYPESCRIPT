@@ -105,7 +105,7 @@ export const aniadirCarro = async (nombre:string,descripcion:string,precio:numbe
 
     console.log("el id del usuario es " + userId);
 
-    const nuevoAuto = await Car.create({
+    const nuevoAuto:CarsInterface = await Car.create({
         nombre: nombre,
         descripcion: descripcion,  // Clave encriptada
         precio: precio,
