@@ -2,7 +2,7 @@ import  express from 'express';
 // import { Cobtenercarros,Cobteneruncarro,CeliminarCarro,CaniadirCarro,CactualizarCarro,CguardarArchivo,CguardarUnArchivo,CsubirServidor,CdevolverArchivoBase64,CconvertirBase64toFile } from '../controllers/controllercarros';
 
 import validToken,{AuthenticatedRequest} from '../Middlewares/tokenValidator';
-import { Cobtenercarros,Cobteneruncarro,CeliminarCarro,CaniadirCarro,CactualizarCarro,CguardarArchivo } from '../Controllers/controllerCars';
+import { Cobtenercarros,Cobteneruncarro,CeliminarCarro,CaniadirCarro,CactualizarCarro,CguardarArchivo,CguardarUnArchivo } from '../Controllers/controllerCars';
 const rutasAutos = express.Router();
 
 // rutasAutos.get("/",(req,res) => {
@@ -22,7 +22,7 @@ rutasAutos.put('/updateCar/:id',[validToken] ,CactualizarCarro);
 
 rutasAutos.post('/guardarPdf/list',[validToken],CguardarArchivo)
 
-// rutasAutos.post('/guardarPdf/lista/:id',[validToken],CguardarUnArchivo)
+rutasAutos.post('/guardarPdf/list/:id',[validToken],CguardarUnArchivo)
 
 // rutasAutos.post("/guardarListaServidor",[validToken],CsubirServidor)
 

@@ -243,3 +243,77 @@ export const guardarArchivosCarros = async (
       }
     });
   };
+
+  export const guardarArchivoUnCarroFile = async (id:string, tipoGuardado:'pdf' | 'txt'):Promise<string> => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            console.log("el tipo de guardado es: " + tipoGuardado);
+            const carro = await Car.findByPk(id);
+            const existe = await existeCarro(id)
+
+            let nombreDelArchivo = "";
+            const folderPath = path.join(__dirname, "../ArchivosGuardados");
+            if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath);
+
+            if (tipoGuardado === "txt" && existe) {
+                let filePath = path.join(folderPath, "Carro.txt");
+                let i = 1;
+                while (fs.existsSync(filePath)) {
+                    filePath = path.join(folderPath, `Carro${i}.txt`);
+                    i++;
+                }
+                nombreDelArchivo = path.basename(filePath);
+
+                // Crear el contenido del archivo .txt
+                let fileContent = "Detalle de Carro\n\n";
+
+                // Agregar los carros al archivo .txt
+
+                fileContent += ` ID: ${carro.id} - Nombre: ${carro.nombre} - Descripcion: ${carro.descripcion} - Precio: ${carro.precio} - Stock: ${carro.stock}\n`;
+
+                fs.writeFile(filePath, fileContent, async (err) => {
+                    if (err) return reject("Error al guardar el archivo TXT: " + err);
+                    console.log("Archivo TXT guardado en:", filePath);
+
+                    const variableBase64 = await convertirYGuardarArchivoBase64(nombreDelArchivo);
+                    resolve(variableBase64 || '');
+                });
+
+            } else if (tipoGuardado === "pdf" && existe) {
+                let filePath = path.join(folderPath, "Carro.pdf");
+                let i = 1;
+                while (fs.existsSync(filePath)) {
+                    filePath = path.join(folderPath, `Carro${i}.pdf`);
+                    i++;
+                }
+                nombreDelArchivo = path.basename(filePath);
+
+                const doc = new PDFDocument();
+                const writeStream = fs.createWriteStream(filePath);
+                doc.pipe(writeStream);
+
+                doc.fontSize(20).text("Detalles del Carro", { align: "center" }).moveDown();
+
+                //agregar carro al pdf
+                doc.fontSize(14).text(`ID: ${carro.id} - Nombre: ${carro.nombre} - Descripcion: ${carro.descripcion} - Precio: ${carro.precio} - Stock:${carro.stock}`)
+
+
+                doc.end();
+
+                writeStream.on("finish", async () => {
+                    console.log("PDF guardado en:", filePath);
+                    const variableBase64 = await convertirYGuardarArchivoBase64(nombreDelArchivo);
+                    resolve(variableBase64 || '');
+                });
+
+                writeStream.on("error", (err) => reject("Error al guardar el PDF: " + err));
+            } else {
+                reject("Tipo de guardado no soportado.");
+            }
+        } catch (error) {
+            reject("Error en el proceso: " + error);
+        }
+
+    }
+    );
+};

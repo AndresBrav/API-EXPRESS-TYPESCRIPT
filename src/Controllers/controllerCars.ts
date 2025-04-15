@@ -1,4 +1,4 @@
-import { obtenerCarros, obtenerUnCarro, existeCarro, eliminarUnCarro, aniadirCarro, ActualizarCarro, guardarArchivosCarros } from "../Services/servicesCars";
+import { obtenerCarros, obtenerUnCarro, existeCarro, eliminarUnCarro, aniadirCarro, ActualizarCarro, guardarArchivosCarros, guardarArchivoUnCarroFile } from "../Services/servicesCars";
 import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken";
 import { Request, Response } from "express";
 import User from "../Models/modelUser";
@@ -115,5 +115,58 @@ const CguardarArchivo = async (req: AuthenticatedRequest, res: Response) => {
 }
 
 
+const CguardarUnArchivo = async (req: AuthenticatedRequest, res: Response) => {
 
-export { Cobtenercarros, Cobteneruncarro, CeliminarCarro, CaniadirCarro, CactualizarCarro, CguardarArchivo }
+    try {
+        const { id } = req.params
+        const {  tipoGuardado } = req.body;
+
+        const loginUsuario = req.DatosToken?.u //USER1
+        /********* Obtenemos el id del usuario****** */
+        const usuarioaux = await User.findOne({
+            where: { login: loginUsuario },
+            raw: true
+        })
+
+        const listaDeCarrosDelUsuario = await Car.findAll({
+            where: {
+                user_id: usuarioaux.id
+            },
+            raw: true
+        })
+        // console.log("...........................................");
+        // console.log(listaDeCarrosDelUsuario);
+
+        let idsCarros = [];
+        listaDeCarrosDelUsuario.forEach(carro => {
+            idsCarros.push(carro.id);
+        });
+
+        let existeValor = idsCarros.includes(Number(id));
+
+        if (existeValor) {
+            const base64Data = await guardarArchivoUnCarroFile(id, tipoGuardado) //guarda el pdf de un carro en la direccion 
+            res.json({
+                msg: "llegamos hasta aqui verifica que se haya subido el carro",
+                archivoB64: base64Data
+            })
+        }
+        else {
+            res.json({
+                msg: "El id del carro que ingresaste no pertenece al usuario que inicio sesion"
+            })
+        }
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: error });
+    }
+
+
+
+    // await guardarPdfUnCarro(id, TipoTransferencia) //guarda el pdf de un carro en la direccion 
+
+}
+
+
+
+export { Cobtenercarros, Cobteneruncarro, CeliminarCarro, CaniadirCarro, CactualizarCarro, CguardarArchivo, CguardarUnArchivo }
