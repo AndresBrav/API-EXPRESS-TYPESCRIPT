@@ -336,3 +336,17 @@ export const subirListaServidor = async (nombreArchivo, TipoTransferencia, host,
   //uploadFileToFTP(localFilePath, remoteFilePath, transferMode);
   await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode, host, user, password);
 }
+
+
+
+export const obtenerBase64 = async (nombreArchivo:string):Promise<string> => {
+  return new Promise(async (resolve, reject) => {
+      try {
+          const base64Data = await convertirYGuardarArchivoBase64(nombreArchivo);
+          resolve(base64Data);
+      } catch (error) {
+          reject("Error al obtener el archivo en Base64: " + error);
+      }
+
+  })
+}

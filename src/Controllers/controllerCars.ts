@@ -1,4 +1,4 @@
-import { obtenerCarros, obtenerUnCarro, existeCarro, eliminarUnCarro, aniadirCarro, ActualizarCarro, guardarArchivosCarros, guardarArchivoUnCarroFile, subirListaServidor } from "../Services/servicesCars";
+import { obtenerCarros, obtenerUnCarro, existeCarro, eliminarUnCarro, aniadirCarro, ActualizarCarro, guardarArchivosCarros, guardarArchivoUnCarroFile, subirListaServidor, obtenerBase64 } from "../Services/servicesCars";
 import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken";
 import { Request, Response } from "express";
 import User from "../Models/modelUser";
@@ -177,6 +177,22 @@ const CsubirServidor = async (req: AuthenticatedRequest, res: Response) => {
     })
 }
 
+const CdevolverArchivoBase64 = async (req: AuthenticatedRequest, res: Response) => {
+
+    try {
+        const { nombreArchivo } = req.body
+        const base64Data = await obtenerBase64(nombreArchivo);
+
+        res.json({
+            msg: "El codigo base64 se genero correctamente:",
+            base64: base64Data
+        })
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: error });
+    }
+}
 
 
-export { Cobtenercarros, Cobteneruncarro, CeliminarCarro, CaniadirCarro, CactualizarCarro, CguardarArchivo, CguardarUnArchivo, CsubirServidor }
+
+export { Cobtenercarros, Cobteneruncarro, CeliminarCarro, CaniadirCarro, CactualizarCarro, CguardarArchivo, CguardarUnArchivo, CsubirServidor, CdevolverArchivoBase64 }

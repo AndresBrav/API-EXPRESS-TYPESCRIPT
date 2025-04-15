@@ -2,7 +2,7 @@ import  express from 'express';
 // import { Cobtenercarros,Cobteneruncarro,CeliminarCarro,CaniadirCarro,CactualizarCarro,CguardarArchivo,CguardarUnArchivo,CsubirServidor,CdevolverArchivoBase64,CconvertirBase64toFile } from '../controllers/controllercarros';
 
 import validToken,{AuthenticatedRequest} from '../Middlewares/tokenValidator';
-import { Cobtenercarros,Cobteneruncarro,CeliminarCarro,CaniadirCarro,CactualizarCarro,CguardarArchivo,CguardarUnArchivo,CsubirServidor } from '../Controllers/controllerCars';
+import { Cobtenercarros,Cobteneruncarro,CeliminarCarro,CaniadirCarro,CactualizarCarro,CguardarArchivo,CguardarUnArchivo,CsubirServidor,CdevolverArchivoBase64 } from '../Controllers/controllerCars';
 const rutasAutos = express.Router();
 
 // rutasAutos.get("/",(req,res) => {
@@ -26,7 +26,7 @@ rutasAutos.post('/guardarPdf/list/:id',[validToken],CguardarUnArchivo)
 
 rutasAutos.post("/guardarListServidor",[validToken],CsubirServidor)
 
-// rutasAutos.post("/ArchivoBase64",[validToken],CdevolverArchivoBase64)
+rutasAutos.post("/ArchivoBase64",[validToken],CdevolverArchivoBase64)
 
 // rutasAutos.post("/ConvertirBase64toFile",[validToken],CconvertirBase64toFile)
 
