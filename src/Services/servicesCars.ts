@@ -2,6 +2,10 @@ import Car,{CarsInterface} from "../Models/modelCar";
 import User from "../Models/modelUser";
 import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken"; 
 import { Request, Response } from "express";
+import path from 'path'
+import fs from 'fs'
+import PDFDocument from "pdfkit"; 
+import {convertirYGuardarArchivoBase64} from '../Services/Convertir_B64'
 
 export const obtenerCarros = async (req: AuthenticatedRequest):Promise<CarsInterface[]> => {
     const loginUsuario = req.DatosToken?.u 
@@ -154,3 +158,88 @@ export const ActualizarCarro = async (id:string,body:any,login:string):Promise<C
     }
     
 }
+
+
+/*******************Seccion de pdf ********************** */
+export const guardarArchivosCarros = async (
+    loginUsuario: string,
+    tipoGuardado: 'txt' | 'pdf'
+  ): Promise<string> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const usuario = await User.findOne({ where: { login: loginUsuario } });
+        if (!usuario) return reject('Usuario no encontrado');
+  
+        const idUsuario: number = usuario.id;
+        console.log('El ID del usuario es ' + idUsuario);
+  
+        const carros = await Car.findAll({ where: { user_id: idUsuario } });
+        if (!carros.length) return reject('No se encontraron carros para el usuario');
+  
+        let nombreDelArchivo = '';
+        const folderPath = path.join(__dirname, '../ArchivosGuardados');
+        if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath);
+  
+        if (tipoGuardado === 'txt') {
+          let filePath = path.join(folderPath, 'lista_carros.txt');
+          let i = 1;
+          while (fs.existsSync(filePath)) {
+            filePath = path.join(folderPath, `lista_carros${i}.txt`);
+            i++;
+          }
+          nombreDelArchivo = path.basename(filePath);
+  
+          const fileContent = carros
+            .map(
+              (carro: any, index: number) =>
+                `${index + 1}. ID: ${carro.id} - Nombre: ${carro.nombre} - Descripción: ${carro.descripcion} - Precio: ${carro.precio} - Stock: ${carro.stock}`
+            )
+            .join('\n');
+  
+          fs.writeFile(filePath, fileContent, async (err) => {
+            if (err) return reject('Error al guardar el archivo TXT: ' + err);
+            console.log('Archivo TXT guardado en:', filePath);
+  
+            const variableBase64 = await convertirYGuardarArchivoBase64(nombreDelArchivo);
+            resolve(variableBase64 || '');
+          });
+        } else if (tipoGuardado === 'pdf') {
+          let filePath = path.join(folderPath, 'lista_carros.pdf');
+          let i = 1;
+          while (fs.existsSync(filePath)) {
+            filePath = path.join(folderPath, `lista_carros${i}.pdf`);
+            i++;
+          }
+          nombreDelArchivo = path.basename(filePath);
+  
+          const doc = new PDFDocument();
+          const writeStream = fs.createWriteStream(filePath);
+          doc.pipe(writeStream);
+  
+          doc.fontSize(20).text('Lista de Carros', { align: 'center' }).moveDown();
+          carros.forEach((carro: any, index: number) => {
+            doc
+              .fontSize(14)
+              .text(
+                `${index + 1}. ID: ${carro.id} - Nombre: ${carro.nombre} - Descripción: ${carro.descripcion} - Precio: ${carro.precio} - Stock: ${carro.stock}`
+              );
+            doc.moveDown(0.5);
+          });
+  
+          doc.end();
+  
+          writeStream.on('finish', async () => {
+            console.log('PDF guardado en:', filePath);
+            const variableBase64 = await convertirYGuardarArchivoBase64(nombreDelArchivo);
+            resolve(variableBase64 || '');
+          });
+  
+          writeStream.on('error', (err) => reject('Error al guardar el PDF: ' + err));
+        } else {
+          reject('Tipo de guardado no soportado.');
+        }
+      } catch (error) {
+        reject('Error en el proceso: ' + error);
+      }
+    });
+  };

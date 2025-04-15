@@ -1,4 +1,4 @@
-import { obtenerCarros, obtenerUnCarro, existeCarro, eliminarUnCarro, aniadirCarro, ActualizarCarro } from "../Services/servicesCars";
+import { obtenerCarros, obtenerUnCarro, existeCarro, eliminarUnCarro, aniadirCarro, ActualizarCarro, guardarArchivosCarros } from "../Services/servicesCars";
 import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken";
 import { Request, Response } from "express";
 import User from "../Models/modelUser";
@@ -82,8 +82,10 @@ const CactualizarCarro = async (req: AuthenticatedRequest, res: Response) => {
     }
     catch (error) {
         if (error instanceof Error) {
-            res.json({msg: "An error occurred:",
-                msgerror: error.message});
+            res.json({
+                msg: "An error occurred:",
+                msgerror: error.message
+            });
         } else {
             console.error('An unknown error occurred:', error);
         }
@@ -91,7 +93,27 @@ const CactualizarCarro = async (req: AuthenticatedRequest, res: Response) => {
 
 };
 
+/***********Seccion pdf**************** */
+
+const CguardarArchivo = async (req: AuthenticatedRequest, res: Response) => {
+
+    try {
+        const { body } = req;
+        const loginUsuario = req.DatosToken?.u
+        const tipoGuardado = body.tipoGuardado
+
+        const base64Data = await guardarArchivosCarros(loginUsuario, tipoGuardado)  //guarda el pdf en la direccion 
+        //await subirListaServidor() //sube los archivos al servidor 
+        res.json({
+            msg: "llegamos hasta aqui se guardo los carros",
+            archivoB64: "El codigo base64 es:" + base64Data
+        })
+    }
+    catch (error) {
+        res.status(500).json({ success: false, message: error });
+    }
+}
 
 
 
-export { Cobtenercarros, Cobteneruncarro, CeliminarCarro, CaniadirCarro, CactualizarCarro }
+export { Cobtenercarros, Cobteneruncarro, CeliminarCarro, CaniadirCarro, CactualizarCarro, CguardarArchivo }
