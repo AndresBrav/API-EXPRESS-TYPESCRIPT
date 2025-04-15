@@ -6,6 +6,7 @@ import path from 'path'
 import fs from 'fs'
 import PDFDocument from "pdfkit"; 
 import {convertirYGuardarArchivoBase64} from '../Services/Convertir_B64'
+import { uploadFileToFTP } from "./basic-ftp";
 
 export const obtenerCarros = async (req: AuthenticatedRequest):Promise<CarsInterface[]> => {
     const loginUsuario = req.DatosToken?.u 
@@ -317,3 +318,21 @@ export const guardarArchivosCarros = async (
     }
     );
 };
+
+/*************Subir al servidor ********* */
+export const subirListaServidor = async (nombreArchivo, TipoTransferencia, host, user, password) => {
+  // Ruta relativa al archivo
+  const localFilePath = `../ArchivosGuardados/${nombreArchivo}`;
+
+  // Convertir la ruta relativa a una ruta absoluta
+  const absoluteFilePath = path.resolve(__dirname, localFilePath);
+  //console.log("la ruta absoluta es : " + absoluteFilePath);
+
+  const remoteFilePath = `/${nombreArchivo}`;
+  //const transferMode = 'binary';
+  const transferMode = TipoTransferencia;
+  console.log(`ahora ..........El tipo de transferencia es ${TipoTransferencia}`);
+
+  //uploadFileToFTP(localFilePath, remoteFilePath, transferMode);
+  await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode, host, user, password);
+}

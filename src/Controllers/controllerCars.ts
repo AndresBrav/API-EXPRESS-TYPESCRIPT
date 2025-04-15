@@ -1,4 +1,4 @@
-import { obtenerCarros, obtenerUnCarro, existeCarro, eliminarUnCarro, aniadirCarro, ActualizarCarro, guardarArchivosCarros, guardarArchivoUnCarroFile } from "../Services/servicesCars";
+import { obtenerCarros, obtenerUnCarro, existeCarro, eliminarUnCarro, aniadirCarro, ActualizarCarro, guardarArchivosCarros, guardarArchivoUnCarroFile, subirListaServidor } from "../Services/servicesCars";
 import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken";
 import { Request, Response } from "express";
 import User from "../Models/modelUser";
@@ -167,6 +167,16 @@ const CguardarUnArchivo = async (req: AuthenticatedRequest, res: Response) => {
 
 }
 
+const CsubirServidor = async (req: AuthenticatedRequest, res: Response) => {
+    const { nombreArchivo, TipoTransferencia, host, user, password } = req.body
+
+    //Ejecutar la subida
+    await subirListaServidor(nombreArchivo, TipoTransferencia, host, user, password);
+    res.send({
+        msg: "se subio al servidor"
+    })
+}
 
 
-export { Cobtenercarros, Cobteneruncarro, CeliminarCarro, CaniadirCarro, CactualizarCarro, CguardarArchivo, CguardarUnArchivo }
+
+export { Cobtenercarros, Cobteneruncarro, CeliminarCarro, CaniadirCarro, CactualizarCarro, CguardarArchivo, CguardarUnArchivo, CsubirServidor }
