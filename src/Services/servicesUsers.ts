@@ -1,15 +1,14 @@
-import { Usuario } from '../interfaces/Usuario';
 // import Usuarios from "../Models/usuariosModel"
-import { UsuarioActualizado } from '../interfaces/Usuario';
-import User,{UsuariosInstance} from '../Models/modelUser';
+import User, { UsuariosInstance } from '../Models/modelUser';
 
 // import { isString, isNumero } from '../Validations/validaciones';
 
 import bcrypt from 'bcrypt'
 
-import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken"; 
+import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken";
+import { addUserBD } from '../types/user.types'
 
-export const obtenerUsuarios = async (req: AuthenticatedRequest):Promise<UsuariosInstance[]> => {
+export const obtenerUsuarios = async (req: AuthenticatedRequest): Promise<UsuariosInstance[]> => {
 
     const loginusuario = req.DatosToken?.u  //con el que inicio sesion
 
@@ -19,14 +18,14 @@ export const obtenerUsuarios = async (req: AuthenticatedRequest):Promise<Usuario
         raw: true  // Esto hace que devuelva un objeto simple 
     });
 
-    if(tipo.tipo == "admin"){
+    if (tipo.tipo == "admin") {
 
-        const user:UsuariosInstance[] = await User.findAll()
+        const user: UsuariosInstance[] = await User.findAll()
         return user;
     }
-    else{
+    else {
         // const user = "No tiene permisos para ver los usuarios"
-        const user:UsuariosInstance[]=[]
+        const user: UsuariosInstance[] = []
         return user;
     }
 
@@ -37,7 +36,7 @@ export const obtenerUsuarios = async (req: AuthenticatedRequest):Promise<Usuario
 
 export const obtenerUnUsuario = async (id) => {
     // const { id } = req.params;
-    const unUsuario:UsuariosInstance = await User.findByPk(id);
+    const unUsuario: UsuariosInstance = await User.findByPk(id);
     if (unUsuario) {
         return unUsuario
     } else {
@@ -51,22 +50,20 @@ export const existeUsuario = async (id) => {
 };
 
 export const eliminarUnUsuario = async (id): Promise<boolean> => {
-    const user:UsuariosInstance = await User.findByPk(id);
+    const user: UsuariosInstance = await User.findByPk(id);
     if (user) {
         await user.destroy();
         return true
     }
-    else{
+    else {
         return false
     }
-    
+
 }
 
 
-export const aniadirUsuario = async (user):Promise<boolean> => {
+export const aniadirUsuario = async (user: addUserBD): Promise<boolean> => {
 
-    //const { body } = req;
-    //await User.create(body);
     // Hashear la clave antes de guardarla
     const claveencriptada = bcrypt.hashSync(user.clave, 10);
 
@@ -80,7 +77,7 @@ export const aniadirUsuario = async (user):Promise<boolean> => {
     return true
 }
 
-export const SactualizarUnUsuario = async (id:string,login:string,clave:string,sts:string,tipo:string):Promise<boolean> => {
+export const SactualizarUnUsuario = async (id: string, login: string, clave: string, sts: string, tipo: string): Promise<boolean> => {
     // const { login, clave, sts, tipo } = req.body;
     const claveencriptada = bcrypt.hashSync(clave, 10);
     const carro = await User.findByPk(id);
@@ -94,7 +91,19 @@ export const SactualizarUnUsuario = async (id:string,login:string,clave:string,s
         });
         return true;
     }
-    else{
+    else {
         return false;
+    }
+}
+
+export const validarDatos = (login: string, clave: string, sts: string, tipo: string): boolean => {
+    // console.log("vamos a verificar los tipos .........")
+    // console.log(typeof login)
+    // console.log(typeof clave)
+    if (typeof login === "string" && typeof clave === "string" && typeof sts === "string" && typeof tipo === "string") {
+        return true
+    }
+    else {
+        return false
     }
 }

@@ -114,6 +114,10 @@ const CaniadirCarroNuevo = async (req: AuthenticatedRequest, res: Response): Pro
     }
 };
 
+
+
+
+
 const CactualizarCarro = async (req: AuthenticatedRequest, res: Response) => {
     const { id } = req.params;
     const { body } = req;
