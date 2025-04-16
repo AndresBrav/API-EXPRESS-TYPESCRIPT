@@ -2,7 +2,8 @@ import  express from 'express';
 // import { Cobtenercarros,Cobteneruncarro,CeliminarCarro,CaniadirCarro,CactualizarCarro,CguardarArchivo,CguardarUnArchivo,CsubirServidor,CdevolverArchivoBase64,CconvertirBase64toFile } from '../controllers/controllercarros';
 
 import validToken,{AuthenticatedRequest} from '../Middlewares/tokenValidator';
-import { Cobtenercarros,Cobteneruncarro,CeliminarCarro,CaniadirCarro,CactualizarCarro,CguardarArchivo,CguardarUnArchivo,CsubirServidor,CdevolverArchivoBase64, CconvertirBase64toFile } from '../Controllers/controllerCars';
+import { Cobtenercarros,Cobteneruncarro,CeliminarCarro,CactualizarCarro,CguardarArchivo,CguardarUnArchivo,CsubirServidor,CdevolverArchivoBase64, CconvertirBase64toFile, CaniadirCarroNuevo } from '../Controllers/controllerCars';
+
 const rutasAutos = express.Router();
 
 
@@ -17,7 +18,7 @@ rutasAutos.get('/getOne/:id',[validToken], Cobteneruncarro);
 
 rutasAutos.delete('/delCar/:id',[validToken], CeliminarCarro);
 
-rutasAutos.post('/addCar',[validToken], CaniadirCarro);
+rutasAutos.post('/addCar',[validToken], CaniadirCarroNuevo);
 
 rutasAutos.put('/updateCar/:id',[validToken] ,CactualizarCarro);
 

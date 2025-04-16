@@ -1,16 +1,17 @@
-import Car,{CarsInterface} from "../Models/modelCar";
+import Car, { CarsInterface } from "../Models/modelCar";
 import User from "../Models/modelUser";
-import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken"; 
+import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken";
 import { Request, Response } from "express";
 import path from 'path'
 import fs from 'fs'
-import PDFDocument from "pdfkit"; 
-import {convertirYGuardarArchivoBase64} from '../Services/Convertir_B64'
+import PDFDocument from "pdfkit";
+import { convertirYGuardarArchivoBase64 } from '../Services/Convertir_B64'
 import { uploadFileToFTP } from "./basic-ftp";
 
-export const obtenerCarros = async (req: AuthenticatedRequest):Promise<CarsInterface[]> => {
-    const loginUsuario = req.DatosToken?.u 
-    console.log("recuperado de usrt ", req.DatosToken?.u );
+
+export const obtenerCarros = async (req: AuthenticatedRequest): Promise<CarsInterface[]> => {
+    const loginUsuario = req.DatosToken?.u
+    console.log("recuperado de usrt ", req.DatosToken?.u);
 
     // Obtener el ID del usuario a partir de su nombre
     const usuario = await User.findOne({ where: { login: loginUsuario } });
@@ -21,14 +22,14 @@ export const obtenerCarros = async (req: AuthenticatedRequest):Promise<CarsInter
 
     /*****Retornar carros  */
     // Obtener los carros asociados a ese usuario
-    const carros:CarsInterface[] = await Car.findAll({ where: { user_id: idUsuario } });
+    const carros: CarsInterface[] = await Car.findAll({ where: { user_id: idUsuario } });
 
     //const carro = await Carro.findAll()
     return carros;
 }
 
 
-export const obtenerUnCarro = async (id:string) => {
+export const obtenerUnCarro = async (id: string) => {
     const unCarro = await Car.findByPk(id);
     if (unCarro) {
         return unCarro
@@ -42,7 +43,7 @@ export const existeCarro = async (id) => {
     return !!carro; // Devuelve true si existe, false si no
 };
 
-export const eliminarUnCarro = async (loginUsuario:string | undefined,id:string):Promise<boolean> => {
+export const eliminarUnCarro = async (loginUsuario: string | undefined, id: string): Promise<boolean> => {
 
     const loginusuario = loginUsuario//con el que inicio sesion
     // const { body } = req.body;
@@ -78,45 +79,74 @@ export const eliminarUnCarro = async (loginUsuario:string | undefined,id:string)
         const carro = await Car.findByPk(id);
         await carro.destroy();
         return true
-        
+
     }
-    else{
+    else {
         return false
-        
+
     }
 
 }
 
-export const aniadirCarro = async (nombre:string,descripcion:string,precio:number,stock:number,loginUsuario:string):Promise<CarsInterface> => {
 
+export const aniadirCarro = async (
+    nombre: string,
+    descripcion: string,
+    precio: number,
+    stock: number,
+    loginUsuario: string
+  ): Promise<CarsInterface> => {
+    // Validaciones
+    if (typeof nombre !== "string" || nombre.trim() === "") {
+      throw new Error("El nombre tiene que ser de tipo string");
+    }
+    if (typeof descripcion !== "string" || descripcion.trim() === "") {
+      throw new Error("La descripción tiene que ser de tipo string");
+    }
+    if (typeof precio !== "number" || isNaN(precio) || precio <= 0) {
+      throw new Error("El precio tiene que ser number");
+    }
+    if (typeof stock !== "number" || isNaN(stock) || stock < 0) {
+      throw new Error("El stock tiene que ser number");
+    }
+    if (typeof loginUsuario !== "string" || loginUsuario.trim() === "") {
+      throw new Error("El loginUsuario  tiene que ser string");
+    }
 
-    //console.log("recuperado de usrt ", req.usrT.u);
-
-    const loginusuario = loginUsuario  //con el que inicio sesion
-    // const { body } = req.body;
+      
+  
+    // Buscar el usuario
     const idUsuario = await User.findOne({
-        where: { login: loginusuario },
-        attributes: ["id"],
-        raw: true  // <- Esto hace que devuelva un objeto simple 
+      where: { login: loginUsuario },
+      attributes: ["id"],
+      raw: true,
     });
-
-    // Extraer solo el ID
-    const userId = idUsuario ? idUsuario.id : null;
-
-    console.log("el id del usuario es " + userId);
-
-    const nuevoAuto:CarsInterface = await Car.create({
-        nombre: nombre,
-        descripcion: descripcion,  // Clave encriptada
-        precio: precio,
-        stock: stock,
-        user_id: userId
+  
+    if (!idUsuario) {
+      throw new Error("Usuario no encontrado");
+    }
+  
+    const userId = idUsuario.id;
+  
+    // Crear el auto
+    const nuevoAuto: CarsInterface = await Car.create({
+      nombre,
+      descripcion,
+      precio,
+      stock,
+      user_id: userId,
     });
-
+  
+    if (!nuevoAuto) {
+      throw new Error("No se pudo crear el auto");
+    }
+  
     return nuevoAuto;
-}
+  };
 
-export const ActualizarCarro = async (id:string,body:any,login:string):Promise<CarsInterface> => {
+
+
+export const ActualizarCarro = async (id: string, body: any, login: string): Promise<CarsInterface> => {
     /********* Obtenemos el id del usuario****** */
     const usuarioaux = await User.findOne({
         where: { login: login },
@@ -153,11 +183,11 @@ export const ActualizarCarro = async (id:string,body:any,login:string):Promise<C
         console.log("el carro actualizado es ................................")
         console.log(carro)
         return carro;
-    } 
-    else{
+    }
+    else {
         throw new Error("el auto no se actualizo ingresa correctamente los datos ")
     }
-    
+
 }
 
 
@@ -165,87 +195,87 @@ export const ActualizarCarro = async (id:string,body:any,login:string):Promise<C
 export const guardarArchivosCarros = async (
     loginUsuario: string,
     tipoGuardado: 'txt' | 'pdf'
-  ): Promise<string> => {
+): Promise<string> => {
     return new Promise(async (resolve, reject) => {
-      try {
-        const usuario = await User.findOne({ where: { login: loginUsuario } });
-        if (!usuario) return reject('Usuario no encontrado');
-  
-        const idUsuario: number = usuario.id;
-        console.log('El ID del usuario es ' + idUsuario);
-  
-        const carros = await Car.findAll({ where: { user_id: idUsuario } });
-        if (!carros.length) return reject('No se encontraron carros para el usuario');
-  
-        let nombreDelArchivo = '';
-        const folderPath = path.join(__dirname, '../ArchivosGuardados');
-        if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath);
-  
-        if (tipoGuardado === 'txt') {
-          let filePath = path.join(folderPath, 'lista_carros.txt');
-          let i = 1;
-          while (fs.existsSync(filePath)) {
-            filePath = path.join(folderPath, `lista_carros${i}.txt`);
-            i++;
-          }
-          nombreDelArchivo = path.basename(filePath);
-  
-          const fileContent = carros
-            .map(
-              (carro: any, index: number) =>
-                `${index + 1}. ID: ${carro.id} - Nombre: ${carro.nombre} - Descripción: ${carro.descripcion} - Precio: ${carro.precio} - Stock: ${carro.stock}`
-            )
-            .join('\n');
-  
-          fs.writeFile(filePath, fileContent, async (err) => {
-            if (err) return reject('Error al guardar el archivo TXT: ' + err);
-            console.log('Archivo TXT guardado en:', filePath);
-  
-            const variableBase64 = await convertirYGuardarArchivoBase64(nombreDelArchivo);
-            resolve(variableBase64 || '');
-          });
-        } else if (tipoGuardado === 'pdf') {
-          let filePath = path.join(folderPath, 'lista_carros.pdf');
-          let i = 1;
-          while (fs.existsSync(filePath)) {
-            filePath = path.join(folderPath, `lista_carros${i}.pdf`);
-            i++;
-          }
-          nombreDelArchivo = path.basename(filePath);
-  
-          const doc = new PDFDocument();
-          const writeStream = fs.createWriteStream(filePath);
-          doc.pipe(writeStream);
-  
-          doc.fontSize(20).text('Lista de Carros', { align: 'center' }).moveDown();
-          carros.forEach((carro: any, index: number) => {
-            doc
-              .fontSize(14)
-              .text(
-                `${index + 1}. ID: ${carro.id} - Nombre: ${carro.nombre} - Descripción: ${carro.descripcion} - Precio: ${carro.precio} - Stock: ${carro.stock}`
-              );
-            doc.moveDown(0.5);
-          });
-  
-          doc.end();
-  
-          writeStream.on('finish', async () => {
-            console.log('PDF guardado en:', filePath);
-            const variableBase64 = await convertirYGuardarArchivoBase64(nombreDelArchivo);
-            resolve(variableBase64 || '');
-          });
-  
-          writeStream.on('error', (err) => reject('Error al guardar el PDF: ' + err));
-        } else {
-          reject('Tipo de guardado no soportado.');
-        }
-      } catch (error) {
-        reject('Error en el proceso: ' + error);
-      }
-    });
-  };
+        try {
+            const usuario = await User.findOne({ where: { login: loginUsuario } });
+            if (!usuario) return reject('Usuario no encontrado');
 
-  export const guardarArchivoUnCarroFile = async (id:string, tipoGuardado:'pdf' | 'txt'):Promise<string> => {
+            const idUsuario: number = usuario.id;
+            console.log('El ID del usuario es ' + idUsuario);
+
+            const carros = await Car.findAll({ where: { user_id: idUsuario } });
+            if (!carros.length) return reject('No se encontraron carros para el usuario');
+
+            let nombreDelArchivo = '';
+            const folderPath = path.join(__dirname, '../ArchivosGuardados');
+            if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath);
+
+            if (tipoGuardado === 'txt') {
+                let filePath = path.join(folderPath, 'lista_carros.txt');
+                let i = 1;
+                while (fs.existsSync(filePath)) {
+                    filePath = path.join(folderPath, `lista_carros${i}.txt`);
+                    i++;
+                }
+                nombreDelArchivo = path.basename(filePath);
+
+                const fileContent = carros
+                    .map(
+                        (carro: any, index: number) =>
+                            `${index + 1}. ID: ${carro.id} - Nombre: ${carro.nombre} - Descripción: ${carro.descripcion} - Precio: ${carro.precio} - Stock: ${carro.stock}`
+                    )
+                    .join('\n');
+
+                fs.writeFile(filePath, fileContent, async (err) => {
+                    if (err) return reject('Error al guardar el archivo TXT: ' + err);
+                    console.log('Archivo TXT guardado en:', filePath);
+
+                    const variableBase64 = await convertirYGuardarArchivoBase64(nombreDelArchivo);
+                    resolve(variableBase64 || '');
+                });
+            } else if (tipoGuardado === 'pdf') {
+                let filePath = path.join(folderPath, 'lista_carros.pdf');
+                let i = 1;
+                while (fs.existsSync(filePath)) {
+                    filePath = path.join(folderPath, `lista_carros${i}.pdf`);
+                    i++;
+                }
+                nombreDelArchivo = path.basename(filePath);
+
+                const doc = new PDFDocument();
+                const writeStream = fs.createWriteStream(filePath);
+                doc.pipe(writeStream);
+
+                doc.fontSize(20).text('Lista de Carros', { align: 'center' }).moveDown();
+                carros.forEach((carro: any, index: number) => {
+                    doc
+                        .fontSize(14)
+                        .text(
+                            `${index + 1}. ID: ${carro.id} - Nombre: ${carro.nombre} - Descripción: ${carro.descripcion} - Precio: ${carro.precio} - Stock: ${carro.stock}`
+                        );
+                    doc.moveDown(0.5);
+                });
+
+                doc.end();
+
+                writeStream.on('finish', async () => {
+                    console.log('PDF guardado en:', filePath);
+                    const variableBase64 = await convertirYGuardarArchivoBase64(nombreDelArchivo);
+                    resolve(variableBase64 || '');
+                });
+
+                writeStream.on('error', (err) => reject('Error al guardar el PDF: ' + err));
+            } else {
+                reject('Tipo de guardado no soportado.');
+            }
+        } catch (error) {
+            reject('Error en el proceso: ' + error);
+        }
+    });
+};
+
+export const guardarArchivoUnCarroFile = async (id: string, tipoGuardado: 'pdf' | 'txt'): Promise<string> => {
     return new Promise(async (resolve, reject) => {
         try {
             console.log("el tipo de guardado es: " + tipoGuardado);
@@ -321,71 +351,71 @@ export const guardarArchivosCarros = async (
 
 /*************Subir al servidor ********* */
 export const subirListaServidor = async (nombreArchivo, TipoTransferencia, host, user, password) => {
-  // Ruta relativa al archivo
-  const localFilePath = `../ArchivosGuardados/${nombreArchivo}`;
+    // Ruta relativa al archivo
+    const localFilePath = `../ArchivosGuardados/${nombreArchivo}`;
 
-  // Convertir la ruta relativa a una ruta absoluta
-  const absoluteFilePath = path.resolve(__dirname, localFilePath);
-  //console.log("la ruta absoluta es : " + absoluteFilePath);
+    // Convertir la ruta relativa a una ruta absoluta
+    const absoluteFilePath = path.resolve(__dirname, localFilePath);
+    //console.log("la ruta absoluta es : " + absoluteFilePath);
 
-  const remoteFilePath = `/${nombreArchivo}`;
-  //const transferMode = 'binary';
-  const transferMode = TipoTransferencia;
-  console.log(`ahora ..........El tipo de transferencia es ${TipoTransferencia}`);
+    const remoteFilePath = `/${nombreArchivo}`;
+    //const transferMode = 'binary';
+    const transferMode = TipoTransferencia;
+    console.log(`ahora ..........El tipo de transferencia es ${TipoTransferencia}`);
 
-  //uploadFileToFTP(localFilePath, remoteFilePath, transferMode);
-  await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode, host, user, password);
+    //uploadFileToFTP(localFilePath, remoteFilePath, transferMode);
+    await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode, host, user, password);
 }
 
 
 
-export const obtenerBase64 = async (nombreArchivo:string):Promise<string> => {
-  return new Promise(async (resolve, reject) => {
-      try {
-          const base64Data = await convertirYGuardarArchivoBase64(nombreArchivo);
-          resolve(base64Data);
-      } catch (error) {
-          reject("Error al obtener el archivo en Base64: " + error);
-      }
+export const obtenerBase64 = async (nombreArchivo: string): Promise<string> => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const base64Data = await convertirYGuardarArchivoBase64(nombreArchivo);
+            resolve(base64Data);
+        } catch (error) {
+            reject("Error al obtener el archivo en Base64: " + error);
+        }
 
-  })
+    })
 }
 
-export const convertirBase64toFileUpdate = async (base64Data:string, nombreArchivo:string, extension:string):Promise<string> => {
-  return new Promise((resolve, reject) => {
-      try {
-          if (!base64Data || !nombreArchivo || !extension) {
-              return reject("Base64, nombre de archivo o extensión no proporcionados.");
-          }
+export const convertirBase64toFileUpdate = async (base64Data: string, nombreArchivo: string, extension: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        try {
+            if (!base64Data || !nombreArchivo || !extension) {
+                return reject("Base64, nombre de archivo o extensión no proporcionados.");
+            }
 
-          // Crear la carpeta 'ArchivosConvertidosDeBase64' si no existe
-          const folderPath = path.join(__dirname, "../ArchivosConvertidosDeBase64");
-          if (!fs.existsSync(folderPath)) {
-              fs.mkdirSync(folderPath);
-          }
+            // Crear la carpeta 'ArchivosConvertidosDeBase64' si no existe
+            const folderPath = path.join(__dirname, "../ArchivosConvertidosDeBase64");
+            if (!fs.existsSync(folderPath)) {
+                fs.mkdirSync(folderPath);
+            }
 
-          // Ruta del archivo con nombre y extensión
-          let filePath = path.join(folderPath, `${nombreArchivo}.${extension}`);
-          let i = 1;
+            // Ruta del archivo con nombre y extensión
+            let filePath = path.join(folderPath, `${nombreArchivo}.${extension}`);
+            let i = 1;
 
-          // Verificar si el archivo ya existe y cambiar el nombre si es necesario
-          while (fs.existsSync(filePath)) {
-              filePath = path.join(folderPath, `${nombreArchivo}${i}.${extension}`);
-              i++;
-          }
+            // Verificar si el archivo ya existe y cambiar el nombre si es necesario
+            while (fs.existsSync(filePath)) {
+                filePath = path.join(folderPath, `${nombreArchivo}${i}.${extension}`);
+                i++;
+            }
 
-          // Convertir base64 a buffer
-          const buffer = Buffer.from(base64Data, "base64");
+            // Convertir base64 a buffer
+            const buffer = Buffer.from(base64Data, "base64");
 
-          // Escribir el archivo
-          fs.writeFile(filePath, buffer, (err) => {
-              if (err) return reject("Error al guardar el archivo: " + err);
-              console.log("Archivo guardado en:", filePath);
-              resolve(filePath);
-          });
+            // Escribir el archivo
+            fs.writeFile(filePath, buffer, (err) => {
+                if (err) return reject("Error al guardar el archivo: " + err);
+                console.log("Archivo guardado en:", filePath);
+                resolve(filePath);
+            });
 
-      } catch (error) {
-          reject("Error en el proceso: " + error);
-      }
-  });
+        } catch (error) {
+            reject("Error en el proceso: " + error);
+        }
+    });
 };

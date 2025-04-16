@@ -3,7 +3,7 @@ import { Usuario } from '../interfaces/Usuario';
 import { UsuarioActualizado } from '../interfaces/Usuario';
 import User,{UsuariosInstance} from '../Models/modelUser';
 
-import { isString, isNumero } from '../Validations/validaciones';
+// import { isString, isNumero } from '../Validations/validaciones';
 
 import bcrypt from 'bcrypt'
 

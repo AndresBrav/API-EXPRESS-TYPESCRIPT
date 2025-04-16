@@ -2,12 +2,12 @@ import { obtenerCarros, obtenerUnCarro, existeCarro, eliminarUnCarro, aniadirCar
 import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken";
 import { Request, Response } from "express";
 import User from "../Models/modelUser";
-import Car,{CarsInterface} from "../Models/modelCar";
+import Car, { CarsInterface } from "../Models/modelCar";
 
 const Cobtenercarros = async (req: AuthenticatedRequest, res: Response) => {
 
     /*const listaCarros = await Carro.findAll();*/
-    const listaCarros:CarsInterface[] = await obtenerCarros(req)
+    const listaCarros: CarsInterface[] = await obtenerCarros(req)
 
     res.send(listaCarros);
 };
@@ -16,9 +16,9 @@ const Cobteneruncarro = async (req: AuthenticatedRequest, res: Response) => {
     // const data = req.body
     const { id } = req.params
 
-    const carro:CarsInterface = await obtenerUnCarro(id);
+    const carro: CarsInterface = await obtenerUnCarro(id);
 
-    const existe:boolean = await existeCarro(id)
+    const existe: boolean = await existeCarro(id)
     console.log(`el carro existe ? ${existe}`);
     try {
         if (existe) {
@@ -54,17 +54,64 @@ const CeliminarCarro = async (req: AuthenticatedRequest, res: Response) => {
     }
 };
 
-const CaniadirCarro = async (req: AuthenticatedRequest, res: Response) => {
-    const { nombre, descripcion, precio, stock } = req.body
-    //console.log("recuperado de usrt ", req.usrT.u);
-    const loginusuario = req.DatosToken?.u  //con el que inicio sesion
 
-    const resultado:CarsInterface = await aniadirCarro(nombre, descripcion, precio, stock, loginusuario)
-    // console.log(resultado)
-    res.json({
-        msg: "auto añadido exitosamente",
-        auto: resultado
-    })
+const CaniadirCarroNuevo = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+        const { nombre, descripcion, precio, stock } = req.body;
+        const loginUsuario = req.DatosToken?.u;
+
+        // Validar que los datos básicos estén presentes
+        if (!nombre || !descripcion || precio == null || stock == null || !loginUsuario) {
+            res.status(400).json({ msg: "Faltan datos requeridos" });
+            return;
+        }
+
+        // Llamar al servicio
+        const resultado: CarsInterface = await aniadirCarro(
+            nombre,
+            descripcion,
+            precio,
+            stock,
+            loginUsuario
+        );
+
+        // Responder con éxito
+        res.status(201).json({
+            msg: "Auto añadido exitosamente",
+            auto: resultado,
+        });
+    } catch (error) {
+        // Manejar errores específicos
+        if (error instanceof Error) {
+            console.error("Error al añadir el auto es ...:", error.message);
+            if (error.message.includes("El nombre tiene que ser de tipo string")) {
+                res.status(400).json({ msg: error.message })
+                return
+            }
+            if (error.message.includes("La descripción tiene que ser de tipo string")) {
+                res.status(400).json({ msg: error.message })
+                return
+            }
+            if (error.message.includes("El precio tiene que ser number")) {
+                res.status(400).json({ msg: error.message })
+                return
+            }
+            if (error.message.includes("El stock tiene que ser number")) {
+                res.status(400).json({ msg: error.message })
+                return
+            }
+            if (error.message.includes("El loginUsuario  tiene que ser string")) {
+                res.status(400).json({ msg: error.message })
+                return
+            }
+
+            res.status(500).json({ msg: "Error interno del servidor" });
+            return
+        }
+        // Por si el error no es una instancia de Error
+        console.error("Error desconocido:", error);
+        res.status(500).json({ msg: "Error interno del servidor no se identifico" });
+    }
 };
 
 const CactualizarCarro = async (req: AuthenticatedRequest, res: Response) => {
@@ -119,7 +166,7 @@ const CguardarUnArchivo = async (req: AuthenticatedRequest, res: Response) => {
 
     try {
         const { id } = req.params
-        const {  tipoGuardado } = req.body;
+        const { tipoGuardado } = req.body;
 
         const loginUsuario = req.DatosToken?.u //USER1
         /********* Obtenemos el id del usuario****** */
@@ -194,13 +241,13 @@ const CdevolverArchivoBase64 = async (req: AuthenticatedRequest, res: Response) 
 }
 
 const CconvertirBase64toFile = async (req: AuthenticatedRequest, res: Response) => {
-    const {base64Data,nombreArchivo,extension} = req.body
+    const { base64Data, nombreArchivo, extension } = req.body
     //const {base64Data,nombreArchivo} = req.body
     try {
         await convertirBase64toFileUpdate(base64Data, nombreArchivo, extension);
         //await convertirBase64toFile(base64Data, nombreArchivo);
         res.json(
-            {msg: "El archivo se convirtio correctamente"}
+            { msg: "El archivo se convirtio correctamente" }
         )
     } catch (error) {
         res.status(500).json({ success: false, message: error });
@@ -209,4 +256,4 @@ const CconvertirBase64toFile = async (req: AuthenticatedRequest, res: Response) 
 
 
 
-export { Cobtenercarros, Cobteneruncarro, CeliminarCarro, CaniadirCarro, CactualizarCarro, CguardarArchivo, CguardarUnArchivo, CsubirServidor, CdevolverArchivoBase64, CconvertirBase64toFile }
+export { Cobtenercarros, Cobteneruncarro, CeliminarCarro, CaniadirCarroNuevo, CactualizarCarro, CguardarArchivo, CguardarUnArchivo, CsubirServidor, CdevolverArchivoBase64, CconvertirBase64toFile }
