@@ -56,6 +56,9 @@ export const respPhrase: { [key: string]: RespPhrase } = {
     },
     SERVICE_UNAVAILABLE: {
         val: "Servicio no Disponible",
+    },
+    INCORRECT_FIELD:{
+        val: "el parametro que ingresas es incorrecto"
     }
 };
 

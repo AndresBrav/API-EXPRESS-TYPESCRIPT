@@ -7,3 +7,11 @@ export type addUserBD = {
   tipo: TypeUser;
 };
 
+export type updateUserBD ={
+  id?:string,
+  login?: string;
+  clave?: string;
+  sts?: string;
+  tipo?: string;
+}
+

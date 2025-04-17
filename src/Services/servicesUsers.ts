@@ -6,7 +6,10 @@ import User, { UsuariosInstance } from '../Models/modelUser';
 import bcrypt from 'bcrypt'
 
 import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken";
-import { addUserBD } from '../types/user.types'
+import { addUserBD, updateUserBD } from '../types/user.types'
+import ResError from '../util/resError';
+import { respCode, respPhrase } from '../util/httpResponse';
+import ResSuccess from '../util/resSuccess';
 
 export const obtenerUsuarios = async (req: AuthenticatedRequest): Promise<UsuariosInstance[]> => {
 
@@ -77,30 +80,35 @@ export const aniadirUsuario = async (user: addUserBD): Promise<boolean> => {
     return true
 }
 
-export const SactualizarUnUsuario = async (id: string, login: string, clave: string, sts: string, tipo: string): Promise<boolean> => {
-    // const { login, clave, sts, tipo } = req.body;
-    const claveencriptada = bcrypt.hashSync(clave, 10);
-    const carro = await User.findByPk(id);
+export const SactualizarUnUsuario = async (id?: string, login?: string, clave?: string, sts?: string, tipo?: string): Promise<ResError | ResSuccess> => {
 
-    if (carro) {
-        await carro.update({
-            login: login,
-            clave: claveencriptada,  // Clave encriptada
-            sts: sts,
-            tipo: tipo
-        });
-        return true;
+    
+
+    const camposAActualizar: any = {};
+
+    if (typeof login === "string") { camposAActualizar.login = login; }
+    else { return new ResError(respCode.BAD_REQUEST, respPhrase.INCORRECT_FIELD.val, null)  }
+
+    if (typeof clave === "string") { camposAActualizar.clave = bcrypt.hashSync(clave, 10); }
+    else { return new ResError(respCode.BAD_REQUEST, respPhrase.INCORRECT_FIELD.val, null)  }
+    if (typeof sts === "string") { camposAActualizar.sts = sts; }
+    else { return new ResError(respCode.BAD_REQUEST, respPhrase.INCORRECT_FIELD.val, null)  }
+    if (typeof tipo === "string") { camposAActualizar.tipo = tipo; }
+    else { return new ResError(respCode.BAD_REQUEST, respPhrase.INCORRECT_FIELD.val, null)  }
+
+    const usuario = await User.findByPk(id);
+    if (!usuario) {
+        return new ResError(respCode.NOT_FOUND, respPhrase.INCORRECT_FIELD.val, null)
     }
-    else {
-        return false;
-    }
+    await usuario.update(camposAActualizar);
+    const data:string = "el usuario se actualizo con exito"
+    return new ResSuccess(respCode.ACCEPTED, respPhrase.ACCEPTED.val, data); //data es el codigo de authorizacion
+    // return true;
+
 }
 
 export const validarDatos = (login: string, clave: string, sts: string, tipo: string): boolean => {
-    // console.log("vamos a verificar los tipos .........")
-    // console.log(typeof login)
-    // console.log(typeof clave)
-    // throw new Error("ingresa los datos correctamente")
+
     if (typeof login === "string" && typeof clave === "string" && typeof sts === "string" && typeof tipo === "string") {
         return true
     }
