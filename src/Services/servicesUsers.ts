@@ -100,10 +100,11 @@ export const validarDatos = (login: string, clave: string, sts: string, tipo: st
     // console.log("vamos a verificar los tipos .........")
     // console.log(typeof login)
     // console.log(typeof clave)
+    // throw new Error("ingresa los datos correctamente")
     if (typeof login === "string" && typeof clave === "string" && typeof sts === "string" && typeof tipo === "string") {
         return true
     }
     else {
-        return false
+        throw new Error("ingresa los datos correctamente")
     }
 }

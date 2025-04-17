@@ -67,30 +67,36 @@ const CeliminarUnUsuario = async (req: AuthenticatedRequest, res: Response) => {
 };
 
 const CaniadirUsuario = async (req: AuthenticatedRequest, res: Response) => {
+    
+    try {
     const { login, clave, sts, tipo } = req.body;
+    const datosCorrectos: boolean = validarDatos(login, clave, sts, tipo); //vamos a verificar que todo este correcto
 
-    const datosCorrectos = validarDatos(login, clave, sts, tipo); //vamos a verificar que todo este correcto
+    console.log("los datos que trae es : " + datosCorrectos)
 
-    console.log("los datos que trae es : "+datosCorrectos)
+    
+        if (datosCorrectos) {
+            const user: addUserBD = { login, clave, sts, tipo }
 
-    if (datosCorrectos) {
-        const user: addUserBD = { login, clave, sts, tipo }
+            const seaniadio = await aniadirUsuario(user)
+            // const seaniadio = true
 
-        const seaniadio = await aniadirUsuario(user)
-        // const seaniadio = true
+            if (seaniadio) {
+                res.json({
+                    msg: "Usuario fue agregado con éxito",
 
-        if (seaniadio) {
-            res.json({
-                msg: "Usuario fue agregado con éxito",
+                });
+            }
 
-            });
         }
 
-    }
-    else {
-        res.json({
-            msg: "no se añadio el usuario ingresa los datos correctamente"
-        })
+    } catch (error) {
+        if(error instanceof Error){
+            if(error.message.includes("ingresa los datos correctamente")){
+                res.status(400).json({ msg: error.message })
+                return
+            }
+        }
     }
 
 
