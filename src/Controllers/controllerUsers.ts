@@ -12,10 +12,9 @@ import ResError from "../util/resError"; //importar el constructar
 import ResSuccess from "../util/resSuccess";
 
 
-
 const CobtenerUsuarios = async (req: AuthenticatedRequest, res: Response) => {
     console.log("estamos obteniendo .....")
-    const listaUsuarios = await obtenerUsuarios(req)
+    const listaUsuarios:UsuariosInstance[] = await obtenerUsuarios(req)
     // console.log(!listaUsuarios)
     if (listaUsuarios.length === 0) {
         res.send("no tienes permisos para acceder a los usuarios")

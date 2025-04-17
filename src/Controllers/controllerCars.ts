@@ -133,8 +133,8 @@ const CactualizarCarro = async (req: AuthenticatedRequest, res: Response) => {
     }
     catch (error) {
         if (error instanceof Error) {
-            res.json({
-                msg: "An error occurred:",
+            res.status(400).json({
+                msg: "Ah ocurrido un error:",
                 msgerror: error.message
             });
         } else {

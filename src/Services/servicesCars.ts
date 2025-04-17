@@ -7,7 +7,10 @@ import fs from 'fs'
 import PDFDocument from "pdfkit";
 import { convertirYGuardarArchivoBase64 } from '../Services/Convertir_B64'
 import { uploadFileToFTP } from "./basic-ftp";
-
+import ResError from "../util/resError";
+import ResSuccess from "../util/resSuccess";
+import { respCode, respPhrase } from "../util/httpResponse";
+import bcrypt from 'bcrypt'
 
 export const obtenerCarros = async (req: AuthenticatedRequest): Promise<CarsInterface[]> => {
     const loginUsuario = req.DatosToken?.u
@@ -95,54 +98,54 @@ export const aniadirCarro = async (
     precio: number,
     stock: number,
     loginUsuario: string
-  ): Promise<CarsInterface> => {
+): Promise<CarsInterface> => {
     // Validaciones
     if (typeof nombre !== "string" || nombre.trim() === "") {
-      throw new Error("El nombre tiene que ser de tipo string");
+        throw new Error("El nombre tiene que ser de tipo string");
     }
     if (typeof descripcion !== "string" || descripcion.trim() === "") {
-      throw new Error("La descripción tiene que ser de tipo string");
+        throw new Error("La descripción tiene que ser de tipo string");
     }
     if (typeof precio !== "number" || isNaN(precio) || precio <= 0) {
-      throw new Error("El precio tiene que ser number");
+        throw new Error("El precio tiene que ser number");
     }
     if (typeof stock !== "number" || isNaN(stock) || stock < 0) {
-      throw new Error("El stock tiene que ser number");
+        throw new Error("El stock tiene que ser number");
     }
     if (typeof loginUsuario !== "string" || loginUsuario.trim() === "") {
-      throw new Error("El loginUsuario  tiene que ser string");
+        throw new Error("El loginUsuario  tiene que ser string");
     }
 
-      
-  
+
+
     // Buscar el usuario
     const idUsuario = await User.findOne({
-      where: { login: loginUsuario },
-      attributes: ["id"],
-      raw: true,
+        where: { login: loginUsuario },
+        attributes: ["id"],
+        raw: true,
     });
-  
+
     if (!idUsuario) {
-      throw new Error("Usuario no encontrado");
+        throw new Error("Usuario no encontrado");
     }
-  
+
     const userId = idUsuario.id;
-  
+
     // Crear el auto
     const nuevoAuto: CarsInterface = await Car.create({
-      nombre,
-      descripcion,
-      precio,
-      stock,
-      user_id: userId,
+        nombre,
+        descripcion,
+        precio,
+        stock,
+        user_id: userId,
     });
-  
+
     if (!nuevoAuto) {
-      throw new Error("No se pudo crear el auto");
+        throw new Error("No se pudo crear el auto");
     }
-  
+
     return nuevoAuto;
-  };
+};
 
 
 
@@ -160,8 +163,6 @@ export const ActualizarCarro = async (id: string, body: any, login: string): Pro
         include: User
     });
 
-    // console.log("El carro que se actualizó es:");
-    // console.log(JSON.stringify(relacionCarroUsuario, null, 2));
 
     /******Guardamos sus id en un Arreglo */
     const idsCarros = [];
@@ -172,14 +173,28 @@ export const ActualizarCarro = async (id: string, body: any, login: string): Pro
     console.log("IDs de los carros:", idsCarros);
 
     let existeValor = idsCarros.includes(Number(id));
-    // console.log(id);
-    // console.log("El valor existe:", existeValor);
-
 
     const carro = await Car.findByPk(id);
 
+
+    const camposAActualizar: any = {};
+
+    if (typeof body.nombre === "string") { camposAActualizar.nombre = body.nombre; }
+    else {  throw new Error(" el nombre tiene que ser string ") }
+
+    if (typeof body.descripcion === "string") { camposAActualizar.descripcion = body.descripcion; }
+    else {  throw new Error(" la descripcion tiene que ser string ") }
+
+    if (typeof body.precio === "number") { camposAActualizar.precio = body.precio; }
+    else {  throw new Error(" el precio tiene que ser un numero ") }
+
+    if (typeof body.stock === "number") { camposAActualizar.stock = body.stock; }
+    else {  throw new Error(" el stock  tiene que ser un numero ") }
+
+
+
     if (carro && existeValor) {
-        await carro.update(body);  //puedes enviar un solo dato {"nombre": "vw actualizado"}
+        await carro.update(camposAActualizar);  //puedes enviar un solo dato {"nombre": "vw actualizado"}
         console.log("el carro actualizado es ................................")
         console.log(carro)
         return carro;

@@ -52,7 +52,7 @@ export const existeUsuario = async (id) => {
     return !!user; // Devuelve true si existe, false si no
 };
 
-export const eliminarUnUsuario = async (id): Promise<boolean> => {
+export const eliminarUnUsuario = async (id:string): Promise<boolean> => {
     const user: UsuariosInstance = await User.findByPk(id);
     if (user) {
         await user.destroy();
@@ -98,7 +98,7 @@ export const SactualizarUnUsuario = async (id?: string, login?: string, clave?: 
 
     const usuario = await User.findByPk(id);
     if (!usuario) {
-        return new ResError(respCode.NOT_FOUND, respPhrase.INCORRECT_FIELD.val, null)
+        return new ResError(respCode.NOT_FOUND, respPhrase.NOT_FOUND.val, null)
     }
     await usuario.update(camposAActualizar);
     const data:string = "el usuario se actualizo con exito"
