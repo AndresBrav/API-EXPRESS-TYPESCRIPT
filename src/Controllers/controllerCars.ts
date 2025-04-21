@@ -153,7 +153,7 @@ const CguardarArchivo = async (req: AuthenticatedRequest, res: Response) => {
         const loginUsuario = req.DatosToken?.u
         const tipoGuardado = body.tipoGuardado
 
-        if ( tipoGuardado === "txt" || tipoGuardado ==="pdf") {
+        if (tipoGuardado === "txt" || tipoGuardado === "pdf") {
             const base64Data = await guardarArchivosCarros(loginUsuario, tipoGuardado)  //guarda el pdf en la direccion 
             //await subirListaServidor() //sube los archivos al servidor 
             res.json({
@@ -161,7 +161,7 @@ const CguardarArchivo = async (req: AuthenticatedRequest, res: Response) => {
                 archivoB64: "El codigo base64 es:" + base64Data
             })
         }
-        else{
+        else {
             res.status(404).json({
                 msg: "el tipGuardado tiene que ser txt o pdf",
             })
@@ -232,10 +232,31 @@ const CsubirServidor = async (req: AuthenticatedRequest, res: Response) => {
     const { nombreArchivo, TipoTransferencia, host, user, password } = req.body
 
     //Ejecutar la subida
-    await subirListaServidor(nombreArchivo, TipoTransferencia, host, user, password);
-    res.send({
-        msg: "se subio al servidor"
-    })
+    try {
+        await subirListaServidor(nombreArchivo, TipoTransferencia, host, user, password);
+        res.send({
+            msg: "se subio al servidor"
+        })
+    } catch (error) {
+        if(error instanceof Error){
+            if(error.message.includes("ingresa el nombre correctamente")){
+                res.status(400).json({msg:"ingresa el nombre correctamente"})
+            }
+            if(error.message.includes("el tipo tiene que ser text o binary")){
+                res.status(400).json({msg:error.message})
+            }
+            if(error.message.includes("ingresa el host correctamente")){
+                res.status(400).json({msg:error.message})
+            }
+            if(error.message.includes("ingresa el user correctamente")){
+                res.status(400).json({msg:error.message})
+            }
+            if(error.message.includes("ingresa el password correctamente")){
+                res.status(400).json({msg:error.message})
+            }
+
+        }
+    }
 }
 
 const CdevolverArchivoBase64 = async (req: AuthenticatedRequest, res: Response) => {

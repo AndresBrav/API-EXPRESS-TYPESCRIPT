@@ -11,6 +11,7 @@ import ResError from "../util/resError";
 import ResSuccess from "../util/resSuccess";
 import { respCode, respPhrase } from "../util/httpResponse";
 import bcrypt from 'bcrypt'
+import { IsString, typeTransfer } from "../Validations/validateTypes";
 
 export const obtenerCarros = async (req: AuthenticatedRequest): Promise<CarsInterface[]> => {
     const loginUsuario = req.DatosToken?.u
@@ -365,7 +366,7 @@ export const guardarArchivoUnCarroFile = async (id: string, tipoGuardado: 'pdf' 
 };
 
 /*************Subir al servidor ********* */
-export const subirListaServidor = async (nombreArchivo, TipoTransferencia, host, user, password) => {
+export const subirListaServidor = async (nombreArchivo: string, TipoTransferencia: string, host: string, user: string, password: string) => {
     // Ruta relativa al archivo
     const localFilePath = `../ArchivosGuardados/${nombreArchivo}`;
 
@@ -377,9 +378,29 @@ export const subirListaServidor = async (nombreArchivo, TipoTransferencia, host,
     //const transferMode = 'binary';
     const transferMode = TipoTransferencia;
     console.log(`ahora ..........El tipo de transferencia es ${TipoTransferencia}`);
-
-    //uploadFileToFTP(localFilePath, remoteFilePath, transferMode);
-    await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode, host, user, password);
+    
+    if (IsString(nombreArchivo) && typeTransfer(TipoTransferencia) && IsString(host) && IsString(user) && IsString(password)) {
+        
+        await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode, host, user, password);
+    }
+    else {
+        if (!IsString(nombreArchivo)) {
+            throw new Error("ingresa el nombre correctamente")
+        }
+        if (!typeTransfer(TipoTransferencia)) {  /* !false = true entra y se evalua */
+            // console.log("no ingresaste correctamente el tipo de transferencia ")
+            throw new Error("el tipo tiene que ser text o binary")
+        }
+        if (!IsString(host)) {
+            throw new Error("ingresa el host correctamente")
+        }
+        if (!IsString(user)) {
+            throw new Error("ingresa el user correctamente")
+        }
+        if (!IsString(password)) {
+            throw new Error("ingresa el password correctamente")
+        }
+    }
 }
 
 
