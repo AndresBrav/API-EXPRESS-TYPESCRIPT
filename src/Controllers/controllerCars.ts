@@ -290,7 +290,7 @@ const CconvertirBase64toFile = async (req: AuthenticatedRequest, res: Response) 
             { msg: "El archivo se convirtio correctamente" }
         )
     } catch (error) {
-        res.status(500).json({ success: false, message: error });
+        res.status(400).json({ success: false, message: error });
     }
 }
 

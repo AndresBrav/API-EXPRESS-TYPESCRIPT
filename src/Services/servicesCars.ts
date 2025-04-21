@@ -378,9 +378,9 @@ export const subirListaServidor = async (nombreArchivo: string, TipoTransferenci
     //const transferMode = 'binary';
     const transferMode = TipoTransferencia;
     console.log(`ahora ..........El tipo de transferencia es ${TipoTransferencia}`);
-    
+
     if (IsString(nombreArchivo) && typeTransfer(TipoTransferencia) && IsString(host) && IsString(user) && IsString(password)) {
-        
+
         await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode, host, user, password);
     }
     else {
@@ -422,6 +422,18 @@ export const convertirBase64toFileUpdate = async (base64Data: string, nombreArch
         try {
             if (!base64Data || !nombreArchivo || !extension) {
                 return reject("Base64, nombre de archivo o extensión no proporcionados.");
+            }
+            // console.log("..........verificar ")
+            // console.log(typeof nombreArchivo)
+            
+            if (!IsString(base64Data)) {
+                return reject("Ingresa el codigo base64 como string")
+            }
+            if (!IsString(nombreArchivo)) {
+                return reject("Ingresa el nombre correctamente es de tipo string")
+            }
+            if (!IsString(extension)) {
+                return reject("Ingresa la extension  correctamente es txt o pdf")
             }
 
             // Crear la carpeta 'ArchivosConvertidosDeBase64' si no existe
