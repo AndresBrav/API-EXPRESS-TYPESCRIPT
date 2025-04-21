@@ -3,6 +3,7 @@ import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken";
 import { Request, Response } from "express";
 import User from "../Models/modelUser";
 import Car, { CarsInterface } from "../Models/modelCar";
+import { IsString } from "../Validations/validateTypes";
 
 const Cobtenercarros = async (req: AuthenticatedRequest, res: Response) => {
 
@@ -238,21 +239,21 @@ const CsubirServidor = async (req: AuthenticatedRequest, res: Response) => {
             msg: "se subio al servidor"
         })
     } catch (error) {
-        if(error instanceof Error){
-            if(error.message.includes("ingresa el nombre correctamente")){
-                res.status(400).json({msg:"ingresa el nombre correctamente"})
+        if (error instanceof Error) {
+            if (error.message.includes("ingresa el nombre correctamente")) {
+                res.status(400).json({ msg: "ingresa el nombre correctamente" })
             }
-            if(error.message.includes("el tipo tiene que ser text o binary")){
-                res.status(400).json({msg:error.message})
+            if (error.message.includes("el tipo tiene que ser text o binary")) {
+                res.status(400).json({ msg: error.message })
             }
-            if(error.message.includes("ingresa el host correctamente")){
-                res.status(400).json({msg:error.message})
+            if (error.message.includes("ingresa el host correctamente")) {
+                res.status(400).json({ msg: error.message })
             }
-            if(error.message.includes("ingresa el user correctamente")){
-                res.status(400).json({msg:error.message})
+            if (error.message.includes("ingresa el user correctamente")) {
+                res.status(400).json({ msg: error.message })
             }
-            if(error.message.includes("ingresa el password correctamente")){
-                res.status(400).json({msg:error.message})
+            if (error.message.includes("ingresa el password correctamente")) {
+                res.status(400).json({ msg: error.message })
             }
 
         }
@@ -263,12 +264,16 @@ const CdevolverArchivoBase64 = async (req: AuthenticatedRequest, res: Response) 
 
     try {
         const { nombreArchivo } = req.body
-        const base64Data = await obtenerBase64(nombreArchivo);
-
-        res.json({
-            msg: "El codigo base64 se genero correctamente:",
-            base64: base64Data
-        })
+        if (IsString(nombreArchivo)) {
+            const base64Data = await obtenerBase64(nombreArchivo);
+            res.json({
+                msg: "El codigo base64 se genero correctamente:",
+                base64: base64Data
+            })
+        }
+        else{
+            res.status(404).json({msg: "ingresa correctamente el nombre del Archivo"})
+        }
 
     } catch (error) {
         res.status(500).json({ success: false, message: error });
