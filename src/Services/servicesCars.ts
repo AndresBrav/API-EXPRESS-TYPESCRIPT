@@ -180,16 +180,16 @@ export const ActualizarCarro = async (id: string, body: any, login: string): Pro
     const camposAActualizar: any = {};
 
     if (typeof body.nombre === "string") { camposAActualizar.nombre = body.nombre; }
-    else {  throw new Error(" el nombre tiene que ser string ") }
+    else { throw new Error(" el nombre tiene que ser string ") }
 
     if (typeof body.descripcion === "string") { camposAActualizar.descripcion = body.descripcion; }
-    else {  throw new Error(" la descripcion tiene que ser string ") }
+    else { throw new Error(" la descripcion tiene que ser string ") }
 
     if (typeof body.precio === "number") { camposAActualizar.precio = body.precio; }
-    else {  throw new Error(" el precio tiene que ser un numero ") }
+    else { throw new Error(" el precio tiene que ser un numero ") }
 
     if (typeof body.stock === "number") { camposAActualizar.stock = body.stock; }
-    else {  throw new Error(" el stock  tiene que ser un numero ") }
+    else { throw new Error(" el stock  tiene que ser un numero ") }
 
 
 

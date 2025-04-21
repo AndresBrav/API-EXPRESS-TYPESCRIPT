@@ -1,0 +1,23 @@
+1. ID: 3 - Nombre: Volkswagen W3 - Descripción: Auto medio - Precio: 78 - Stock: 20000
+2. ID: 4 - Nombre: VW4 - Descripción: Auto chico - Precio: 10000 - Stock: 5000
+3. ID: 5 - Nombre: VW5 - Descripción: Auto grande - Precio: 20000 - Stock: 20000
+4. ID: 6 - Nombre: VW6 - Descripción: Auto chico - Precio: 10000 - Stock: 5000
+5. ID: 14 - Nombre: auto nuevo - Descripción: Auto grande nuevo - Precio: 20000 - Stock: 20000
+6. ID: 15 - Nombre: auto nuevo - Descripción: Auto grande nuevo - Precio: 20000 - Stock: 20000
+7. ID: 16 - Nombre: auto lolo - Descripción: Auto grande nuevo - Precio: 20000 - Stock: 125
+8. ID: 17 - Nombre: auto increible - Descripción: Auto actualizado - Precio: 20000 - Stock: 20000
+9. ID: 18 - Nombre: auto increible *5 - Descripción: Auto nuev - Precio: 20000 - Stock: 20000
+10. ID: 19 - Nombre: auto increible *5 - Descripción: Auto nuev - Precio: 0 - Stock: 20000
+11. ID: 20 - Nombre: auto increible *5 - Descripción: Auto nuev - Precio: 0 - Stock: 20000
+12. ID: 21 - Nombre: auto increible *5 - Descripción: Auto nuev - Precio: 0 - Stock: 20000
+13. ID: 22 - Nombre: ferrari la ferrari - Descripción: nananannanannan - Precio: 5000 - Stock: 20000
+14. ID: 23 - Nombre: liverpool - Descripción: nananannanannan - Precio: 5000 - Stock: 20000
+15. ID: 24 - Nombre: livettttrpool - Descripción: ntttttttttn - Precio: 5000 - Stock: 20000
+16. ID: 25 - Nombre: auto mio prueva - Descripción: ntttttttttn - Precio: 5000 - Stock: 20000
+17. ID: 26 - Nombre: buggaty veyron - Descripción: auto de francia - Precio: 456 - Stock: 456
+18. ID: 27 - Nombre: hola - Descripción: 3000 - Precio: 456 - Stock: 456
+19. ID: 28 - Nombre: 23i - Descripción: 23i - Precio: 1000 - Stock: 456
+20. ID: 29 - Nombre: 23895 - Descripción: 23i - Precio: 1000 - Stock: 456
+21. ID: 30 - Nombre: 8749 - Descripción: 23i - Precio: 4564 - Stock: 456
+22. ID: 31 - Nombre: Volkswagen W3 - Descripción: Auto medio - Precio: 20000 - Stock: 20000
+23. ID: 32 - Nombre: 8741 - Descripción: 23 - Precio: 4564 - Stock: 456

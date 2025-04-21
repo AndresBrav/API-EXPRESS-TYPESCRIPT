@@ -153,12 +153,22 @@ const CguardarArchivo = async (req: AuthenticatedRequest, res: Response) => {
         const loginUsuario = req.DatosToken?.u
         const tipoGuardado = body.tipoGuardado
 
-        const base64Data = await guardarArchivosCarros(loginUsuario, tipoGuardado)  //guarda el pdf en la direccion 
-        //await subirListaServidor() //sube los archivos al servidor 
-        res.json({
-            msg: "llegamos hasta aqui se guardo los carros",
-            archivoB64: "El codigo base64 es:" + base64Data
-        })
+        if ( tipoGuardado === "txt" || tipoGuardado ==="pdf") {
+            const base64Data = await guardarArchivosCarros(loginUsuario, tipoGuardado)  //guarda el pdf en la direccion 
+            //await subirListaServidor() //sube los archivos al servidor 
+            res.json({
+                msg: "llegamos hasta aqui se guardo los carros",
+                archivoB64: "El codigo base64 es:" + base64Data
+            })
+        }
+        else{
+            res.status(404).json({
+                msg: "el tipGuardado tiene que ser txt o pdf",
+            })
+
+        }
+
+
     }
     catch (error) {
         res.status(500).json({ success: false, message: error });
