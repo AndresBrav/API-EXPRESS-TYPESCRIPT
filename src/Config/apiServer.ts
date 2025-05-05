@@ -58,6 +58,7 @@ class ApiServer {
       console.log("base de datos conectada");
       console.log("hola puedes iniciar")
       console.log("bienvenidad 1")
+      console.log("bienvenidad 2")
     } catch (error) {
       console.log(error);
       console.log('error al conectarse en la base de datos');
