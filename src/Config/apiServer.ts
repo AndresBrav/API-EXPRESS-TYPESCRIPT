@@ -57,6 +57,7 @@ class ApiServer {
       await db.authenticate();
       console.log("base de datos conectada");
       console.log("hola puedes iniciar")
+      console.log("bienvenidad 1")
     } catch (error) {
       console.log(error);
       console.log('error al conectarse en la base de datos');
