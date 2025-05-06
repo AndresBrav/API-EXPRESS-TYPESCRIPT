@@ -1,6 +1,6 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
 import db from '../db/conexion';
-
+import Car from './modelCar';
 // define crea o usa
 const DetailCar = db.define("DetailCar", {
     color: {
@@ -24,5 +24,7 @@ const DetailCar = db.define("DetailCar", {
         updatedAt: false, // Para que no tenga la columna updatedAt
         tableName: "detailscars"
     });
+
+
 
 export default DetailCar;

@@ -12,6 +12,7 @@ import ResSuccess from "../util/resSuccess";
 import { respCode, respPhrase } from "../util/httpResponse";
 import bcrypt from 'bcrypt'
 import { IsString, typeTransfer } from "../Validations/validateTypes";
+import DetailCar from "../Models/modelDetailCar";
 
 export const obtenerCarros = async (req: AuthenticatedRequest): Promise<CarsInterface[]> => {
     const loginUsuario = req.DatosToken?.u
@@ -204,6 +205,19 @@ export const ActualizarCarro = async (id: string, body: any, login: string): Pro
         throw new Error("el auto no se actualizo ingresa correctamente los datos ")
     }
 
+}
+
+
+export const ObtenerTodosDetalles = async() => {
+    try {
+        const detallesCarros = await DetailCar.findAll({
+            include:Car
+        })
+        console.log(detallesCarros)
+        return detallesCarros;
+    } catch (error) {
+        console.log("sucedio el siguiente error",error)
+    }
 }
 
 

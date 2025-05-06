@@ -1,4 +1,17 @@
-import { obtenerCarros, obtenerUnCarro, existeCarro, eliminarUnCarro, aniadirCarro, ActualizarCarro, guardarArchivosCarros, guardarArchivoUnCarroFile, subirListaServidor, obtenerBase64, convertirBase64toFileUpdate } from "../Services/servicesCars";
+import {
+    obtenerCarros,
+    obtenerUnCarro,
+    existeCarro,
+    eliminarUnCarro,
+    aniadirCarro,
+    ActualizarCarro,
+    guardarArchivosCarros,
+    guardarArchivoUnCarroFile,
+    subirListaServidor,
+    obtenerBase64,
+    convertirBase64toFileUpdate,
+    ObtenerTodosDetalles
+} from "../Services/servicesCars";
 import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken";
 import { Request, Response } from "express";
 import User from "../Models/modelUser";
@@ -145,6 +158,21 @@ const CactualizarCarro = async (req: AuthenticatedRequest, res: Response) => {
 
 };
 
+/* obtener detalles especificos de los carros */
+const CgetDCars = async (req: AuthenticatedRequest, res: Response) => {
+    try {
+        const resultado = await ObtenerTodosDetalles()
+        res.json({
+            msg: "enviaremos todos los detalles",
+            resultado: resultado
+        })
+    } catch (error) {
+
+    }
+
+}
+
+
 /***********Seccion pdf**************** */
 
 const CguardarArchivo = async (req: AuthenticatedRequest, res: Response) => {
@@ -271,8 +299,8 @@ const CdevolverArchivoBase64 = async (req: AuthenticatedRequest, res: Response) 
                 base64: base64Data
             })
         }
-        else{
-            res.status(404).json({msg: "ingresa correctamente el nombre del Archivo"})
+        else {
+            res.status(404).json({ msg: "ingresa correctamente el nombre del Archivo" })
         }
 
     } catch (error) {
@@ -295,7 +323,18 @@ const CconvertirBase64toFile = async (req: AuthenticatedRequest, res: Response) 
 }
 
 
-// obtener detalles especificos del carros
 
 
-export { Cobtenercarros, Cobteneruncarro, CeliminarCarro, CaniadirCarroNuevo, CactualizarCarro, CguardarArchivo, CguardarUnArchivo, CsubirServidor, CdevolverArchivoBase64, CconvertirBase64toFile }
+export {
+    Cobtenercarros,
+    Cobteneruncarro,
+    CeliminarCarro,
+    CaniadirCarroNuevo,
+    CactualizarCarro,
+    CguardarArchivo,
+    CguardarUnArchivo,
+    CsubirServidor,
+    CdevolverArchivoBase64,
+    CconvertirBase64toFile,
+    CgetDCars
+}

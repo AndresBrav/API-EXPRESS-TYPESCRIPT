@@ -34,10 +34,15 @@ const Car = db.define<CarsInterface>("Car", {
         updatedAt: false // Para que no tenga la columna updatedAt
     });
 
-Car.hasOne(DetailCar, {
+Car.hasOne(DetailCar, {     /* "Un Car tiene un solo DetailCar. Úsalos con la clave foránea car_id en detailscars." */
     foreignKey: 'car_id'
 })
 
-DetailCar.belongsTo(Car)
+// Relación uno a uno
+DetailCar.belongsTo(Car, {
+    foreignKey: 'car_id'        /* "DetailCar pertenece a un Car, y usa la columna car_id como su foreign key." */
+});
+
+
 
 export default Car;
