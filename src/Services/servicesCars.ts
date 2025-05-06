@@ -12,7 +12,7 @@ import ResSuccess from "../util/resSuccess";
 import { respCode, respPhrase } from "../util/httpResponse";
 import bcrypt from 'bcrypt'
 import { IsString, typeTransfer } from "../Validations/validateTypes";
-import DetailCar from "../Models/modelDetailCar";
+import DetailCar, { DetailCarInterface } from "../Models/modelDetailCar";
 
 export const obtenerCarros = async (req: AuthenticatedRequest): Promise<CarsInterface[]> => {
     const loginUsuario = req.DatosToken?.u
@@ -210,7 +210,7 @@ export const ActualizarCarro = async (id: string, body: any, login: string): Pro
 
 export const ObtenerTodosDetalles = async() => {
     try {
-        const detallesCarros = await DetailCar.findAll({
+        const detallesCarros: DetailCarInterface[] = await DetailCar.findAll({
             include:Car
         })
         console.log(detallesCarros)

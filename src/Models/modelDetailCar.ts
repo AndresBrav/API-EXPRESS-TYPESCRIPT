@@ -1,8 +1,27 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
 import db from '../db/conexion';
-import Car from './modelCar';
+import Car, { CarsInterface } from './modelCar';
+
+interface DetailCarAtribbutes{
+    id?:number,
+    color?:string,
+    transmision?:string,
+    combustible?:string,
+    puertas?:number,
+    motor?:string,
+    car_id?:number
+
+}
+
+export interface DetailCarInterface
+    extends Model<DetailCarAtribbutes>,
+    DetailCarAtribbutes {
+        Car?: CarsInterface; // Agrega la propiedad opcional si viene del include
+     }
+
+
 // define crea o usa
-const DetailCar = db.define("DetailCar", {
+const DetailCar = db.define<DetailCarInterface>("DetailCar", {
     color: {
         type: DataTypes.STRING
     },

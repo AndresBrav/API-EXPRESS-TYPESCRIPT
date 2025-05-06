@@ -17,6 +17,7 @@ import { Request, Response } from "express";
 import User from "../Models/modelUser";
 import Car, { CarsInterface } from "../Models/modelCar";
 import { IsString } from "../Validations/validateTypes";
+import { DetailCarInterface } from "../Models/modelDetailCar";
 
 const Cobtenercarros = async (req: AuthenticatedRequest, res: Response) => {
 
@@ -161,7 +162,7 @@ const CactualizarCarro = async (req: AuthenticatedRequest, res: Response) => {
 /* obtener detalles especificos de los carros */
 const CgetDCars = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const resultado = await ObtenerTodosDetalles()
+        const resultado:DetailCarInterface[] = await ObtenerTodosDetalles()
         res.json({
             msg: "enviaremos todos los detalles",
             resultado: resultado
