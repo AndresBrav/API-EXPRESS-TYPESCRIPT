@@ -295,5 +295,7 @@ const CconvertirBase64toFile = async (req: AuthenticatedRequest, res: Response) 
 }
 
 
+// obtener detalles especificos del carros
+
 
 export { Cobtenercarros, Cobteneruncarro, CeliminarCarro, CaniadirCarroNuevo, CactualizarCarro, CguardarArchivo, CguardarUnArchivo, CsubirServidor, CdevolverArchivoBase64, CconvertirBase64toFile }

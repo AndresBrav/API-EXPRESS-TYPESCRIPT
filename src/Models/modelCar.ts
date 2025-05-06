@@ -1,6 +1,6 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
 import db from '../db/conexion';
-
+import DetailCar from './modelDetailCar';
 interface CarsAttributes {
     id?: number,
     nombre?: string,
@@ -33,5 +33,11 @@ const Car = db.define<CarsInterface>("Car", {
         createdAt: false, // Para que no tenga la columna createdAt
         updatedAt: false // Para que no tenga la columna updatedAt
     });
+
+Car.hasOne(DetailCar, {
+    foreignKey: 'car_id'
+})
+
+DetailCar.belongsTo(Car)
 
 export default Car;
