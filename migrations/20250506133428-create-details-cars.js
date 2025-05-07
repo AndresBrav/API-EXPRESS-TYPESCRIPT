@@ -38,7 +38,8 @@ module.exports = {
         },
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL',
-        allowNull: true
+        allowNull: true,
+        unique:true // ✅ Esto impone que cada car_id sea único
       }
     });
   },

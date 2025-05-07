@@ -213,10 +213,19 @@ export const ObtenerTodosDetalles = async() => {
         const detallesCarros: DetailCarInterface[] = await DetailCar.findAll({
             include:Car
         })
-        console.log(detallesCarros)
+        // console.log(detallesCarros)
         return detallesCarros;
     } catch (error) {
         console.log("sucedio el siguiente error",error)
+    }
+}
+
+// Promise<DetailCarInterface>
+export const aniadirDetallesCarros = async(body:any,login:string):Promise<any> => {
+    try {
+        console.log(login)
+    } catch (error) {
+        
     }
 }
 

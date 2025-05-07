@@ -13,7 +13,8 @@ import {
     CdevolverArchivoBase64,
     CconvertirBase64toFile,
     CaniadirCarroNuevo,
-    CgetDCars
+    CgetDCars,
+    CaniadirDetailCar
 } from '../Controllers/controllerCars';
 
 const rutasAutos = express.Router();
@@ -37,6 +38,7 @@ rutasAutos.put('/updateCar/:id', [validToken], CactualizarCarro);
 /* mas detalles de los autos */
 rutasAutos.get('/getAllDetailsCar', [validToken], CgetDCars);
 
+rutasAutos.post('addDetailsCar',[validToken],CaniadirDetailCar)
 
 rutasAutos.post('/guardarPdf/list', [validToken], CguardarArchivo)
 

@@ -10,7 +10,8 @@ import {
     subirListaServidor,
     obtenerBase64,
     convertirBase64toFileUpdate,
-    ObtenerTodosDetalles
+    ObtenerTodosDetalles,
+    aniadirDetallesCarros
 } from "../Services/servicesCars";
 import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken";
 import { Request, Response } from "express";
@@ -171,6 +172,15 @@ const CgetDCars = async (req: AuthenticatedRequest, res: Response) => {
 
     }
 
+}
+const CaniadirDetailCar = async (req: AuthenticatedRequest, res: Response) => {
+    const { body } = req;
+    const login = req.DatosToken?.u
+    const resultado = await aniadirDetallesCarros(body,login)
+    res.json({
+        msg: "se añadio correctamente",
+        result: resultado
+    })
 }
 
 
@@ -337,5 +347,6 @@ export {
     CsubirServidor,
     CdevolverArchivoBase64,
     CconvertirBase64toFile,
-    CgetDCars
+    CgetDCars,
+    CaniadirDetailCar
 }
