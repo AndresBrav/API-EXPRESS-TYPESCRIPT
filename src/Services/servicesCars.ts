@@ -208,24 +208,64 @@ export const ActualizarCarro = async (id: string, body: any, login: string): Pro
 }
 
 
-export const ObtenerTodosDetalles = async() => {
+export const ObtenerTodosDetalles = async () => {
     try {
         const detallesCarros: DetailCarInterface[] = await DetailCar.findAll({
-            include:Car
+            include: Car
         })
         // console.log(detallesCarros)
         return detallesCarros;
     } catch (error) {
-        console.log("sucedio el siguiente error",error)
+        console.log("sucedio el siguiente error", error)
     }
 }
 
 // Promise<DetailCarInterface>
-export const aniadirDetallesCarros = async(body:any,login:string):Promise<any> => {
-    try {
-        console.log(login)
-    } catch (error) {
-        
+export const aniadirDetallesCarros = async (
+    color: string,
+    transmision: string,
+    combustible: string,
+    puertas: number,
+    motor: string,
+    car_id: number,
+    login: string
+): Promise<DetailCarInterface> => {
+    const iduser = await User.findOne({
+        where: { login: login },
+        raw: true,
+        attributes: ['id']
+    })
+    console.log("el id del usuario es ", iduser)
+    // Extraer solo el ID
+    const userId = iduser ? iduser.id : null;
+
+    const usuariosAutos = await Car.findAll({
+        where: { user_id: userId },
+        // include:User,
+        raw: true
+    });
+
+
+    const idCarros: number[] = usuariosAutos.map(auto => auto.id)
+
+    console.log(idCarros)
+    console.log(idCarros.includes(Number(car_id)))
+
+    if (idCarros.includes(Number(car_id)) === true) {
+        const detallescreados: DetailCarInterface = await DetailCar.create({
+            color,
+            transmision,
+            combustible,
+            puertas,
+            motor,
+            car_id
+        })
+
+        return detallescreados;
+    }
+    else {
+        // console.log("no se va a evaluar")
+        throw new Error("el car_id que ingresaste no te pertenece o esta duplicado")
     }
 }
 
@@ -448,7 +488,7 @@ export const convertirBase64toFileUpdate = async (base64Data: string, nombreArch
             }
             // console.log("..........verificar ")
             // console.log(typeof nombreArchivo)
-            
+
             if (!IsString(base64Data)) {
                 return reject("Ingresa el codigo base64 como string")
             }

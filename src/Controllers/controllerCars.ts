@@ -18,7 +18,8 @@ import { Request, Response } from "express";
 import User from "../Models/modelUser";
 import Car, { CarsInterface } from "../Models/modelCar";
 import { IsString } from "../Validations/validateTypes";
-import { DetailCarInterface } from "../Models/modelDetailCar";
+import DetailCar, { DetailCarInterface } from "../Models/modelDetailCar";
+import { where } from "sequelize";
 
 const Cobtenercarros = async (req: AuthenticatedRequest, res: Response) => {
 
@@ -163,7 +164,7 @@ const CactualizarCarro = async (req: AuthenticatedRequest, res: Response) => {
 /* obtener detalles especificos de los carros */
 const CgetDCars = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const resultado:DetailCarInterface[] = await ObtenerTodosDetalles()
+        const resultado: DetailCarInterface[] = await ObtenerTodosDetalles()
         res.json({
             msg: "enviaremos todos los detalles",
             resultado: resultado
@@ -174,13 +175,37 @@ const CgetDCars = async (req: AuthenticatedRequest, res: Response) => {
 
 }
 const CaniadirDetailCar = async (req: AuthenticatedRequest, res: Response) => {
-    const { body } = req;
-    const login = req.DatosToken?.u
-    const resultado = await aniadirDetallesCarros(body,login)
-    res.json({
-        msg: "se añadio correctamente",
-        result: resultado
-    })
+
+    try {
+        const login = req.DatosToken?.u
+        const { color, transmision, combustible, puertas, motor, car_id } = req.body;
+
+        const resultado: DetailCarInterface = await aniadirDetallesCarros(
+            color,
+            transmision,
+            combustible,
+            puertas,
+            motor,
+            car_id,
+            login)
+
+        res.json({
+            msg: "se añadio correctamente el detalle",
+            result: resultado
+        })
+
+    }
+    catch (error) {
+        if (error instanceof Error) {
+
+            if (error.message.includes("el car_id que ingresaste no te pertenece o esta duplicado")) {
+                res.status(400).json({
+                    msg: "el car_id que ingresaste no te pertenece o esta duplicado"
+                })
+            }
+            
+        }
+    }
 }
 
 

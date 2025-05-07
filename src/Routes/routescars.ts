@@ -38,7 +38,7 @@ rutasAutos.put('/updateCar/:id', [validToken], CactualizarCarro);
 /* mas detalles de los autos */
 rutasAutos.get('/getAllDetailsCar', [validToken], CgetDCars);
 
-rutasAutos.post('addDetailsCar',[validToken],CaniadirDetailCar)
+rutasAutos.post('/addDetailsCar',[validToken],CaniadirDetailCar)
 
 rutasAutos.post('/guardarPdf/list', [validToken], CguardarArchivo)
 
