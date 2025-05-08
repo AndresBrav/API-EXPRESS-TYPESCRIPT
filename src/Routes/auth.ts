@@ -3,6 +3,6 @@ import { loginUser } from '../Controllers/auth'
 
 const routerLogin = express.Router()
 
-routerLogin.post("/login/iniciar", loginUser)
+routerLogin.post("/login/start", loginUser)
 
 export default routerLogin

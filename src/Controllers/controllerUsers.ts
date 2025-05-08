@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken";  // Import verifyToken
+// import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken";  // Import verifyToken
+import {AuthenticatedRequest} from '../Middlewares/tokenValidator'
 import User, { UsersInstance } from "../Models/modelUser"
 import {
     getUsers,

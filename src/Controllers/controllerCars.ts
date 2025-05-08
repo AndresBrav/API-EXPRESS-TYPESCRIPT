@@ -13,7 +13,7 @@ import {
     ObtenerTodosDetalles,
     aniadirDetallesCarros
 } from "../Services/servicesCars";
-import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken";
+import  { AuthenticatedRequest } from "../Middlewares/tokenValidator";
 import { Request, Response } from "express";
 import User from "../Models/modelUser";
 import Car, { CarsInterface } from "../Models/modelCar";

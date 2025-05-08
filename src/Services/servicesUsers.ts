@@ -1,6 +1,6 @@
 import User, { UsersInstance } from '../Models/modelUser';
 import bcrypt from 'bcrypt'
-import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken";
+import  { AuthenticatedRequest } from "../Middlewares/tokenValidator";
 import { addUserBD, updateUserBD } from '../types/user.types'
 import ResError from '../util/resError';
 import { respCode, respPhrase } from '../util/httpResponse';

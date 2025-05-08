@@ -2,19 +2,14 @@ import { newJWT, validPass } from "../util/crypt"
 import { loginUserModel } from '../Models/auth'
 import { respCode, respPhrase } from "../util/httpResponse";
 import ResError from "../util/resError";
-import jwt from "jsonwebtoken";  // Asegúrate de importar jsonwebtoken
 import ResSuccess from "../util/resSuccess";
 export const loginUserService = async (loginA: string, claveA: string): Promise<any> => {
     try {
-        // console.log("los datos del usuario es.." + loginA)
-        // console.log("la clave es usuario es.." + claveA)
-
-        //*************- Llamar al modelo de base de datos *************//
+        //*************- Call database Model *************//
         const result = await loginUserModel(loginA);
-        // console.log(result) //trae login,clave,vig,admin
+        // console.log(result) //bring login,clave,vig,admin
         if (result.rows.length === 1) {
-            const passDB = result.rows[0].CLAVE //clave de la baseDatos
-            // console.log(passDB)
+            const passDB = result.rows[0].CLAVE //clave from DB
             const verifPassword = await validPass(claveA, passDB)
             console.log(verifPassword)
 
@@ -27,7 +22,7 @@ export const loginUserService = async (loginA: string, claveA: string): Promise<
 
                   console.log(token)
 
-                return new ResSuccess(respCode.OK, respPhrase.OK.auth1, data); //data es el codigo de authorizacion
+                return new ResSuccess(respCode.OK, respPhrase.OK.auth1, data); //data is the authorization code
                 }
                 else return new ResError(respCode.UNAUTHORIZED, respPhrase.UNAUTHORIZED.auth2, null);
               }

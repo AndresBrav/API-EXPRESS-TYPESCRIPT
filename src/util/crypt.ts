@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt'
-import jwt from "jsonwebtoken";  // Asegúrate de importar jsonwebtoken
-import { Secret, SignOptions } from "jsonwebtoken"; // 👈 importa el tipo
+import jwt from "jsonwebtoken";  // Make sure to import jsonwebtoken
+import { Secret, SignOptions } from "jsonwebtoken"; // 👈 import the type
 import { JwtPayload } from 'jsonwebtoken';
 export const validPass = async (passIN: string, passDB: string): Promise<boolean> => {
   try {
@@ -24,17 +24,16 @@ export const newJWT = (
 ): Promise<string> => {
   const payload: JWTPayload = { u, t };
 
-  // 1) Asegurarnos de que la SECRETKEY existe
+  // 1) Ensuring that SECRETKEY exists
   const secret = process.env.SECRETKEY as string;
   if (!secret) {
-    throw new Error("SECRETKEY no está definida en las variables de entorno");
+    throw new Error("SECRETKEY is not defined in .env");
   }
 
-  // 2) Preparamos las opciones con el tipo correcto
+  // 2) Prepare the options with the correct type
   const options: SignOptions = { expiresIn: tiempo };
 
   return new Promise((resolve, reject) => {
-    // 3) Cast explícito de `secret` al tipo `Secret`
     jwt.sign(
       payload,
       secret,
@@ -69,6 +68,6 @@ export const validJWT = (token): any => {
     // const data = "hola";
     return data;
   } catch (error) {
-    throw new Error('Token inválido');
+    throw new Error('Invalid Token');
   }
 };

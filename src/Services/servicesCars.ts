@@ -1,6 +1,6 @@
 import Car, { CarsInterface } from "../Models/modelCar";
 import User from "../Models/modelUser";
-import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken";
+import { AuthenticatedRequest } from "../Middlewares/tokenValidator";
 import { Request, Response } from "express";
 import path from 'path'
 import fs from 'fs'
