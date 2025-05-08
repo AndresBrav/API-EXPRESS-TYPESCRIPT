@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
-import jwt from "jsonwebtoken";  // Asegúrate de importar jsonwebtoken
-// import cors from "cors";
-import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken";  // Importa verifyToken
+import verifyToken, { AuthenticatedRequest } from "../Middlewares/verifyToken";  // Import verifyToken
 import User, { UsersInstance } from "../Models/modelUser"
 import {
     getUsers,
@@ -12,10 +10,8 @@ import {
     updateUser,
     validateData
 } from "../Services/servicesUsers";
-import bcrypt from 'bcrypt'
 import { addUserBD } from '../types/user.types'
-
-import ResError from "../util/resError"; //importar el constructar
+import ResError from "../util/resError"; 
 import ResSuccess from "../util/resSuccess";
 
 
