@@ -11,7 +11,7 @@ import ResError from "../util/resError";
 import ResSuccess from "../util/resSuccess";
 import { respCode, respPhrase } from "../util/httpResponse";
 import bcrypt from 'bcrypt'
-import { IsString, typeTransfer } from "../Validations/validateTypes";
+import { IsNumber, IsString, typeTransfer } from "../Validations/validateTypes";
 import DetailCar, { DetailCarInterface } from "../Models/modelDetailCar";
 
 export const obtenerCarros = async (req: AuthenticatedRequest): Promise<CarsInterface[]> => {
@@ -230,6 +230,34 @@ export const aniadirDetallesCarros = async (
     car_id: number,
     login: string
 ): Promise<DetailCarInterface> => {
+
+    if (!IsString(color)) {
+        throw new Error("ingresa el color como string")
+    }
+    if (!IsString(transmision)) {
+        throw new Error("ingresa la transmision como string")
+    }
+    if (!IsString(combustible)) {
+        throw new Error("ingresa el combustible como string")
+    }
+    if (!IsNumber(puertas)) {
+        throw new Error("ingresa el numero de puertas  como numero")
+    }
+    if (!IsString(motor)) {
+        throw new Error("ingresa el motor como string")
+    }
+    if (!IsString(motor)) {
+        throw new Error("ingresa el motor como string")
+    }
+    if (!IsNumber(car_id)) {
+        throw new Error("ingresa el car_id como numero")
+    }
+    if (!IsString(login)) {
+        throw new Error("ingresa el login como string")
+    }
+
+
+
     const iduser = await User.findOne({
         where: { login: login },
         raw: true,

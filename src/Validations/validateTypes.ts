@@ -1,5 +1,14 @@
 export const IsString = (x: string): boolean => {
-    if (typeof x === "string" && x.trim().length>0) {
+    if (typeof x === "string" && x.trim().length > 0) {
+        return true
+    }
+    else {
+        return false
+    }
+
+}
+export const IsNumber = (x: number): boolean => {
+    if (typeof x === "number") {
         return true
     }
     else {
@@ -8,11 +17,11 @@ export const IsString = (x: string): boolean => {
 
 }
 
-export const typeTransfer = (x:any):boolean => {
-    if(typeof x ==="string" && (x==="text" || x ==="binary")){
+export const typeTransfer = (x: any): boolean => {
+    if (typeof x === "string" && (x === "text" || x === "binary")) {
         return true
     }
-    else{
+    else {
         return false
     }
 }

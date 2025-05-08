@@ -197,13 +197,18 @@ const CaniadirDetailCar = async (req: AuthenticatedRequest, res: Response) => {
     }
     catch (error) {
         if (error instanceof Error) {
-
             if (error.message.includes("el car_id que ingresaste no te pertenece o esta duplicado")) {
                 res.status(400).json({
                     msg: "el car_id que ingresaste no te pertenece o esta duplicado"
                 })
             }
-            
+            else {
+                res.status(400).json({
+                    msg: error.message
+                })
+            }
+
+
         }
     }
 }
