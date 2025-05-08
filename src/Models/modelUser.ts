@@ -11,12 +11,12 @@ interface UsersAttributes {
   tipo?: string
 }
 
-// Define una interfaz para la instancia del modelo
+// Define a interface for the instance of model
 export interface UsersInstance
-  extends Model<UsersAttributes>, // incluye métodos como .save(), .destroy(), etc. // Métodos de Sequelize con tipos
-  UsersAttributes { }           // permite acceder directamente a username, edad, password
+  extends Model<UsersAttributes>, // include methods like .save(), .destroy(), etc. // Methods from  Sequelize with types
+  UsersAttributes { }           // allows direct access to username, edad, password
 
-// Define el modelo con los tipos específicos
+// Define the model
 const User = db.define<UsersInstance>('User', {
   id: {
     type: DataTypes.INTEGER,
@@ -36,8 +36,8 @@ const User = db.define<UsersInstance>('User', {
     type: DataTypes.STRING
   }
 }, {
-  createdAt: false, // Para que no tenga la columna createdAt
-  updatedAt: false // Para que no tenga la columna
+  createdAt: false, // So that you do not have the createdAt column
+  updatedAt: false // So that you do not have the updatedAt column
 }
 );
 
