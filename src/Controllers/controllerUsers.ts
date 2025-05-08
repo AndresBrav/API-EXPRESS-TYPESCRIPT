@@ -12,7 +12,6 @@ import {
     updateUser,
     validateData
 } from "../Services/servicesUsers";
-// import { obtenerTodosLosUsuarios, consultarDetalleUsuario, aniadirUsuario, actualizarUsuario, borrarUsuario } from '../Services/usuarioServices'
 import bcrypt from 'bcrypt'
 import { addUserBD } from '../types/user.types'
 
@@ -39,7 +38,6 @@ const CgetOneUser = async (req: AuthenticatedRequest, res: Response) => {
     const user: UsersInstance = await getOneUser(id)
 
     const exists = await UserExists(id)
-    // console.log(`el usuario existe ? ${existe}`);
     try {
         if (exists) {
             res.json(user);
