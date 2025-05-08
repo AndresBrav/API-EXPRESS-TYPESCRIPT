@@ -92,10 +92,6 @@ export const updateUser = async (
     if (typeof tipo === "string") { fieldstoUpdate.tipo = tipo; }
     else { return new ResError(respCode.BAD_REQUEST, respPhrase.INCORRECT_FIELD.val, null) }
 
-    // console.log(!login)
-    // if(!login){
-    //     console.log("no login entered in postman")
-    // }
 
     const user = await User.findByPk(id);
     if (!user) {
