@@ -44,7 +44,7 @@ class ApiServer {
   public escuchar(): void {
     const port = process.env.PORT || 4000;
     this.app.listen(port, () => {
-      console.log(`API REST iniciada en el puerto ${port}`);
+      console.log(`API REST startid in the port ${port}`);
     });
   }
 
