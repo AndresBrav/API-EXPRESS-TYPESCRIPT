@@ -6,8 +6,7 @@ import {
     CaddUser,
     CupdateUser
 } from '../Controllers/controllerUsers'; 
-import jwt from "jsonwebtoken";  
-import { loginUser } from '../Controllers/auth';
+
 import validToken, { AuthenticatedRequest } from '../Middlewares/tokenValidator';
 
 const routesUsers: Router = express.Router();
