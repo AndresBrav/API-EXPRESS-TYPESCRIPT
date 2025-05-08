@@ -1,8 +1,8 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
-import db from '../db/conexion'; // Asegúrate de que esta ruta sea correcta
+import db from '../db/conexion'; // DB Conection
 import Car from './modelCar';
 
-// Define una interfaz para los atributos del modelo
+// Define a interface for the attributes of model
 interface UsersAttributes {
   id?: number
   login?: string;
