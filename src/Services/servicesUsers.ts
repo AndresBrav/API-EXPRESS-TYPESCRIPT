@@ -8,7 +8,7 @@ import ResSuccess from '../util/resSuccess';
 
 export const getUsers = async (req: AuthenticatedRequest): Promise<UsersInstance[]> => {
 
-    const loginusuario = req.DatosToken?.u 
+    const loginusuario = req.DatosToken?.u
 
     const tipo = await User.findOne({
         where: { login: loginusuario },
@@ -26,11 +26,11 @@ export const getUsers = async (req: AuthenticatedRequest): Promise<UsersInstance
         return user;
     }
 
-    
+
 }
 
 
-export const getOneUser = async (id:string) => {
+export const getOneUser = async (id: string) => {
     const unUsuario: UsersInstance = await User.findByPk(id);
     if (unUsuario) {
         return unUsuario
@@ -44,7 +44,7 @@ export const UserExists = async (id) => {
     return !!user; // Returns true if exists, false if not
 };
 
-export const delUser = async (id:string): Promise<boolean> => {
+export const delUser = async (id: string): Promise<boolean> => {
     const user: UsersInstance = await User.findByPk(id);
     if (user) {
         await user.destroy();
@@ -72,28 +72,37 @@ export const addUser = async (user: addUserBD): Promise<boolean> => {
     return true
 }
 
-export const updateUser = async (id?: string, login?: string, clave?: string, sts?: string, tipo?: string): Promise<ResError | ResSuccess> => {
-
-    
+export const updateUser = async (
+    id?: string,
+    login?: string,
+    clave?: string,
+    sts?: string,
+    tipo?: string): Promise<ResError | ResSuccess> => {
 
     const fieldstoUpdate: any = {};
 
+    /* you have to fill in all the fields */
     if (typeof login === "string") { fieldstoUpdate.login = login; }
-    else { return new ResError(respCode.BAD_REQUEST, respPhrase.INCORRECT_FIELD.val, null)  }
+    else { return new ResError(respCode.BAD_REQUEST, respPhrase.INCORRECT_FIELD.val, null) }
 
     if (typeof clave === "string") { fieldstoUpdate.clave = bcrypt.hashSync(clave, 10); }
-    else { return new ResError(respCode.BAD_REQUEST, respPhrase.INCORRECT_FIELD.val, null)  }
+    else { return new ResError(respCode.BAD_REQUEST, respPhrase.INCORRECT_FIELD.val, null) }
     if (typeof sts === "string") { fieldstoUpdate.sts = sts; }
-    else { return new ResError(respCode.BAD_REQUEST, respPhrase.INCORRECT_FIELD.val, null)  }
+    else { return new ResError(respCode.BAD_REQUEST, respPhrase.INCORRECT_FIELD.val, null) }
     if (typeof tipo === "string") { fieldstoUpdate.tipo = tipo; }
-    else { return new ResError(respCode.BAD_REQUEST, respPhrase.INCORRECT_FIELD.val, null)  }
+    else { return new ResError(respCode.BAD_REQUEST, respPhrase.INCORRECT_FIELD.val, null) }
+
+    // console.log(!login)
+    // if(!login){
+    //     console.log("no login entered in postman")
+    // }
 
     const user = await User.findByPk(id);
     if (!user) {
         return new ResError(respCode.NOT_FOUND, respPhrase.NOT_FOUND.val, null)
     }
     await user.update(fieldstoUpdate);
-    const data:string = "the user was succefully updated"
+    const data: string = "the user was succefully updated"
     return new ResSuccess(respCode.ACCEPTED, respPhrase.ACCEPTED.val, data); //data es el codigo de authorizacion
     // return true;
 
