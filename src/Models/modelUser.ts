@@ -3,7 +3,7 @@ import db from '../db/conexion'; // Asegúrate de que esta ruta sea correcta
 import Car from './modelCar';
 
 // Define una interfaz para los atributos del modelo
-interface UsuariosAttributes {
+interface UsersAttributes {
   id?: number
   login?: string;
   clave?: string;
@@ -12,12 +12,12 @@ interface UsuariosAttributes {
 }
 
 // Define una interfaz para la instancia del modelo
-export interface UsuariosInstance
-  extends Model<UsuariosAttributes>, // incluye métodos como .save(), .destroy(), etc. // Métodos de Sequelize con tipos
-  UsuariosAttributes { }           // permite acceder directamente a username, edad, password
+export interface UsersInstance
+  extends Model<UsersAttributes>, // incluye métodos como .save(), .destroy(), etc. // Métodos de Sequelize con tipos
+  UsersAttributes { }           // permite acceder directamente a username, edad, password
 
 // Define el modelo con los tipos específicos
-const User = db.define<UsuariosInstance>('User', {
+const User = db.define<UsersInstance>('User', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,

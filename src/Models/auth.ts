@@ -1,4 +1,4 @@
-import User, { UsuariosInstance } from "./modelUser";
+import User, { UsersInstance } from "./modelUser";
 
 export const loginUserModel = async (loginA: string): Promise<{ rows: any[] }> => {
     const user1 = await User.findOne({

@@ -1,29 +1,26 @@
 import express, { Request, Response, Router } from 'express';
-import { /*consultarUsuarios, consultarDetalle, ingresar, actualizar, borrar, RegistrarLogin,*/ CobtenerUsuarios, CobtenerUnUsuario, CeliminarUnUsuario, CaniadirUsuario, CactualizarUnUsuario } from '../Controllers/controllerUsers'; // Asegúrate de importar las funciones from '../Controllers/usuariosController'
+import {
+    CgetUsers,
+    CgetOneUser,
+    CdelUser,
+    CaddUser,
+    CupdateUser
+} from '../Controllers/controllerUsers'; // Asegúrate de importar las funciones from '../Controllers/usuariosController'
 import jwt from "jsonwebtoken";  // Asegúrate de importar jsonwebtoken
 // import cors from "cors";
 import { loginUser } from '../Controllers/auth';
 import validToken, { AuthenticatedRequest } from '../Middlewares/tokenValidator';
 
-const rutasUsuarios: Router = express.Router();
+const routesUsers: Router = express.Router();
 
-rutasUsuarios.get('/getUsers', [validToken], CobtenerUsuarios);
+routesUsers.get('/getUsers', [validToken], CgetUsers);
 
-rutasUsuarios.get('/getUsers/:id', [validToken], CobtenerUnUsuario);
+routesUsers.get('/getUsers/:id', [validToken], CgetOneUser);
 
-rutasUsuarios.delete('/delUsers/:id', [validToken], CeliminarUnUsuario);
+routesUsers.delete('/delUsers/:id', [validToken], CdelUser);
 
-rutasUsuarios.post('/addUser', [validToken], CaniadirUsuario);
+routesUsers.post('/addUser', [validToken], CaddUser);
 
-rutasUsuarios.put('/update/:id', [validToken], CactualizarUnUsuario);
+routesUsers.put('/update/:id', [validToken], CupdateUser);
 
-// rutasUsuarios.post("/login/iniciar", loginUser)
-
-
-/* // Ruta protegida que requiere token
-rutasUsuarios.get("/protected/usuario", validToken, (req: AuthenticatedRequest, res: Response): void => {
-    res.send(`Acceso permitido a la ruta protegida. El username del usuario es: ${req.DatosToken?.u}`);
-}); */
-
-
-export default rutasUsuarios;
+export default routesUsers;
