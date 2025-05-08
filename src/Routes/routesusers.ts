@@ -5,9 +5,8 @@ import {
     CdelUser,
     CaddUser,
     CupdateUser
-} from '../Controllers/controllerUsers'; // Asegúrate de importar las funciones from '../Controllers/usuariosController'
-import jwt from "jsonwebtoken";  // Asegúrate de importar jsonwebtoken
-// import cors from "cors";
+} from '../Controllers/controllerUsers'; 
+import jwt from "jsonwebtoken";  
 import { loginUser } from '../Controllers/auth';
 import validToken, { AuthenticatedRequest } from '../Middlewares/tokenValidator';
 
