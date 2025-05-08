@@ -1,13 +1,11 @@
 import * as dotenv from 'dotenv';
-dotenv.config(); // ¡Esto carga el archivo .env!
+dotenv.config(); // ¡this charge the file .env!
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import UserRoutes from '../Routes/routesusers';
 import CarsRoutes from '../Routes/routescars'
 import LoginRoutes from '../Routes/auth'
 import morgan from 'morgan';
-// actualizado
-
 import db from '../db/conexion'
 
 
@@ -24,9 +22,9 @@ class ApiServer {
     this.usersPath = "/users";
     this.carsPaht="/cars";
     this.loginPath="/api/auth"
-    this.middlewares();  // Llama a la función middleware
-    this.routes();       // Registra las rutas
-    this.dbConnet(); //conexion a la base de datos
+    this.middlewares();  // Call the middleware function
+    this.routes();       // Register the routes
+    this.dbConnet(); //Data Base connection
     
   }
 
@@ -51,15 +49,15 @@ class ApiServer {
   }
 
   async dbConnet() {
-    //conexion a la base de datos
+    //Data Base connection
 
     try {
       await db.authenticate();
-      console.log("base de datos conectada");
-      console.log("hola puedes iniciar")
+      console.log("Connected data base");
+      console.log("hello you can start")
     } catch (error) {
       console.log(error);
-      console.log('error al conectarse en la base de datos');
+      console.log('error when connecting to the database');
     }
   }
 }
