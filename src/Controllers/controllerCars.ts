@@ -13,7 +13,7 @@ import {
     getDetailsCars,
     addDetailCar
 } from "../Services/servicesCars";
-import  { AuthenticatedRequest } from "../Middlewares/tokenValidator";
+import { AuthenticatedRequest } from "../Middlewares/tokenValidator";
 import { Request, Response } from "express";
 import User from "../Models/modelUser";
 import Car, { CarsInterface } from "../Models/modelCar";

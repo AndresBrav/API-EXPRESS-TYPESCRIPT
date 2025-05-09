@@ -38,7 +38,7 @@ routesCars.post('/saveOnePdf/list/:id', [validToken], CsaveOnePdf)
 
 routesCars.post("/uploadListServer", [validToken], CuploadServer)
 
-routesCars.post("/returnBase64File", [validToken], CreturnBase64File)
+routesCars.post("/returnBase64File", [validToken], CreturnBase64File) /* generate b64 from file */
 
 routesCars.post("/ConvertBase64toFile", [validToken], CconvertBase64toFile)
 

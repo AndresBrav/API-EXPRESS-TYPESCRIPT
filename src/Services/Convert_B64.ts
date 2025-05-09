@@ -2,7 +2,7 @@ import path from 'path';
 import { readFile } from 'fs/promises';
 
 // function to conver file to b64
-export const convertirYGuardarArchivoBase64 = async (nombreArchivo: string): Promise<string | null> => {
+export const returnB64fromFile = async (nombreArchivo: string): Promise<string | null> => {
     try {
         // Relative path to the file
         const localFilePath = path.resolve(__dirname, '../ArchivosGuardados/', nombreArchivo);

@@ -4,7 +4,7 @@ import { AuthenticatedRequest } from "../Middlewares/tokenValidator";
 import path from 'path'
 import fs from 'fs'
 import PDFDocument from "pdfkit";
-import { convertirYGuardarArchivoBase64 } from './Convert_B64'
+import { returnB64fromFile } from './Convert_B64'
 import { uploadFileToFTP } from "./basic-ftp";
 import { IsNumber, IsString, typeTransfer } from "../Validations/validateTypes";
 import DetailCar, { DetailCarInterface } from "../Models/modelDetailCar";
@@ -320,7 +320,7 @@ export const saveCarFile = async (
                     if (err) return reject('Error saving file TXT: ' + err);
                     console.log('file txt saved:', filePath);
 
-                    const variableBase64 = await convertirYGuardarArchivoBase64(nombreDelArchivo);
+                    const variableBase64 = await returnB64fromFile(nombreDelArchivo);
                     resolve(variableBase64 || '');
                 });
             } else if (tipoGuardado === 'pdf') {
@@ -350,7 +350,7 @@ export const saveCarFile = async (
 
                 writeStream.on('finish', async () => {
                     console.log('PDF saved in :', filePath);
-                    const variableBase64 = await convertirYGuardarArchivoBase64(nombreDelArchivo);
+                    const variableBase64 = await returnB64fromFile(nombreDelArchivo);
                     resolve(variableBase64 || '');
                 });
 
@@ -395,7 +395,7 @@ export const saveOneCarFile = async (id: string, tipoGuardado: 'pdf' | 'txt'): P
                     if (err) return reject("Error saving file TXT: " + err);
                     // console.log("file TXT saved in:", filePath);
 
-                    const variableBase64 = await convertirYGuardarArchivoBase64(nombreDelArchivo);
+                    const variableBase64 = await returnB64fromFile(nombreDelArchivo);
                     resolve(variableBase64 || '');
                 });
 
@@ -422,7 +422,7 @@ export const saveOneCarFile = async (id: string, tipoGuardado: 'pdf' | 'txt'): P
 
                 writeStream.on("finish", async () => {
                     // console.log("PDF saved in:", filePath);
-                    const variableBase64 = await convertirYGuardarArchivoBase64(nombreDelArchivo);
+                    const variableBase64 = await returnB64fromFile(nombreDelArchivo);
                     resolve(variableBase64 || '');
                 });
 
@@ -481,7 +481,7 @@ export const uploadListServer = async (nombreArchivo: string, TipoTransferencia:
 export const getBase64 = async (nombreArchivo: string): Promise<string> => {
     return new Promise(async (resolve, reject) => {
         try {
-            const base64Data = await convertirYGuardarArchivoBase64(nombreArchivo);
+            const base64Data = await returnB64fromFile(nombreArchivo);
             resolve(base64Data);
         } catch (error) {
             reject("Error al obtener el archivo en Base64: " + error);
