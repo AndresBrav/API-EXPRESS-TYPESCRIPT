@@ -39,41 +39,35 @@ export const carExists = async (id) => {
     return !!car; // Returns true if it exists, false if not
 };
 
-export const eliminarUnCarro = async (loginUsuario: string | undefined, id: string): Promise<boolean> => {
+export const delOneCar = async (loginUser: string | undefined, id: string): Promise<boolean> => {
 
-    const loginusuario = loginUsuario//con el que inicio sesion
-    // const { body } = req.body;
-    const idUsuario = await User.findOne({
-        where: { login: loginusuario },
+    const loginuser = loginUser//login in with
+    const idUser = await User.findOne({
+        where: { login: loginuser },
         attributes: ["id"],
-        raw: true  // <- Esto hace que devuelva un objeto simple 
+        raw: true  // <- return simple object
     });
 
-    // Extraer solo el ID
-    const userId = idUsuario ? idUsuario.id : null;
+    // Extract only id
+    const userId = idUser ? idUser.id : null;
 
-    console.log("el id del usuario es " + userId);
-
-
+    // console.log("the user id is " + userId);
 
     const user_ids = await Car.findAll({
         where: { user_id: userId },
         raw: true
     });
 
-    console.log("el id de los usuarios es.......");
-    console.log(user_ids);
+    // console.log(user_ids);
 
     const userIdArray = user_ids.map(user => user.id);
-    console.log(userIdArray);
-    // res.end();
-    // const { id } = req.params;
-
-    let pertenece = userIdArray.includes(Number(id));
+    // console.log(userIdArray);
+    
+    let belongsTo = userIdArray.includes(Number(id));
     // console.log(pertenece)
-    if (pertenece) {
-        const carro = await Car.findByPk(id);
-        await carro.destroy();
+    if (belongsTo) {
+        const car = await Car.findByPk(id);
+        await car.destroy();
         return true
 
     }
@@ -85,7 +79,7 @@ export const eliminarUnCarro = async (loginUsuario: string | undefined, id: stri
 }
 
 
-export const aniadirCarro = async (
+export const addCar = async (
     nombre: string,
     descripcion: string,
     precio: number,
@@ -94,38 +88,38 @@ export const aniadirCarro = async (
 ): Promise<CarsInterface> => {
     // Validaciones
     if (typeof nombre !== "string" || nombre.trim() === "") {
-        throw new Error("El nombre tiene que ser de tipo string");
+        throw new Error("the name must be of type string");
     }
     if (typeof descripcion !== "string" || descripcion.trim() === "") {
-        throw new Error("La descripción tiene que ser de tipo string");
+        throw new Error("the descripcion must be of type string");
     }
     if (typeof precio !== "number" || isNaN(precio) || precio <= 0) {
-        throw new Error("El precio tiene que ser number");
+        throw new Error("the precio must be of type number");
     }
     if (typeof stock !== "number" || isNaN(stock) || stock < 0) {
-        throw new Error("El stock tiene que ser number");
+        throw new Error("the stock must be of type number");
     }
     if (typeof loginUsuario !== "string" || loginUsuario.trim() === "") {
-        throw new Error("El loginUsuario  tiene que ser string");
+        throw new Error("the loginUsuario must be of type string");
     }
 
 
 
-    // Buscar el usuario
-    const idUsuario = await User.findOne({
+    // look for the user
+    const idUser = await User.findOne({
         where: { login: loginUsuario },
         attributes: ["id"],
         raw: true,
     });
 
-    if (!idUsuario) {
-        throw new Error("Usuario no encontrado");
+    if (!idUser) {
+        throw new Error("User not found");
     }
 
-    const userId = idUsuario.id;
+    const userId = idUser.id;
 
-    // Crear el auto
-    const nuevoAuto: CarsInterface = await Car.create({
+    // Create the car
+    const newCar: CarsInterface = await Car.create({
         nombre,
         descripcion,
         precio,
@@ -133,86 +127,86 @@ export const aniadirCarro = async (
         user_id: userId,
     });
 
-    if (!nuevoAuto) {
-        throw new Error("No se pudo crear el auto");
+    if (!newCar) {
+        throw new Error("Could not create the car");
     }
 
-    return nuevoAuto;
+    return newCar;
 };
 
 
 
-export const ActualizarCarro = async (id: string, body: any, login: string): Promise<CarsInterface> => {
-    /********* Obtenemos el id del usuario****** */
-    const usuarioaux = await User.findOne({
+export const updateCar = async (id: string, body: any, login: string): Promise<CarsInterface> => {
+    /********* we get the user id ****** */
+    const useraux = await User.findOne({
         where: { login: login },
         raw: true
     })
 
 
-    /**********Obtenemos la relacion ************* */
-    const relacionCarroUsuario = await Car.findAll({
-        where: { user_id: usuarioaux.id },
+    /**********we get the relation ************* */
+    const relationCarUser = await Car.findAll({
+        where: { user_id: useraux.id },
         include: User
     });
 
 
-    /******Guardamos sus id en un Arreglo */
-    const idsCarros = [];
-    relacionCarroUsuario.forEach(carro => {
-        idsCarros.push(carro.id);
+    /******we store their ids in a Array */
+    const idsCars = [];
+    relationCarUser.forEach(car => {
+        idsCars.push(car.id);
     });
 
-    console.log("IDs de los carros:", idsCarros);
+    // console.log("the car ids are:", idsCars);
 
-    let existeValor = idsCarros.includes(Number(id));
+    let existValue = idsCars.includes(Number(id));
 
-    const carro = await Car.findByPk(id);
-
-
-    const camposAActualizar: any = {};
-
-    if (typeof body.nombre === "string") { camposAActualizar.nombre = body.nombre; }
-    else { throw new Error(" el nombre tiene que ser string ") }
-
-    if (typeof body.descripcion === "string") { camposAActualizar.descripcion = body.descripcion; }
-    else { throw new Error(" la descripcion tiene que ser string ") }
-
-    if (typeof body.precio === "number") { camposAActualizar.precio = body.precio; }
-    else { throw new Error(" el precio tiene que ser un numero ") }
-
-    if (typeof body.stock === "number") { camposAActualizar.stock = body.stock; }
-    else { throw new Error(" el stock  tiene que ser un numero ") }
+    const car = await Car.findByPk(id);
 
 
+    const fieldsToUpdate: any = {};
 
-    if (carro && existeValor) {
-        await carro.update(camposAActualizar);  //puedes enviar un solo dato {"nombre": "vw actualizado"}
-        console.log("el carro actualizado es ................................")
-        console.log(carro)
-        return carro;
+    if (typeof body.nombre === "string") { fieldsToUpdate.nombre = body.nombre; }
+    else { throw new Error("the nombre must be of type string") }
+
+    if (typeof body.descripcion === "string") { fieldsToUpdate.descripcion = body.descripcion; }
+    else { throw new Error("the nombre must be of type string") }
+
+    if (typeof body.precio === "number") { fieldsToUpdate.precio = body.precio; }
+    else { throw new Error("the nombre must be of type number") }
+
+    if (typeof body.stock === "number") { fieldsToUpdate.stock = body.stock; }
+    else { throw new Error("the nombre must be of type number") }
+
+
+
+    if (car && existValue) {
+        await car.update(fieldsToUpdate); 
+        // console.log("the upgraded car is  ................................")
+        // console.log(car)
+        return car;
     }
     else {
-        throw new Error("el auto no se actualizo ingresa correctamente los datos ")
+        throw new Error("the car was not updated enter the data correctly")
     }
 
 }
 
 
-export const ObtenerTodosDetalles = async () => {
+export const getDetailsCars = async () => {
     try {
-        const detallesCarros: DetailCarInterface[] = await DetailCar.findAll({
+        const detailscars: DetailCarInterface[] = await DetailCar.findAll({
             include: Car
         })
-        // console.log(detallesCarros)
-        return detallesCarros;
+        // console.log(detailscars)
+        return detailscars;
     } catch (error) {
-        console.log("sucedio el siguiente error", error)
+        console.log("happened the next error", error)
     }
 }
 
 // Promise<DetailCarInterface>
-export const aniadirDetallesCarros = async (
+export const addDetailCar = async (
     color: string,
     transmision: string,
     combustible: string,
@@ -223,28 +217,25 @@ export const aniadirDetallesCarros = async (
 ): Promise<DetailCarInterface> => {
 
     if (!IsString(color)) {
-        throw new Error("ingresa el color como string")
+        throw new Error("enter the color as a string")
     }
     if (!IsString(transmision)) {
-        throw new Error("ingresa la transmision como string")
+        throw new Error("enter the transmision as a string")
     }
     if (!IsString(combustible)) {
-        throw new Error("ingresa el combustible como string")
+        throw new Error("enter the combustible as a string")
     }
     if (!IsNumber(puertas)) {
-        throw new Error("ingresa el numero de puertas  como numero")
+        throw new Error("enter the puertas as a number")
     }
     if (!IsString(motor)) {
-        throw new Error("ingresa el motor como string")
-    }
-    if (!IsString(motor)) {
-        throw new Error("ingresa el motor como string")
+        throw new Error("enter the motor as a string")
     }
     if (!IsNumber(car_id)) {
-        throw new Error("ingresa el car_id como numero")
+        throw new Error("enter the car_id as a number")
     }
     if (!IsString(login)) {
-        throw new Error("ingresa el login como string")
+        throw new Error("enter the login as a string")
     }
 
 
@@ -254,24 +245,24 @@ export const aniadirDetallesCarros = async (
         raw: true,
         attributes: ['id']
     })
-    console.log("el id del usuario es ", iduser)
-    // Extraer solo el ID
+    // console.log("the user id is ", iduser)
+    // extract only de id
     const userId = iduser ? iduser.id : null;
 
-    const usuariosAutos = await Car.findAll({
+    const userCars = await Car.findAll({
         where: { user_id: userId },
         // include:User,
         raw: true
     });
 
 
-    const idCarros: number[] = usuariosAutos.map(auto => auto.id)
+    const idCars: number[] = userCars.map(auto => auto.id)
 
-    console.log(idCarros)
-    console.log(idCarros.includes(Number(car_id)))
+    // console.log(idCars)
+    // console.log(idCarros.includes(Number(car_id)))
 
-    if (idCarros.includes(Number(car_id)) === true) {
-        const detallescreados: DetailCarInterface = await DetailCar.create({
+    if (idCars.includes(Number(car_id)) === true) {
+        const detailscreated: DetailCarInterface = await DetailCar.create({
             color,
             transmision,
             combustible,
@@ -280,30 +271,30 @@ export const aniadirDetallesCarros = async (
             car_id
         })
 
-        return detallescreados;
+        return detailscreated;
     }
     else {
-        // console.log("no se va a evaluar")
-        throw new Error("el car_id que ingresaste no te pertenece o esta duplicado")
+        // console.log("will not be evaluated")
+        throw new Error("the car_id you entered does not belong to you or is duplicated")
     }
 }
 
 
-/*******************Seccion de pdf ********************** */
-export const guardarArchivosCarros = async (
-    loginUsuario: string,
+/*******************pdf Section********************** */
+export const saveCarFile = async (
+    loginUser: string,
     tipoGuardado: 'txt' | 'pdf'
 ): Promise<string> => {
     return new Promise(async (resolve, reject) => {
         try {
-            const usuario = await User.findOne({ where: { login: loginUsuario } });
-            if (!usuario) return reject('Usuario no encontrado');
+            const user = await User.findOne({ where: { login: loginUser } });
+            if (!user) return reject('user not found');
 
-            const idUsuario: number = usuario.id;
-            console.log('El ID del usuario es ' + idUsuario);
+            const idUser: number = user.id;
+            // console.log('the user id is ' + idUsuario);
 
-            const carros = await Car.findAll({ where: { user_id: idUsuario } });
-            if (!carros.length) return reject('No se encontraron carros para el usuario');
+            const cars = await Car.findAll({ where: { user_id: idUser } });
+            if (!cars.length) return reject('No cars were found for the user');
 
             let nombreDelArchivo = '';
             const folderPath = path.join(__dirname, '../ArchivosGuardados');
@@ -318,7 +309,7 @@ export const guardarArchivosCarros = async (
                 }
                 nombreDelArchivo = path.basename(filePath);
 
-                const fileContent = carros
+                const fileContent = cars
                     .map(
                         (carro: any, index: number) =>
                             `${index + 1}. ID: ${carro.id} - Nombre: ${carro.nombre} - Descripción: ${carro.descripcion} - Precio: ${carro.precio} - Stock: ${carro.stock}`
@@ -326,8 +317,8 @@ export const guardarArchivosCarros = async (
                     .join('\n');
 
                 fs.writeFile(filePath, fileContent, async (err) => {
-                    if (err) return reject('Error al guardar el archivo TXT: ' + err);
-                    console.log('Archivo TXT guardado en:', filePath);
+                    if (err) return reject('Error saving file TXT: ' + err);
+                    console.log('file txt saved:', filePath);
 
                     const variableBase64 = await convertirYGuardarArchivoBase64(nombreDelArchivo);
                     resolve(variableBase64 || '');
@@ -346,7 +337,7 @@ export const guardarArchivosCarros = async (
                 doc.pipe(writeStream);
 
                 doc.fontSize(20).text('Lista de Carros', { align: 'center' }).moveDown();
-                carros.forEach((carro: any, index: number) => {
+                cars.forEach((carro: any, index: number) => {
                     doc
                         .fontSize(14)
                         .text(
@@ -358,17 +349,17 @@ export const guardarArchivosCarros = async (
                 doc.end();
 
                 writeStream.on('finish', async () => {
-                    console.log('PDF guardado en:', filePath);
+                    console.log('PDF saved in :', filePath);
                     const variableBase64 = await convertirYGuardarArchivoBase64(nombreDelArchivo);
                     resolve(variableBase64 || '');
                 });
 
-                writeStream.on('error', (err) => reject('Error al guardar el PDF: ' + err));
+                writeStream.on('error', (err) => reject('Error saving file PDF: ' + err));
             } else {
-                reject('Tipo de guardado no soportado.');
+                reject('save Type not supported.');
             }
         } catch (error) {
-            reject('Error en el proceso: ' + error);
+            reject('Error in the process: ' + error);
         }
     });
 };
@@ -378,7 +369,7 @@ export const guardarArchivoUnCarroFile = async (id: string, tipoGuardado: 'pdf' 
         try {
             console.log("el tipo de guardado es: " + tipoGuardado);
             const carro = await Car.findByPk(id);
-            const existe = await existeCarro(id)
+            const existe = await carExists(id)
 
             let nombreDelArchivo = "";
             const folderPath = path.join(__dirname, "../ArchivosGuardados");

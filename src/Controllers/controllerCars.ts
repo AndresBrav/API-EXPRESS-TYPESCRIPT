@@ -2,16 +2,16 @@ import {
     getCars,
     getOneCar,
     carExists,
-    eliminarUnCarro,
-    aniadirCarro,
-    ActualizarCarro,
-    guardarArchivosCarros,
+    delOneCar,
+    addCar,
+    updateCar,
+    saveCarFile,
     guardarArchivoUnCarroFile,
     subirListaServidor,
     obtenerBase64,
     convertirBase64toFileUpdate,
-    ObtenerTodosDetalles,
-    aniadirDetallesCarros
+    getDetailsCars,
+    addDetailCar
 } from "../Services/servicesCars";
 import  { AuthenticatedRequest } from "../Middlewares/tokenValidator";
 import { Request, Response } from "express";
@@ -53,18 +53,18 @@ const CgetOneCar = async (req: AuthenticatedRequest, res: Response) => {
 };
 
 const CdelCar = async (req: AuthenticatedRequest, res: Response) => {
-    const loginUsuario = req.DatosToken?.u
+    const loginUser = req.DatosToken?.u
     const { id } = req.params
-    const resultado: boolean = await eliminarUnCarro(loginUsuario, id)
+    const result: boolean = await delOneCar(loginUser, id)
 
-    if (resultado) {
+    if (result) {
         res.json({
-            msg: `Se eliminó el carro con ID ${id}`
+            msg: `Removed car with id: ${id}`
         });
     }
     else {
         res.json({
-            msg: `El carro con ${id} no pertenece al usuario`
+            msg: `the car witch  ${id} does not belong to the user`
         });
     }
 };
@@ -75,14 +75,14 @@ const CaddCar = async (req: AuthenticatedRequest, res: Response): Promise<void> 
         const { nombre, descripcion, precio, stock } = req.body;
         const loginUsuario = req.DatosToken?.u;
 
-        // Validar que los datos básicos estén presentes
+        // Validate that basic data is present
         if (!nombre || !descripcion || precio == null || stock == null || !loginUsuario) {
-            res.status(400).json({ msg: "Faltan datos requeridos" });
+            res.status(400).json({ msg: "Required Data is missing" });
             return;
         }
 
-        // Llamar al servicio
-        const resultado: CarsInterface = await aniadirCarro(
+        // Call the service
+        const result: CarsInterface = await addCar(
             nombre,
             descripcion,
             precio,
@@ -90,32 +90,32 @@ const CaddCar = async (req: AuthenticatedRequest, res: Response): Promise<void> 
             loginUsuario
         );
 
-        // Responder con éxito
+        // Respond Successfully
         res.status(201).json({
-            msg: "Auto añadido exitosamente",
-            auto: resultado,
+            msg: "Car added successfully",
+            auto: result,
         });
     } catch (error) {
-        // Manejar errores específicos
+        // Handle specific erros
         if (error instanceof Error) {
-            console.error("Error al añadir el auto es ...:", error.message);
-            if (error.message.includes("El nombre tiene que ser de tipo string")) {
+            console.error("Error when adding the car is ...:", error.message);
+            if (error.message.includes("the name must be of type string")) {
                 res.status(400).json({ msg: error.message })
                 return
             }
-            if (error.message.includes("La descripción tiene que ser de tipo string")) {
+            if (error.message.includes("the descripcion must be of type string")) {
                 res.status(400).json({ msg: error.message })
                 return
             }
-            if (error.message.includes("El precio tiene que ser number")) {
+            if (error.message.includes("the precio must be of type number")) {
                 res.status(400).json({ msg: error.message })
                 return
             }
-            if (error.message.includes("El stock tiene que ser number")) {
+            if (error.message.includes("the stock must be of type number")) {
                 res.status(400).json({ msg: error.message })
                 return
             }
-            if (error.message.includes("El loginUsuario  tiene que ser string")) {
+            if (error.message.includes("the loginUsuario must be of type string")) {
                 res.status(400).json({ msg: error.message })
                 return
             }
@@ -123,9 +123,8 @@ const CaddCar = async (req: AuthenticatedRequest, res: Response): Promise<void> 
             res.status(500).json({ msg: "Error interno del servidor" });
             return
         }
-        // Por si el error no es una instancia de Error
-        console.error("Error desconocido:", error);
-        res.status(500).json({ msg: "Error interno del servidor no se identifico" });
+        // console.error("Unknown error:", error);
+        res.status(500).json({ msg: "Internal server error not identified" });
     }
 };
 
@@ -139,17 +138,17 @@ const CupdateCar = async (req: AuthenticatedRequest, res: Response) => {
     const login = req.DatosToken?.u
     try {
 
-        const resultado = await ActualizarCarro(id, body, login)
+        const result = await updateCar(id, body, login)
 
         res.json({
-            msg: "carro actualizado",
-            autoActualizado: resultado
+            msg: "upgraded car",
+            upgradedCar: result
         })
     }
     catch (error) {
         if (error instanceof Error) {
             res.status(400).json({
-                msg: "Ah ocurrido un error:",
+                msg: "An error has occurred:",
                 msgerror: error.message
             });
         } else {
@@ -159,26 +158,27 @@ const CupdateCar = async (req: AuthenticatedRequest, res: Response) => {
 
 };
 
-/* obtener detalles especificos de los carros */
+/* we get specif details from cars */
 const CgetDCars = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const resultado: DetailCarInterface[] = await ObtenerTodosDetalles()
+        const result: DetailCarInterface[] = await getDetailsCars()
         res.json({
-            msg: "enviaremos todos los detalles",
-            resultado: resultado
+            msg: "we will send all the details",
+            result: result
         })
     } catch (error) {
 
     }
 
 }
-const CaniadirDetailCar = async (req: AuthenticatedRequest, res: Response) => {
+
+const CaddDetailCar = async (req: AuthenticatedRequest, res: Response) => {
 
     try {
         const login = req.DatosToken?.u
         const { color, transmision, combustible, puertas, motor, car_id } = req.body;
 
-        const resultado: DetailCarInterface = await aniadirDetallesCarros(
+        const result: DetailCarInterface = await addDetailCar(
             color,
             transmision,
             combustible,
@@ -188,8 +188,8 @@ const CaniadirDetailCar = async (req: AuthenticatedRequest, res: Response) => {
             login)
 
         res.json({
-            msg: "se añadio correctamente el detalle",
-            result: resultado
+            msg: "the detail was added correctly",
+            result: result
         })
 
     }
@@ -214,24 +214,23 @@ const CaniadirDetailCar = async (req: AuthenticatedRequest, res: Response) => {
 
 /***********Seccion pdf**************** */
 
-const CguardarArchivo = async (req: AuthenticatedRequest, res: Response) => {
+const CsaveFile = async (req: AuthenticatedRequest, res: Response) => {
 
     try {
         const { body } = req;
-        const loginUsuario = req.DatosToken?.u
+        const loginUser = req.DatosToken?.u
         const tipoGuardado = body.tipoGuardado
 
         if (tipoGuardado === "txt" || tipoGuardado === "pdf") {
-            const base64Data = await guardarArchivosCarros(loginUsuario, tipoGuardado)  //guarda el pdf en la direccion 
-            //await subirListaServidor() //sube los archivos al servidor 
+            const base64Data = await saveCarFile(loginUser, tipoGuardado)  // save the pdf in the address 
             res.json({
-                msg: "llegamos hasta aqui se guardo los carros",
-                archivoB64: "El codigo base64 es:" + base64Data
+                msg: "we arrived here and the car was stored",
+                archivoB64: "the code base64 is:" + base64Data
             })
         }
         else {
             res.status(404).json({
-                msg: "el tipGuardado tiene que ser txt o pdf",
+                msg: "the tipGuardado have to be txt o pdf",
             })
 
         }
@@ -244,22 +243,22 @@ const CguardarArchivo = async (req: AuthenticatedRequest, res: Response) => {
 }
 
 
-const CguardarUnArchivo = async (req: AuthenticatedRequest, res: Response) => {
+const CsaveOnePdf = async (req: AuthenticatedRequest, res: Response) => {
 
     try {
         const { id } = req.params
         const { tipoGuardado } = req.body;
 
-        const loginUsuario = req.DatosToken?.u //USER1
-        /********* Obtenemos el id del usuario****** */
-        const usuarioaux = await User.findOne({
-            where: { login: loginUsuario },
+        const loginUser = req.DatosToken?.u //USER1
+        /*********we get the id from the user****** */
+        const useraux = await User.findOne({
+            where: { login: loginUser },
             raw: true
         })
 
         const listaDeCarrosDelUsuario = await Car.findAll({
             where: {
-                user_id: usuarioaux.id
+                user_id: useraux.id
             },
             raw: true
         })
@@ -370,11 +369,11 @@ export {
     CdelCar,
     CaddCar,
     CupdateCar,
-    CguardarArchivo,
-    CguardarUnArchivo,
+    CsaveFile,
+    CsaveOnePdf,
     CsubirServidor,
     CdevolverArchivoBase64,
     CconvertirBase64toFile,
     CgetDCars,
-    CaniadirDetailCar
+    CaddDetailCar
 }

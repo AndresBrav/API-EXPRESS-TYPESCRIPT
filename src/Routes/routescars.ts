@@ -6,13 +6,13 @@ import {
     CdelCar,
     CaddCar,
     CupdateCar,
-    CguardarArchivo,
-    CguardarUnArchivo,
+    CsaveFile,
+    CsaveOnePdf,
     CsubirServidor,
     CdevolverArchivoBase64,
     CconvertirBase64toFile,
     CgetDCars,
-    CaniadirDetailCar
+    CaddDetailCar
 } from '../Controllers/controllerCars';
 
 const routesCars = express.Router();
@@ -30,11 +30,11 @@ routesCars.put('/updateCar/:id', [validToken], CupdateCar);
 /* more details from cars */
 routesCars.get('/getAllDetailsCar', [validToken], CgetDCars);
 
-routesCars.post('/addDetailsCar',[validToken],CaniadirDetailCar)
+routesCars.post('/addDetailsCar',[validToken],CaddDetailCar)
 
-routesCars.post('/guardarPdf/list', [validToken], CguardarArchivo)
+routesCars.post('/savePdf/list', [validToken], CsaveFile)
 
-routesCars.post('/guardarPdf/list/:id', [validToken], CguardarUnArchivo)
+routesCars.post('/saveOnePdf/list/:id', [validToken], CsaveOnePdf)
 
 routesCars.post("/guardarListServidor", [validToken], CsubirServidor)
 
