@@ -1,51 +1,42 @@
 import Car, { CarsInterface } from "../Models/modelCar";
 import User from "../Models/modelUser";
 import { AuthenticatedRequest } from "../Middlewares/tokenValidator";
-import { Request, Response } from "express";
 import path from 'path'
 import fs from 'fs'
 import PDFDocument from "pdfkit";
 import { convertirYGuardarArchivoBase64 } from '../Services/Convertir_B64'
 import { uploadFileToFTP } from "./basic-ftp";
-import ResError from "../util/resError";
-import ResSuccess from "../util/resSuccess";
-import { respCode, respPhrase } from "../util/httpResponse";
-import bcrypt from 'bcrypt'
 import { IsNumber, IsString, typeTransfer } from "../Validations/validateTypes";
 import DetailCar, { DetailCarInterface } from "../Models/modelDetailCar";
 
-export const obtenerCarros = async (req: AuthenticatedRequest): Promise<CarsInterface[]> => {
-    const loginUsuario = req.DatosToken?.u
-    console.log("recuperado de usrt ", req.DatosToken?.u);
+export const getCars = async (req: AuthenticatedRequest): Promise<CarsInterface[]> => {
+    const loginUser = req.DatosToken?.u
 
-    // Obtener el ID del usuario a partir de su nombre
-    const usuario = await User.findOne({ where: { login: loginUsuario } });
-    //console.log("El usuario que vino es:", JSON.stringify(usuario, null, 2));
-    const idUsuario = usuario.id;
-    console.log("el id del usuario es " + idUsuario);
+    // get id from username
+    const user = await User.findOne({ where: { login: loginUser } });
+    const idUser = user.id;
+    // console.log("id user is " + idUser);
 
 
-    /*****Retornar carros  */
-    // Obtener los carros asociados a ese usuario
-    const carros: CarsInterface[] = await Car.findAll({ where: { user_id: idUsuario } });
-
-    //const carro = await Carro.findAll()
-    return carros;
+    /*****Return cars  */
+    // get cars associated with that user
+    const cars: CarsInterface[] = await Car.findAll({ where: { user_id: idUser } });
+    return cars;
 }
 
 
-export const obtenerUnCarro = async (id: string) => {
-    const unCarro = await Car.findByPk(id);
-    if (unCarro) {
-        return unCarro
+export const getOneCar = async (id: string) => {
+    const aCar = await Car.findByPk(id);
+    if (aCar) {
+        return aCar
     } else {
         return null
     }
 }
 
-export const existeCarro = async (id) => {
-    const carro = await Car.findByPk(id);
-    return !!carro; // Devuelve true si existe, false si no
+export const carExists = async (id) => {
+    const car = await Car.findByPk(id);
+    return !!car; // Returns true if it exists, false if not
 };
 
 export const eliminarUnCarro = async (loginUsuario: string | undefined, id: string): Promise<boolean> => {

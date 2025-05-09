@@ -1,7 +1,7 @@
 import {
-    obtenerCarros,
-    obtenerUnCarro,
-    existeCarro,
+    getCars,
+    getOneCar,
+    carExists,
     eliminarUnCarro,
     aniadirCarro,
     ActualizarCarro,
@@ -19,31 +19,29 @@ import User from "../Models/modelUser";
 import Car, { CarsInterface } from "../Models/modelCar";
 import { IsString } from "../Validations/validateTypes";
 import DetailCar, { DetailCarInterface } from "../Models/modelDetailCar";
-import { where } from "sequelize";
 
-const Cobtenercarros = async (req: AuthenticatedRequest, res: Response) => {
+const CgetCars = async (req: AuthenticatedRequest, res: Response) => {
 
     /*const listaCarros = await Carro.findAll();*/
-    const listaCarros: CarsInterface[] = await obtenerCarros(req)
+    const listCars: CarsInterface[] = await getCars(req)
 
-    res.send(listaCarros);
+    res.send(listCars);
 };
 
-const Cobteneruncarro = async (req: AuthenticatedRequest, res: Response) => {
-    // const data = req.body
+const CgetOneCar = async (req: AuthenticatedRequest, res: Response) => {
     const { id } = req.params
 
-    const carro: CarsInterface = await obtenerUnCarro(id);
+    const car: CarsInterface = await getOneCar(id);
 
-    const existe: boolean = await existeCarro(id)
-    console.log(`el carro existe ? ${existe}`);
+    const exist: boolean = await carExists(id)
+    // console.log(`does the car exists ? ${existe}`);
     try {
-        if (existe) {
-            res.json(carro);
+        if (exist) {
+            res.json(car);
         }
         else {
             res.json(
-                { msg: `el carro con id:${id} no existe` }
+                { msg: `the car with id: ${id} does not exists` }
             )
         }
     }
@@ -54,7 +52,7 @@ const Cobteneruncarro = async (req: AuthenticatedRequest, res: Response) => {
 
 };
 
-const CeliminarCarro = async (req: AuthenticatedRequest, res: Response) => {
+const CdelCar = async (req: AuthenticatedRequest, res: Response) => {
     const loginUsuario = req.DatosToken?.u
     const { id } = req.params
     const resultado: boolean = await eliminarUnCarro(loginUsuario, id)
@@ -72,7 +70,7 @@ const CeliminarCarro = async (req: AuthenticatedRequest, res: Response) => {
 };
 
 
-const CaniadirCarroNuevo = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+const CaddCar = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
         const { nombre, descripcion, precio, stock } = req.body;
         const loginUsuario = req.DatosToken?.u;
@@ -135,7 +133,7 @@ const CaniadirCarroNuevo = async (req: AuthenticatedRequest, res: Response): Pro
 
 
 
-const CactualizarCarro = async (req: AuthenticatedRequest, res: Response) => {
+const CupdateCar = async (req: AuthenticatedRequest, res: Response) => {
     const { id } = req.params;
     const { body } = req;
     const login = req.DatosToken?.u
@@ -367,11 +365,11 @@ const CconvertirBase64toFile = async (req: AuthenticatedRequest, res: Response) 
 
 
 export {
-    Cobtenercarros,
-    Cobteneruncarro,
-    CeliminarCarro,
-    CaniadirCarroNuevo,
-    CactualizarCarro,
+    CgetCars,
+    CgetOneCar,
+    CdelCar,
+    CaddCar,
+    CupdateCar,
     CguardarArchivo,
     CguardarUnArchivo,
     CsubirServidor,

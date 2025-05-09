@@ -26,12 +26,12 @@ const Car = db.define<CarsInterface>("Car", {
         type: DataTypes.DOUBLE
     },
     stock: {
-        type: DataTypes.INTEGER // Se recomienda usar INTEGER en lugar de NUMBER
+        type: DataTypes.INTEGER // It is recommended to use INTEGER instead of NUMBER"
     }
 },
     {
-        createdAt: false, // Para que no tenga la columna createdAt
-        updatedAt: false // Para que no tenga la columna updatedAt
+        createdAt: false, // no column createdAt
+        updatedAt: false // no column  updatedAt
     });
 
 Car.hasOne(DetailCar, {     /* "Un Car tiene un solo DetailCar. Úsalos con la clave foránea car_id en detailscars." */

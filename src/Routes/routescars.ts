@@ -1,57 +1,45 @@
 import express from 'express';
-// import { Cobtenercarros,Cobteneruncarro,CeliminarCarro,CaniadirCarro,CactualizarCarro,CguardarArchivo,CguardarUnArchivo,CsubirServidor,CdevolverArchivoBase64,CconvertirBase64toFile } from '../controllers/controllercarros';
-
 import validToken, { AuthenticatedRequest } from '../Middlewares/tokenValidator';
 import {
-    Cobtenercarros,
-    Cobteneruncarro,
-    CeliminarCarro,
-    CactualizarCarro,
+    CgetCars,
+    CgetOneCar,
+    CdelCar,
+    CaddCar,
+    CupdateCar,
     CguardarArchivo,
     CguardarUnArchivo,
     CsubirServidor,
     CdevolverArchivoBase64,
     CconvertirBase64toFile,
-    CaniadirCarroNuevo,
     CgetDCars,
     CaniadirDetailCar
 } from '../Controllers/controllerCars';
 
-const rutasAutos = express.Router();
+const routesCars = express.Router();
 
+routesCars.get('/', [validToken], CgetCars);
 
-// rutasAutos.get("/",(req,res) => {
-//     console.log("vamos a probar las rutas de los autos");
-// })
+routesCars.get('/getOne/:id', [validToken], CgetOneCar);
 
-rutasAutos.get('/', [validToken], Cobtenercarros);
-//rutasAutos.get('/', [validToken],guardarCarrosPdf);
+routesCars.delete('/delCar/:id', [validToken], CdelCar);
 
-rutasAutos.get('/getOne/:id', [validToken], Cobteneruncarro);
+routesCars.post('/addCar', [validToken], CaddCar);
 
-rutasAutos.delete('/delCar/:id', [validToken], CeliminarCarro);
+routesCars.put('/updateCar/:id', [validToken], CupdateCar);
 
-rutasAutos.post('/addCar', [validToken], CaniadirCarroNuevo);
+/* more details from cars */
+routesCars.get('/getAllDetailsCar', [validToken], CgetDCars);
 
-rutasAutos.put('/updateCar/:id', [validToken], CactualizarCarro);
+routesCars.post('/addDetailsCar',[validToken],CaniadirDetailCar)
 
-/* mas detalles de los autos */
-rutasAutos.get('/getAllDetailsCar', [validToken], CgetDCars);
+routesCars.post('/guardarPdf/list', [validToken], CguardarArchivo)
 
-rutasAutos.post('/addDetailsCar',[validToken],CaniadirDetailCar)
+routesCars.post('/guardarPdf/list/:id', [validToken], CguardarUnArchivo)
 
-rutasAutos.post('/guardarPdf/list', [validToken], CguardarArchivo)
+routesCars.post("/guardarListServidor", [validToken], CsubirServidor)
 
-rutasAutos.post('/guardarPdf/list/:id', [validToken], CguardarUnArchivo)
+routesCars.post("/ArchivoBase64", [validToken], CdevolverArchivoBase64)
 
-rutasAutos.post("/guardarListServidor", [validToken], CsubirServidor)
+routesCars.post("/ConvertBase64toFile", [validToken], CconvertirBase64toFile)
 
-rutasAutos.post("/ArchivoBase64", [validToken], CdevolverArchivoBase64)
-
-rutasAutos.post("/ConvertBase64toFile", [validToken], CconvertirBase64toFile)
-
-// rutasAutos.post("/guardarUnCarroServidor",[validToken],CsubirUnCarroServidor)
-
-
-
-export default rutasAutos
+export default routesCars
