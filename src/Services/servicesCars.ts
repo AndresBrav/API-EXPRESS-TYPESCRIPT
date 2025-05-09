@@ -4,7 +4,7 @@ import { AuthenticatedRequest } from "../Middlewares/tokenValidator";
 import path from 'path'
 import fs from 'fs'
 import PDFDocument from "pdfkit";
-import { convertirYGuardarArchivoBase64 } from '../Services/Convertir_B64'
+import { convertirYGuardarArchivoBase64 } from './Convert_B64'
 import { uploadFileToFTP } from "./basic-ftp";
 import { IsNumber, IsString, typeTransfer } from "../Validations/validateTypes";
 import DetailCar, { DetailCarInterface } from "../Models/modelDetailCar";
@@ -62,7 +62,7 @@ export const delOneCar = async (loginUser: string | undefined, id: string): Prom
 
     const userIdArray = user_ids.map(user => user.id);
     // console.log(userIdArray);
-    
+
     let belongsTo = userIdArray.includes(Number(id));
     // console.log(pertenece)
     if (belongsTo) {
@@ -181,7 +181,7 @@ export const updateCar = async (id: string, body: any, login: string): Promise<C
 
 
     if (car && existValue) {
-        await car.update(fieldsToUpdate); 
+        await car.update(fieldsToUpdate);
         // console.log("the upgraded car is  ................................")
         // console.log(car)
         return car;
@@ -364,18 +364,18 @@ export const saveCarFile = async (
     });
 };
 
-export const guardarArchivoUnCarroFile = async (id: string, tipoGuardado: 'pdf' | 'txt'): Promise<string> => {
+export const saveOneCarFile = async (id: string, tipoGuardado: 'pdf' | 'txt'): Promise<string> => {
     return new Promise(async (resolve, reject) => {
         try {
-            console.log("el tipo de guardado es: " + tipoGuardado);
+            console.log("the save type is : " + tipoGuardado);
             const carro = await Car.findByPk(id);
-            const existe = await carExists(id)
+            const exist = await carExists(id)
 
             let nombreDelArchivo = "";
             const folderPath = path.join(__dirname, "../ArchivosGuardados");
             if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath);
 
-            if (tipoGuardado === "txt" && existe) {
+            if (tipoGuardado === "txt" && exist) {
                 let filePath = path.join(folderPath, "Carro.txt");
                 let i = 1;
                 while (fs.existsSync(filePath)) {
@@ -384,22 +384,22 @@ export const guardarArchivoUnCarroFile = async (id: string, tipoGuardado: 'pdf' 
                 }
                 nombreDelArchivo = path.basename(filePath);
 
-                // Crear el contenido del archivo .txt
+                // Create the file content .txt
                 let fileContent = "Detalle de Carro\n\n";
 
-                // Agregar los carros al archivo .txt
+                // add the cars to file .txt
 
                 fileContent += ` ID: ${carro.id} - Nombre: ${carro.nombre} - Descripcion: ${carro.descripcion} - Precio: ${carro.precio} - Stock: ${carro.stock}\n`;
 
                 fs.writeFile(filePath, fileContent, async (err) => {
-                    if (err) return reject("Error al guardar el archivo TXT: " + err);
-                    console.log("Archivo TXT guardado en:", filePath);
+                    if (err) return reject("Error saving file TXT: " + err);
+                    // console.log("file TXT saved in:", filePath);
 
                     const variableBase64 = await convertirYGuardarArchivoBase64(nombreDelArchivo);
                     resolve(variableBase64 || '');
                 });
 
-            } else if (tipoGuardado === "pdf" && existe) {
+            } else if (tipoGuardado === "pdf" && exist) {
                 let filePath = path.join(folderPath, "Carro.pdf");
                 let i = 1;
                 while (fs.existsSync(filePath)) {
@@ -421,36 +421,36 @@ export const guardarArchivoUnCarroFile = async (id: string, tipoGuardado: 'pdf' 
                 doc.end();
 
                 writeStream.on("finish", async () => {
-                    console.log("PDF guardado en:", filePath);
+                    // console.log("PDF saved in:", filePath);
                     const variableBase64 = await convertirYGuardarArchivoBase64(nombreDelArchivo);
                     resolve(variableBase64 || '');
                 });
 
-                writeStream.on("error", (err) => reject("Error al guardar el PDF: " + err));
+                writeStream.on("error", (err) => reject("Error saving PDF: " + err));
             } else {
-                reject("Tipo de guardado no soportado.");
+                reject("save type not supported");
             }
         } catch (error) {
-            reject("Error en el proceso: " + error);
+            reject("Error in the process: " + error);
         }
 
     }
     );
 };
 
-/*************Subir al servidor ********* */
-export const subirListaServidor = async (nombreArchivo: string, TipoTransferencia: string, host: string, user: string, password: string) => {
-    // Ruta relativa al archivo
+/*************upload to the server  ********* */
+export const uploadListServer = async (nombreArchivo: string, TipoTransferencia: string, host: string, user: string, password: string) => {
+    //Relative path to the file
     const localFilePath = `../ArchivosGuardados/${nombreArchivo}`;
 
-    // Convertir la ruta relativa a una ruta absoluta
+    //Convert relative path to the absoluted path
     const absoluteFilePath = path.resolve(__dirname, localFilePath);
-    //console.log("la ruta absoluta es : " + absoluteFilePath);
+    //console.log("the absoluted path is : " + absoluteFilePath);
 
     const remoteFilePath = `/${nombreArchivo}`;
     //const transferMode = 'binary';
     const transferMode = TipoTransferencia;
-    console.log(`ahora ..........El tipo de transferencia es ${TipoTransferencia}`);
+    // console.log(`now ..........the transfer type is ${TipoTransferencia}`);
 
     if (IsString(nombreArchivo) && typeTransfer(TipoTransferencia) && IsString(host) && IsString(user) && IsString(password)) {
 
@@ -458,27 +458,27 @@ export const subirListaServidor = async (nombreArchivo: string, TipoTransferenci
     }
     else {
         if (!IsString(nombreArchivo)) {
-            throw new Error("ingresa el nombre correctamente")
+            throw new Error("enter the  nombre correctly")
         }
         if (!typeTransfer(TipoTransferencia)) {  /* !false = true entra y se evalua */
-            // console.log("no ingresaste correctamente el tipo de transferencia ")
-            throw new Error("el tipo tiene que ser text o binary")
+
+            throw new Error("el tipo have to be text or binary")
         }
         if (!IsString(host)) {
-            throw new Error("ingresa el host correctamente")
+            throw new Error("enter the host correctly")
         }
         if (!IsString(user)) {
-            throw new Error("ingresa el user correctamente")
+            throw new Error("enter the user correctly")
         }
         if (!IsString(password)) {
-            throw new Error("ingresa el password correctamente")
+            throw new Error("enter the password correctly")
         }
     }
 }
 
 
 
-export const obtenerBase64 = async (nombreArchivo: string): Promise<string> => {
+export const getBase64 = async (nombreArchivo: string): Promise<string> => {
     return new Promise(async (resolve, reject) => {
         try {
             const base64Data = await convertirYGuardarArchivoBase64(nombreArchivo);
@@ -490,53 +490,53 @@ export const obtenerBase64 = async (nombreArchivo: string): Promise<string> => {
     })
 }
 
-export const convertirBase64toFileUpdate = async (base64Data: string, nombreArchivo: string, extension: string): Promise<string> => {
+export const convertBase64toFile = async (base64Data: string, nombreArchivo: string, extension: string): Promise<string> => {
     return new Promise((resolve, reject) => {
         try {
             if (!base64Data || !nombreArchivo || !extension) {
-                return reject("Base64, nombre de archivo o extensión no proporcionados.");
+                return reject("Base64, file name or extension not provided.");
             }
             // console.log("..........verificar ")
             // console.log(typeof nombreArchivo)
 
             if (!IsString(base64Data)) {
-                return reject("Ingresa el codigo base64 como string")
+                return reject("Enter the code base64 as a string")
             }
             if (!IsString(nombreArchivo)) {
-                return reject("Ingresa el nombre correctamente es de tipo string")
+                return reject("enter the nombre correctly is of type string")
             }
             if (!IsString(extension)) {
-                return reject("Ingresa la extension  correctamente es txt o pdf")
+                return reject("enter the extension  correctly is txt or pdf")
             }
 
-            // Crear la carpeta 'ArchivosConvertidosDeBase64' si no existe
+            // create the folder  'ArchivosConvertidosDeBase64' if does not exist
             const folderPath = path.join(__dirname, "../ArchivosConvertidosDeBase64");
             if (!fs.existsSync(folderPath)) {
                 fs.mkdirSync(folderPath);
             }
 
-            // Ruta del archivo con nombre y extensión
+            // Route file with name and extension
             let filePath = path.join(folderPath, `${nombreArchivo}.${extension}`);
             let i = 1;
 
-            // Verificar si el archivo ya existe y cambiar el nombre si es necesario
+            // check if the file already exist and change the name if necessary
             while (fs.existsSync(filePath)) {
                 filePath = path.join(folderPath, `${nombreArchivo}${i}.${extension}`);
                 i++;
             }
 
-            // Convertir base64 a buffer
+            // Convert base64 to buffer
             const buffer = Buffer.from(base64Data, "base64");
 
-            // Escribir el archivo
+            // write the file
             fs.writeFile(filePath, buffer, (err) => {
-                if (err) return reject("Error al guardar el archivo: " + err);
-                console.log("Archivo guardado en:", filePath);
+                if (err) return reject("Error saving file: " + err);
+                console.log("file saved in: ", filePath);
                 resolve(filePath);
             });
 
         } catch (error) {
-            reject("Error en el proceso: " + error);
+            reject("Error in the process: " + error);
         }
     });
 };

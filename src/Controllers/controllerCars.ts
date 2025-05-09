@@ -6,10 +6,10 @@ import {
     addCar,
     updateCar,
     saveCarFile,
-    guardarArchivoUnCarroFile,
-    subirListaServidor,
-    obtenerBase64,
-    convertirBase64toFileUpdate,
+    saveOneCarFile,
+    uploadListServer,
+    getBase64,
+    convertBase64toFile,
     getDetailsCars,
     addDetailCar
 } from "../Services/servicesCars";
@@ -256,32 +256,32 @@ const CsaveOnePdf = async (req: AuthenticatedRequest, res: Response) => {
             raw: true
         })
 
-        const listaDeCarrosDelUsuario = await Car.findAll({
+        const listCarUsers = await Car.findAll({
             where: {
                 user_id: useraux.id
             },
             raw: true
         })
         // console.log("...........................................");
-        // console.log(listaDeCarrosDelUsuario);
+        // console.log(listCarUsers);
 
-        let idsCarros = [];
-        listaDeCarrosDelUsuario.forEach(carro => {
-            idsCarros.push(carro.id);
+        let idsCars = [];
+        listCarUsers.forEach(car => {
+            idsCars.push(car.id);
         });
 
-        let existeValor = idsCarros.includes(Number(id));
+        let existValue = idsCars.includes(Number(id));
 
-        if (existeValor) {
-            const base64Data = await guardarArchivoUnCarroFile(id, tipoGuardado) //guarda el pdf de un carro en la direccion 
+        if (existValue) {
+            const base64Data = await saveOneCarFile(id, tipoGuardado) //guarda el pdf de un carro en la direccion 
             res.json({
-                msg: "llegamos hasta aqui verifica que se haya subido el carro",
-                archivoB64: base64Data
+                msg: " we arrived here check that it has saved the car",
+                fileB64: base64Data
             })
         }
         else {
             res.json({
-                msg: "El id del carro que ingresaste no pertenece al usuario que inicio sesion"
+                msg: "the id car you entered does not belongs to the user login"
             })
         }
 
@@ -289,36 +289,32 @@ const CsaveOnePdf = async (req: AuthenticatedRequest, res: Response) => {
         res.status(500).json({ success: false, message: error });
     }
 
-
-
-    // await guardarPdfUnCarro(id, TipoTransferencia) //guarda el pdf de un carro en la direccion 
-
 }
 
-const CsubirServidor = async (req: AuthenticatedRequest, res: Response) => {
+const CuploadServer = async (req: AuthenticatedRequest, res: Response) => {
     const { nombreArchivo, TipoTransferencia, host, user, password } = req.body
 
-    //Ejecutar la subida
+    //run the upload
     try {
-        await subirListaServidor(nombreArchivo, TipoTransferencia, host, user, password);
+        await uploadListServer(nombreArchivo, TipoTransferencia, host, user, password);
         res.send({
-            msg: "se subio al servidor"
+            msg: "it was uploaded to the server"
         })
     } catch (error) {
         if (error instanceof Error) {
-            if (error.message.includes("ingresa el nombre correctamente")) {
-                res.status(400).json({ msg: "ingresa el nombre correctamente" })
+            if (error.message.includes("enter the  nombre correctly")) {
+                res.status(400).json({ msg: "enter the  nombre correctly" })
             }
-            if (error.message.includes("el tipo tiene que ser text o binary")) {
+            if (error.message.includes("el tipo have to be text or binary")) {
                 res.status(400).json({ msg: error.message })
             }
-            if (error.message.includes("ingresa el host correctamente")) {
+            if (error.message.includes("enter the host correctly")) {
                 res.status(400).json({ msg: error.message })
             }
-            if (error.message.includes("ingresa el user correctamente")) {
+            if (error.message.includes("enter the user correctly")) {
                 res.status(400).json({ msg: error.message })
             }
-            if (error.message.includes("ingresa el password correctamente")) {
+            if (error.message.includes("enter the password correctly")) {
                 res.status(400).json({ msg: error.message })
             }
 
@@ -326,19 +322,19 @@ const CsubirServidor = async (req: AuthenticatedRequest, res: Response) => {
     }
 }
 
-const CdevolverArchivoBase64 = async (req: AuthenticatedRequest, res: Response) => {
+const CreturnBase64File = async (req: AuthenticatedRequest, res: Response) => {
 
     try {
         const { nombreArchivo } = req.body
         if (IsString(nombreArchivo)) {
-            const base64Data = await obtenerBase64(nombreArchivo);
+            const base64Data = await getBase64(nombreArchivo);
             res.json({
-                msg: "El codigo base64 se genero correctamente:",
+                msg: "the code base64 was generated correctly",
                 base64: base64Data
             })
         }
         else {
-            res.status(404).json({ msg: "ingresa correctamente el nombre del Archivo" })
+            res.status(404).json({ msg: " enter the file name correctly" })
         }
 
     } catch (error) {
@@ -346,14 +342,13 @@ const CdevolverArchivoBase64 = async (req: AuthenticatedRequest, res: Response) 
     }
 }
 
-const CconvertirBase64toFile = async (req: AuthenticatedRequest, res: Response) => {
+const CconvertBase64toFile = async (req: AuthenticatedRequest, res: Response) => {
     const { base64Data, nombreArchivo, extension } = req.body
     //const {base64Data,nombreArchivo} = req.body
     try {
-        await convertirBase64toFileUpdate(base64Data, nombreArchivo, extension);
-        //await convertirBase64toFile(base64Data, nombreArchivo);
+        await convertBase64toFile(base64Data, nombreArchivo, extension);
         res.json(
-            { msg: "El archivo se convirtio correctamente" }
+            { msg: "the file was converted correctly" }
         )
     } catch (error) {
         res.status(400).json({ success: false, message: error });
@@ -371,9 +366,9 @@ export {
     CupdateCar,
     CsaveFile,
     CsaveOnePdf,
-    CsubirServidor,
-    CdevolverArchivoBase64,
-    CconvertirBase64toFile,
+    CuploadServer,
+    CreturnBase64File,
+    CconvertBase64toFile,
     CgetDCars,
     CaddDetailCar
 }

@@ -1,24 +1,22 @@
 import path from 'path';
 import { readFile } from 'fs/promises';
 
-// Función para convertir un archivo a Base64 y luego decodificarlo a un archivo
+// function to conver file to b64
 export const convertirYGuardarArchivoBase64 = async (nombreArchivo: string): Promise<string | null> => {
     try {
-        // Ruta relativa al archivo
+        // Relative path to the file
         const localFilePath = path.resolve(__dirname, '../ArchivosGuardados/', nombreArchivo);
 
-        // Leer el archivo de forma asíncrona
+        // read te file async way
         const data = await readFile(localFilePath);
 
-        // Convertir a Base64
+        // Convert to Base64
         const base64String: string = data.toString('base64');
-        console.log("el archivo convertido es ....")
-        console.log(base64String)
+        // console.log("the file converted is ....")
+        // console.log(base64String)
         return base64String;
     } catch (error) {
-        console.error('Error al leer el archivo:', error);
+        console.error('Error reading file:', error);
         return null;
     }
 };
-
-// convertirYGuardarArchivoBase64("../ArchivosGuardados/TSS.pdf");

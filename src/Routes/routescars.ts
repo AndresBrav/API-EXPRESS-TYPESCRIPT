@@ -8,9 +8,9 @@ import {
     CupdateCar,
     CsaveFile,
     CsaveOnePdf,
-    CsubirServidor,
-    CdevolverArchivoBase64,
-    CconvertirBase64toFile,
+    CuploadServer,
+    CreturnBase64File,
+    CconvertBase64toFile,
     CgetDCars,
     CaddDetailCar
 } from '../Controllers/controllerCars';
@@ -36,10 +36,10 @@ routesCars.post('/savePdf/list', [validToken], CsaveFile)
 
 routesCars.post('/saveOnePdf/list/:id', [validToken], CsaveOnePdf)
 
-routesCars.post("/guardarListServidor", [validToken], CsubirServidor)
+routesCars.post("/uploadListServer", [validToken], CuploadServer)
 
-routesCars.post("/ArchivoBase64", [validToken], CdevolverArchivoBase64)
+routesCars.post("/returnBase64File", [validToken], CreturnBase64File)
 
-routesCars.post("/ConvertBase64toFile", [validToken], CconvertirBase64toFile)
+routesCars.post("/ConvertBase64toFile", [validToken], CconvertBase64toFile)
 
 export default routesCars
