@@ -8,6 +8,7 @@ import {
     saveCarFile,
     saveOneCarFile,
     uploadListServer,
+    uploadListServerDB,
     getBase64,
     convertBase64toFile,
     getDetailsCars,
@@ -322,6 +323,22 @@ const CuploadServer = async (req: AuthenticatedRequest, res: Response) => {
     }
 }
 
+const CuploadServerDB = async (req: AuthenticatedRequest, res: Response) => {
+    const { nombreArchivo, ftp_user } = req.body
+
+    //run the upload
+    try {
+        await uploadListServerDB(nombreArchivo, ftp_user);
+        res.send({
+            msg: "it was uploaded to the server"
+        })
+    } catch (error) {
+        if (error instanceof Error) {
+            res.status(400).json({ msg: error.message })
+        }
+    }
+}
+
 const CreturnBase64File = async (req: AuthenticatedRequest, res: Response) => {
 
     try {
@@ -370,5 +387,6 @@ export {
     CreturnBase64File,
     CconvertBase64toFile,
     CgetDCars,
-    CaddDetailCar
+    CaddDetailCar,
+    CuploadServerDB
 }

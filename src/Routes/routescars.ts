@@ -9,6 +9,7 @@ import {
     CsaveFile,
     CsaveOnePdf,
     CuploadServer,
+    CuploadServerDB,
     CreturnBase64File,
     CconvertBase64toFile,
     CgetDCars,
@@ -37,6 +38,8 @@ routesCars.post('/savePdf/list', [validToken], CsaveFile)
 routesCars.post('/saveOnePdf/list/:id', [validToken], CsaveOnePdf)
 
 routesCars.post("/uploadListServer", [validToken], CuploadServer)
+
+routesCars.post("/uploadListServerDB", [validToken], CuploadServerDB)
 
 routesCars.post("/returnBase64File", [validToken], CreturnBase64File) /* generate b64 from file */
 

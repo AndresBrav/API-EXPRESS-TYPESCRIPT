@@ -8,6 +8,7 @@ import { returnB64fromFile } from './Convert_B64'
 import { uploadFileToFTP } from "./basic-ftp";
 import { IsNumber, IsString, typeTransfer } from "../Validations/validateTypes";
 import DetailCar, { DetailCarInterface } from "../Models/modelDetailCar";
+import Ftp from "../Models/modelFtp";
 
 export const getCars = async (req: AuthenticatedRequest): Promise<CarsInterface[]> => {
     const loginUser = req.DatosToken?.u
@@ -469,6 +470,55 @@ export const uploadListServer = async (nombreArchivo: string, TipoTransferencia:
         }
         if (!IsString(user)) {
             throw new Error("enter the user correctly")
+        }
+        if (!IsString(password)) {
+            throw new Error("enter the password correctly")
+        }
+    }
+}
+
+export const uploadListServerDB = async (nombreArchivo: string, ftp_user: string) => {
+    //Relative path to the file
+    const localFilePath = `../ArchivosGuardados/${nombreArchivo}`;
+
+    //Convert relative path to the absoluted path
+    const absoluteFilePath = path.resolve(__dirname, localFilePath);
+    //console.log("the absoluted path is : " + absoluteFilePath);
+
+    const remoteFilePath = `/${nombreArchivo}`;
+
+    // consulsts data base
+
+    const data = await Ftp.findOne({
+        where: { user: ftp_user },
+        raw: true
+    })
+
+    console.log(data)
+
+    const transferMode: string = data.transferMode
+    const host: string = data.host
+    const user: string = data.user
+    const password: string = data.password
+
+
+    if (IsString(nombreArchivo) && typeTransfer(transferMode) && IsString(host) && IsString(user) && IsString(password)) {
+
+        await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode, host, user, password);
+    }
+    else {
+        if (!IsString(nombreArchivo)) {
+            throw new Error("enter the  nombre correctly")
+        }
+        if (!typeTransfer(transferMode)) {  /* !false = true entra y se evalua */
+
+            throw new Error("el tipo have to be text or binary")
+        }
+        if (!IsString(host)) {
+            throw new Error("enter the host correctly")
+        }
+        if (!IsString(user)) {
+            throw new Error("enter the ftp_user correctly")
         }
         if (!IsString(password)) {
             throw new Error("enter the password correctly")
