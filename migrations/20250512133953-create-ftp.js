@@ -25,6 +25,14 @@ module.exports = {
       password: {
         type: Sequelize.STRING,
         allowNull: false
+      },
+      local_path: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      remote_path: {
+        type: Sequelize.STRING,
+        allowNull: false
       }
     });
   },

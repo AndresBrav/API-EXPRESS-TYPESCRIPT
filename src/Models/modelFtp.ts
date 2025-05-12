@@ -7,7 +7,9 @@ interface FtpAttributes {
     transferMode?: string;
     host?: string;
     user?: string;
-    password?: string
+    password?: string;
+    local_path?: string;
+    remote_path?: string;
 }
 
 // Define a interface for the instance of model
@@ -35,11 +37,17 @@ const Ftp = db.define<FtpInstance>('Ftp', {
     },
     password: {
         type: DataTypes.STRING
+    },
+    local_path: {
+        type: DataTypes.STRING
+    },
+    remote_path: {
+        type: DataTypes.STRING
     }
 }, {
     createdAt: false, // So that you do not have the createdAt column
     updatedAt: false, // So that you do not have the updatedAt column
-    tableName:'ftp'
+    tableName: 'ftp'
 }
 );
 

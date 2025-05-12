@@ -453,9 +453,21 @@ export const uploadListServer = async (nombreArchivo: string, TipoTransferencia:
     const transferMode = TipoTransferencia;
     // console.log(`now ..........the transfer type is ${TipoTransferencia}`);
 
-    if (IsString(nombreArchivo) && typeTransfer(TipoTransferencia) && IsString(host) && IsString(user) && IsString(password)) {
-
-        await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode, host, user, password);
+    if (
+        IsString(nombreArchivo) &&
+        typeTransfer(TipoTransferencia) &&
+        IsString(host) &&
+        IsString(user) &&
+        IsString(password)
+    ) {
+        await uploadFileToFTP(
+            absoluteFilePath,
+            remoteFilePath,
+            transferMode,
+            host,
+            user,
+            password
+        );
     }
     else {
         if (!IsString(nombreArchivo)) {
@@ -478,17 +490,7 @@ export const uploadListServer = async (nombreArchivo: string, TipoTransferencia:
 }
 
 export const uploadListServerDB = async (nombreArchivo: string, ftp_user: string) => {
-    //Relative path to the file
-    const localFilePath = `../ArchivosGuardados/${nombreArchivo}`;
-
-    //Convert relative path to the absoluted path
-    const absoluteFilePath = path.resolve(__dirname, localFilePath);
-    //console.log("the absoluted path is : " + absoluteFilePath);
-
-    const remoteFilePath = `/${nombreArchivo}`;
-
     // consulsts data base
-
     const data = await Ftp.findOne({
         where: { user: ftp_user },
         raw: true
@@ -500,11 +502,33 @@ export const uploadListServerDB = async (nombreArchivo: string, ftp_user: string
     const host: string = data.host
     const user: string = data.user
     const password: string = data.password
+    const local_path: string = data.local_path
+    const remote_path: string = data.remote_path
+
+    //Relative path to the file
+    const localFilePath = `${local_path}${nombreArchivo}`;
+    //Convert relative path to the absoluted path
+    const absoluteFilePath = path.resolve(__dirname, localFilePath);
+    //console.log("the absoluted path is : " + absoluteFilePath);
+    const remoteFilePath = `${remote_path}${nombreArchivo}`;
 
 
-    if (IsString(nombreArchivo) && typeTransfer(transferMode) && IsString(host) && IsString(user) && IsString(password)) {
+    if (
+        IsString(nombreArchivo) &&
+        typeTransfer(transferMode) &&
+        IsString(host) &&
+        IsString(user) &&
+        IsString(password)
+    ) {
 
-        await uploadFileToFTP(absoluteFilePath, remoteFilePath, transferMode, host, user, password);
+        await uploadFileToFTP(
+            absoluteFilePath,
+            remoteFilePath,
+            transferMode,
+            host,
+            user,
+            password
+        );
     }
     else {
         if (!IsString(nombreArchivo)) {
@@ -512,7 +536,7 @@ export const uploadListServerDB = async (nombreArchivo: string, ftp_user: string
         }
         if (!typeTransfer(transferMode)) {  /* !false = true entra y se evalua */
 
-            throw new Error("el tipo have to be text or binary")
+            throw new Error("el transferMode have to be text or binary")
         }
         if (!IsString(host)) {
             throw new Error("enter the host correctly")
