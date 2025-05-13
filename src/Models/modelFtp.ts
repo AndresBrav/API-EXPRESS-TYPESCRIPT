@@ -10,6 +10,7 @@ interface FtpAttributes {
     password?: string;
     local_path?: string;
     remote_path?: string;
+    file_format?: string;
 }
 
 // Define a interface for the instance of model
@@ -43,6 +44,9 @@ const Ftp = db.define<FtpInstance>('Ftp', {
     },
     remote_path: {
         type: DataTypes.STRING
+    },
+    file_format:{
+        type:DataTypes.STRING
     }
 }, {
     createdAt: false, // So that you do not have the createdAt column

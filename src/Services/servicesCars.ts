@@ -9,6 +9,9 @@ import { uploadFileToFTP } from "./basic-ftp";
 import { IsNumber, IsString, typeTransfer } from "../Validations/validateTypes";
 import DetailCar, { DetailCarInterface } from "../Models/modelDetailCar";
 import Ftp from "../Models/modelFtp";
+import { readdir } from 'fs/promises';
+import { join } from 'path';
+import { FilterAtxt, FilterCtxt, FilterParams } from "../Validations/filterTypesPath";
 
 export const getCars = async (req: AuthenticatedRequest): Promise<CarsInterface[]> => {
     const loginUser = req.DatosToken?.u
@@ -549,6 +552,66 @@ export const uploadListServerDB = async (nombreArchivo: string, ftp_user: string
         }
     }
 }
+
+export const uploadAutomaticServer = async () => {
+    try {
+        const filters: FilterParams = {
+            startsWith: FilterCtxt.startsWith,
+            endsWith: FilterCtxt.endsWith
+        };
+
+        const filterFiles = await FilterFileslocalpath(filters)
+        console.log(filterFiles)
+    } catch (error) {
+        console.error('Error al leer el directorio:', error);
+        // return [];
+    }
+}
+
+const FilterFileslocalpath = async (filterparams: FilterParams): Promise<string[]> => {
+    // console.log("Start with:", filterparams.startsWith);
+    // console.log("End with:", filterparams.endsWith);
+
+    try {
+        const archivosGuardados: string[] = [];
+        const ruta = join(__dirname, '../ArchivosGuardados/');
+        const archivos = await readdir(ruta);
+
+        const archivosFiltrados = archivos.filter(nombre => {
+            return (
+                nombre.toLowerCase().startsWith(filterparams.startsWith) && // empieza con 'a' o 'A'
+                (nombre.endsWith(filterparams.endsWith)) // termina en .pdf o .txt
+            );
+        });
+        return archivosFiltrados;
+
+    } catch (error) {
+        return [];
+    }
+
+}
+
+/* const FilterFileslocalpath = async (filterparams:FilterAtxt): Promise<string[]> => {
+    try {
+
+        const archivosGuardados: string[] = [];
+        const ruta = join(__dirname, '../ArchivosGuardados/');
+        const archivos = await readdir(ruta);
+
+        const archivosFiltrados = archivos.filter(nombre => {
+            return (
+                nombre.toLowerCase().startsWith('a') && // empieza con 'a' o 'A'
+                (nombre.endsWith('.pdf') || nombre.endsWith('.txt')) // termina en .pdf o .txt
+            );
+        });
+
+        // console.log('Archivos filtrados:', archivosFiltrados);
+        return archivosFiltrados;
+
+    } catch (error) {
+
+    }
+} */
 
 
 

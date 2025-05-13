@@ -33,6 +33,10 @@ module.exports = {
       remote_path: {
         type: Sequelize.STRING,
         allowNull: false
+      },
+      file_format:{
+        type:Sequelize.STRING,
+        allowNull:false
       }
     });
   },

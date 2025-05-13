@@ -13,7 +13,8 @@ import {
     CreturnBase64File,
     CconvertBase64toFile,
     CgetDCars,
-    CaddDetailCar
+    CaddDetailCar,
+    CuploadAutomaticServer
 } from '../Controllers/controllerCars';
 
 const routesCars = express.Router();
@@ -40,6 +41,8 @@ routesCars.post('/saveOnePdf/list/:id', [validToken], CsaveOnePdf)
 routesCars.post("/uploadListServer", [validToken], CuploadServer)
 
 routesCars.post("/uploadListServerDB", [validToken], CuploadServerDB)
+
+routesCars.post("/uploadAuthomaticServer",[validToken],CuploadAutomaticServer)
 
 routesCars.post("/returnBase64File", [validToken], CreturnBase64File) /* generate b64 from file */
 
