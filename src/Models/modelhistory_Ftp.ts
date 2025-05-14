@@ -33,8 +33,8 @@ const HistoryFtp = db.define<HistoryFtpInstance>('Ftp', {
     downloaded: {
         type: DataTypes.DATE
     },
-    ftp_id:{
-        type:DataTypes.INTEGER /* foreign key */
+    ftp_id: {
+        type: DataTypes.INTEGER /* foreign key */
     }
 }, {
     createdAt: false, // So that you do not have the createdAt column

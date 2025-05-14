@@ -5,13 +5,15 @@ import path from 'path'
 import fs from 'fs'
 import PDFDocument from "pdfkit";
 import { returnB64fromFile } from './Convert_B64'
-import { uploadFileToFTP } from "./basic-ftp";
+import { listFilesFromFTP, uploadFileToFTP } from "./basic-ftp";
 import { IsNumber, IsString, typeTransfer } from "../Validations/validateTypes";
 import DetailCar, { DetailCarInterface } from "../Models/modelDetailCar";
 import Ftp from "../Models/modelFtp";
 import { readdir } from 'fs/promises';
 import { join } from 'path';
-import { FilterAtxt, FilterCtxt, FilterParams } from "../Validations/filterTypesPath";
+import { FilterOptions, FilterParams } from "../Validations/filterTypesPath";
+import {getBoliviaDateAsSQLString} from '../util/getDates';
+import { filesFromFTPMethod, FilterFileslocalpath } from "../util/filterFiles";
 
 export const getCars = async (req: AuthenticatedRequest): Promise<CarsInterface[]> => {
     const loginUser = req.DatosToken?.u
@@ -553,65 +555,108 @@ export const uploadListServerDB = async (nombreArchivo: string, ftp_user: string
     }
 }
 
-export const uploadAutomaticServer = async () => {
+export const uploadAutomaticServer = async (ftp_user: string) => {
     try {
         const filters: FilterParams = {
-            startsWith: FilterCtxt.startsWith,
-            endsWith: FilterCtxt.endsWith
+            option1: FilterOptions.option1,
+            option2: FilterOptions.option2,
+            option3: FilterOptions.option3,
+            option4: FilterOptions.option4
         };
 
-        const filterFiles = await FilterFileslocalpath(filters)
+        const filterFiles: string[] = await FilterFileslocalpath(filters)
+        console.log("the filtered files are ")
         console.log(filterFiles)
+
+
+        const filesfromFTP: string[] = await filesFromFTPMethod()
+        console.log("the files brings from ftp are")
+        console.log(filesfromFTP)
+
+        await uploadAutomaticFiles(filterFiles, filesfromFTP)
+
     } catch (error) {
-        console.error('Error al leer el directorio:', error);
+        console.error('Error reading the address:', error);
         // return [];
     }
 }
 
-const FilterFileslocalpath = async (filterparams: FilterParams): Promise<string[]> => {
-    // console.log("Start with:", filterparams.startsWith);
-    // console.log("End with:", filterparams.endsWith);
+// const filesFromFTPMethod = async (): Promise<string[]> => {
+//     const archivos: string[] = await listFilesFromFTP('/', '127.0.0.1', 'ftpuser', '123');
+//     return archivos;
+// }
 
-    try {
-        const archivosGuardados: string[] = [];
-        const ruta = join(__dirname, '../ArchivosGuardados/');
-        const archivos = await readdir(ruta);
+// const FilterFileslocalpath = async (filters: FilterParams): Promise<string[]> => {
+//     try {
+//         const archivosGuardados: string[] = [];
+//         const ruta = join(__dirname, './ArchivosGuardados/');
+//         const archivos = await readdir(ruta);
 
-        const archivosFiltrados = archivos.filter(nombre => {
-            return (
-                nombre.toLowerCase().startsWith(filterparams.startsWith) && // empieza con 'a' o 'A'
-                (nombre.endsWith(filterparams.endsWith)) // termina en .pdf o .txt
-            );
-        });
-        return archivosFiltrados;
+//         // const pattern = `^[${start}].*\\${finish}$`;  
+//         const pattern = `${filters.option3}`;  // Creates the patern as a string
+//         const regex = new RegExp(pattern, 'i');
+//         const archivosFiltrados = archivos.filter(nombre => regex.test(nombre));
+//         // const archivosFiltrados = archivos.filter(nombre => {
+//         //     // return /^[cC].*\.txt$/i.test(nombre);
+//         // });
 
-    } catch (error) {
-        return [];
+//         return archivosFiltrados;
+
+//     } catch (error) {
+//         return [];
+//     }
+// }
+
+const uploadAutomaticFiles = async (filterFiles: string[], filesfromFTP: string[]) => {
+    // console.log(filterFiles.length)
+    for (let index = 0; index < filterFiles.length; index++) {
+        const element = filterFiles[index];
+        console.log("the name's file is ", element)
+        if (filesfromFTP.includes(element)) {
+            console.log("will not go up")
+            const DatesSQL = getBoliviaDateAsSQLString();
+            console.log("Valid date for SQL:", DatesSQL);
+        }
+        else {
+            console.log("will go up")
+            //Relative path to the file
+            const localFilePath = `./ArchivosGuardados/${element}`;
+
+            //Convert relative path to the absoluted path
+            const absoluteFilePath = path.resolve(__dirname, localFilePath);
+            const remoteFilePath = `/${element}`;
+
+            const transferMode = 'binary'
+            const host = '127.0.0.1'
+            const user = 'ftpuser'
+            const password = '123'
+
+            const date: Date = new Date()
+
+            console.log("the date is ", date)
+
+            try {
+                await uploadFileToFTP(
+                    absoluteFilePath,
+                    remoteFilePath,
+                    transferMode,
+                    host,
+                    user,
+                    password
+                );
+            } catch (error) {
+                console.log(error)
+            }
+
+        }
     }
-
 }
 
-/* const FilterFileslocalpath = async (filterparams:FilterAtxt): Promise<string[]> => {
-    try {
 
-        const archivosGuardados: string[] = [];
-        const ruta = join(__dirname, '../ArchivosGuardados/');
-        const archivos = await readdir(ruta);
 
-        const archivosFiltrados = archivos.filter(nombre => {
-            return (
-                nombre.toLowerCase().startsWith('a') && // empieza con 'a' o 'A'
-                (nombre.endsWith('.pdf') || nombre.endsWith('.txt')) // termina en .pdf o .txt
-            );
-        });
 
-        // console.log('Archivos filtrados:', archivosFiltrados);
-        return archivosFiltrados;
 
-    } catch (error) {
 
-    }
-} */
 
 
 

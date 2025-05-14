@@ -1,35 +1,14 @@
-export enum FilterAtxt {
-    startsWith = "a",
-    endsWith = ".txt"
-}
-
-export enum FilterCtxt {
-    startsWith = "c",
-    endsWith = ".txt"
-}
-
-export enum FilterLtxt {
-    startsWith = "l",
-    endsWith = ".txt"
-}
-
-export enum FilterApdf {
-    startsWith = "a",
-    endsWith = ".pdf"
-}
-
-export enum FilterCpdf {
-    startsWith = "c",
-    endsWith = ".pdf"
-}
-
-export enum FilterLpdf {
-    startsWith = "l",
-    endsWith = ".pdf"
+export enum FilterOptions {
+    option1 = '^[cC].*\.txt$', /* starts with c, finish with .txt */
+    option2 = '^[cC].*\.pdf$', /* starts with c, finish with .pdf */
+    option3 = '^[lL].*\.txt$',
+    option4 = '^[lL].*\.pdf$'   
 }
 
 // Interfaz para los filtros que usarás
 export interface FilterParams {
-    startsWith: string;
-    endsWith: string;
+    option1?:string,
+    option2?:string,
+    option3?:string,
+    option4?:string
 }
