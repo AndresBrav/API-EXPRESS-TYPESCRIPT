@@ -10,7 +10,7 @@ export async function uploadFileToFTP(
 ): Promise<void> {
     const client = new Client();
     client.ftp.verbose = true;
-    console.log(`el tipo de transferencia que se esta haciendo es ${transferMode}`);
+    console.log(`the type of transfer being made is ${transferMode}`);
     try {
         await client.access({
             host: host, /* 127.0.0.1 */
@@ -28,7 +28,7 @@ export async function uploadFileToFTP(
         } else if (transferMode === 'text') {
             await client.send('TYPE A');
         } else {
-            throw new Error('Modo de transferencia no válido. Use "binary" o "text".');
+            throw new Error('Invalid transfer mode.Use “binary” or “text”..');
         }
 
         await client.uploadFrom(localFilePath, remoteFilePath);

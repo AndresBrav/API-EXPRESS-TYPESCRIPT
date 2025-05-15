@@ -13,7 +13,8 @@ import {
     convertBase64toFile,
     getDetailsCars,
     addDetailCar,
-    uploadAutomaticServer
+    uploadAutomaticServer,
+    downloadAutomaticServer
 } from "../Services/servicesCars";
 import { AuthenticatedRequest } from "../Middlewares/tokenValidator";
 import { Request, Response } from "express";
@@ -350,6 +351,14 @@ const CuploadAutomaticServer = async (req: AuthenticatedRequest, res: Response) 
     }
 }
 
+const CdownloadAutomaticServer = async (req:AuthenticatedRequest,res:Response) =>{
+    try {
+        await downloadAutomaticServer()
+        res.send("let's download the files from ftp")
+    } catch (error) {
+        
+    }
+}
 
 const CreturnBase64File = async (req: AuthenticatedRequest, res: Response) => {
 
@@ -401,6 +410,6 @@ export {
     CgetDCars,
     CaddDetailCar,
     CuploadServerDB,
-    CuploadAutomaticServer
-
+    CuploadAutomaticServer,
+    CdownloadAutomaticServer
 }
