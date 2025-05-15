@@ -8,12 +8,13 @@ import { returnB64fromFile } from './Convert_B64'
 import { listFilesFromFTP, uploadFileToFTP } from "./basic-ftp";
 import { IsNumber, IsString, typeTransfer } from "../Validations/validateTypes";
 import DetailCar, { DetailCarInterface } from "../Models/modelDetailCar";
-import Ftp from "../Models/modelFtp";
+import Ftp, { FtpInstance } from "../Models/modelFtp";
 import { readdir } from 'fs/promises';
 import { join } from 'path';
 import { FilterOptions, FilterParams } from "../Validations/filterTypesPath";
 import { getBoliviaDateAsSQLString } from '../util/getDates';
 import { filesFromFTPMethod, FilterFileslocalpath } from "../util/filterFiles";
+import HistoryFtp from "../Models/modelhistory_Ftp";
 
 export const getCars = async (req: AuthenticatedRequest): Promise<CarsInterface[]> => {
     const loginUser = req.DatosToken?.u
@@ -564,21 +565,32 @@ export const uploadAutomaticServer = async (ftp_user: string) => {
             raw: true
         })
         console.log("the data is ", data)
+        const id = data.id  /* we get the id */
+        const file_format = data.file_format    /* we get the file_format ^[cC].*\.txt$ */
+        const local_path = data.local_path /* we get de local path ../ArchivosGuardados/ */
 
-        const file_format = data.file_format
-        // console.log("the file format is ", file_format)
-        const local_path = data.local_path
-
-        const filterFiles: string[] = await FilterFileslocalpath(file_format,local_path)
+        const filterFiles: string[] = await FilterFileslocalpath(file_format, local_path)
         console.log("the filtered files are ")
         console.log(filterFiles)
 
 
-        // const filesfromFTP: string[] = await filesFromFTPMethod()
-        // console.log("the files brings from ftp are")
-        // console.log(filesfromFTP)
+        const filesfromFTP: string[] = await filesFromFTPMethod()
+        console.log("the files brings from ftp are")
+        console.log(filesfromFTP)
 
-        // await uploadAutomaticFiles(filterFiles, filesfromFTP)
+        const filesFromHistory_DB = await HistoryFtp.findAll({
+            where: { ftp_id: id },
+            raw: true,
+            attributes: ['name_file']
+        })
+
+        // console.log("the files from db are", filesFromHistory_DB)
+
+        const fileNamesDB = filesFromHistory_DB.map(file => file.name_file);
+
+        // console.log("the name of the files are:", fileNames);
+
+        await uploadAutomaticFiles(filterFiles, filesfromFTP, fileNamesDB, data)
 
     } catch (error) {
         console.error('Error reading the address:', error);
@@ -587,36 +599,58 @@ export const uploadAutomaticServer = async (ftp_user: string) => {
 }
 
 
-const uploadAutomaticFiles = async (filterFiles: string[], filesfromFTP: string[]) => {
+const uploadAutomaticFiles = async (filterFiles: string[], filesfromFTP: string[], fileNamesDB: string[], data: FtpInstance) => {
     // console.log(filterFiles.length)
     for (let index = 0; index < filterFiles.length; index++) {
         const element = filterFiles[index];
         console.log("the name's file is ", element)
-        if (filesfromFTP.includes(element)) {
+        if (filesfromFTP.includes(element) || fileNamesDB.includes(element)) {
             console.log("will not go up")
-            const DatesSQL = getBoliviaDateAsSQLString();
-            console.log("Valid date for SQL:", DatesSQL);
+            // const DatesSQL = getBoliviaDateAsSQLString();
+            // console.log("Valid date for SQL:", DatesSQL);
         }
         else {
             console.log("will go up")
-            //Relative path to the file
-            const localFilePath = `./ArchivosGuardados/${element}`;
-
+            const transferModedb = data.transferMode
+            const hostdb = data.host
+            const userdb = data.user
+            const passworddb = data.password
+            const local_path = data.local_path
+            const remote_path = data.remote_path
+            const id = data.id
+            // Relative path to the file
+            const localFilePath = `${local_path}${element}`;
             //Convert relative path to the absoluted path
             const absoluteFilePath = path.resolve(__dirname, localFilePath);
-            const remoteFilePath = `/${element}`;
+            const remoteFilePath = `${remote_path}${element}`;
 
-            const transferMode = 'binary'
-            const host = '127.0.0.1'
-            const user = 'ftpuser'
-            const password = '123'
+            const transferMode = transferModedb
+            const host = hostdb
+            const user = userdb
+            const password = passworddb
 
-            // const date: Date = new Date()
-            // console.log("the date is ", date)
+            const date: Date = new Date()
+            console.log("the date is ", date)
             const DatesSQL = getBoliviaDateAsSQLString();
             console.log("Valid date for SQL:", DatesSQL);
 
+            const name_file = element
+            const uploaded = date
+            const downloaded = date
+            const ftp_id = id
+
             try {
+                /* upload to db */
+                await HistoryFtp.create(
+                    {
+                        name_file,
+                        uploaded,
+                        downloaded,
+                        ftp_id
+                    }
+                )
+
+                /* upload to FTP */
                 await uploadFileToFTP(
                     absoluteFilePath,
                     remoteFilePath,
