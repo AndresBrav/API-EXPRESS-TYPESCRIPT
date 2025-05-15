@@ -668,13 +668,6 @@ const uploadAutomaticFiles = async (filterFiles: string[], filesfromFTP: string[
 }
 
 
-
-
-
-
-
-
-
 export const getBase64 = async (nombreArchivo: string): Promise<string> => {
     return new Promise(async (resolve, reject) => {
         try {
