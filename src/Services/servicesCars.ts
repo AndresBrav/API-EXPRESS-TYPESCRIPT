@@ -640,7 +640,7 @@ const uploadAutomaticFiles = async (filterFiles: string[], filesfromFTP: string[
             const ftp_id = id
 
             try {
-                /* upload to db */
+                /* upload to db HistoryFtp */
                 await HistoryFtp.create(
                     {
                         name_file,
