@@ -1,5 +1,5 @@
 import { Client } from 'basic-ftp';
-
+import * as path from 'path';
 export async function uploadFileToFTP(
     localFilePath: string,
     remoteFilePath: string,
@@ -72,6 +72,51 @@ export async function listFilesFromFTP(
         return fileNames;
     } catch (err) {
         console.error('Error listing files:', err);
+        throw err;
+    } finally {
+        client.close();
+    }
+}
+
+
+export async function downloadFileFromFTP(
+    remoteFilePath: string,
+    localDirPath: string,
+    host: string,
+    user: string = 'null',
+    password: string = 'null',
+    transferMode: string = 'binary'
+): Promise<void> {
+    const client = new Client();
+    client.ftp.verbose = true;
+
+    try {
+        await client.access({
+            host: host,
+            user: user,
+            password: password,
+            secure: true,
+            port: 21,
+            secureOptions: {
+                rejectUnauthorized: false
+            }
+        });
+
+        if (transferMode === 'binary') {
+            await client.send('TYPE I');
+        } else if (transferMode === 'text') {
+            await client.send('TYPE A');
+        } else {
+            throw new Error('Invalid transfer mode. Use “binary” or “text”.');
+        }
+
+        const fileName = path.basename(remoteFilePath);
+        const localFilePath = path.join(localDirPath, fileName);
+
+        await client.downloadTo(localFilePath, remoteFilePath);
+        console.log(`Archivo descargado correctamente en: ${localFilePath}`);
+    } catch (err) {
+        console.error('Error al descargar archivo:', err);
         throw err;
     } finally {
         client.close();

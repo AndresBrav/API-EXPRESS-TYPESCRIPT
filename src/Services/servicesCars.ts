@@ -5,7 +5,7 @@ import path from 'path'
 import fs from 'fs'
 import PDFDocument from "pdfkit";
 import { returnB64fromFile } from './Convert_B64'
-import { listFilesFromFTP, uploadFileToFTP } from "./basic-ftp";
+import { downloadFileFromFTP, listFilesFromFTP, uploadFileToFTP } from "./basic-ftp";
 import { IsNumber, IsString, typeTransfer } from "../Validations/validateTypes";
 import DetailCar, { DetailCarInterface } from "../Models/modelDetailCar";
 import Ftp, { FtpInstance } from "../Models/modelFtp";
@@ -667,8 +667,15 @@ const uploadAutomaticFiles = async (filterFiles: string[], filesfromFTP: string[
     }
 }
 
-export const downloadAutomaticServer = async() => {
-    
+export const downloadAutomaticServer = async () => {
+    await downloadFileFromFTP(
+        '/Carro.txt',     // Ruta del archivo en el FTP
+        '../downloadsFromFTP',               // Carpeta local donde se guardará
+        '127.0.0.1',                 // Host FTP
+        'ftpuser',                  // Usuario
+        '123',                      // Contraseña
+        'binary'                    // Modo de transferencia
+    );
 }
 
 
