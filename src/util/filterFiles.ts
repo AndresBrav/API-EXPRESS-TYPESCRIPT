@@ -8,14 +8,14 @@ export const filesFromFTPMethod = async (): Promise<string[]> => {
     return archivos;
 }
 
-export const FilterFileslocalpath = async (filters: FilterParams): Promise<string[]> => {
+export const FilterFileslocalpath = async (filter: string,local_path:string): Promise<string[]> => {
     try {
         const archivosGuardados: string[] = [];
-        const ruta = join(__dirname, './ArchivosGuardados/');
+        const ruta = join(__dirname, `${local_path}`);
         const archivos = await readdir(ruta);
-
         // const pattern = `^[${start}].*\\${finish}$`;  
-        const pattern = `${filters.option3}`;  // Creates the patern as a string
+        const pattern = `${filter}`;  // Creates the patern as a string
+        // const pattern = `^[cC].*\.txt$`;  // Creates the patern as a string
         const regex = new RegExp(pattern, 'i');
         const archivosFiltrados = archivos.filter(nombre => regex.test(nombre));
         // const archivosFiltrados = archivos.filter(nombre => {

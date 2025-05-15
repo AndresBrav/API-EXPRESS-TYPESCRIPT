@@ -12,7 +12,7 @@ import Ftp from "../Models/modelFtp";
 import { readdir } from 'fs/promises';
 import { join } from 'path';
 import { FilterOptions, FilterParams } from "../Validations/filterTypesPath";
-import {getBoliviaDateAsSQLString} from '../util/getDates';
+import { getBoliviaDateAsSQLString } from '../util/getDates';
 import { filesFromFTPMethod, FilterFileslocalpath } from "../util/filterFiles";
 
 export const getCars = async (req: AuthenticatedRequest): Promise<CarsInterface[]> => {
@@ -557,23 +557,28 @@ export const uploadListServerDB = async (nombreArchivo: string, ftp_user: string
 
 export const uploadAutomaticServer = async (ftp_user: string) => {
     try {
-        const filters: FilterParams = {
-            option1: FilterOptions.option1,
-            option2: FilterOptions.option2,
-            option3: FilterOptions.option3,
-            option4: FilterOptions.option4
-        };
 
-        const filterFiles: string[] = await FilterFileslocalpath(filters)
+        // consulsts data base
+        const data = await Ftp.findOne({
+            where: { user: ftp_user },
+            raw: true
+        })
+        console.log("the data is ", data)
+
+        const file_format = data.file_format
+        // console.log("the file format is ", file_format)
+        const local_path = data.local_path
+
+        const filterFiles: string[] = await FilterFileslocalpath(file_format,local_path)
         console.log("the filtered files are ")
         console.log(filterFiles)
 
 
-        const filesfromFTP: string[] = await filesFromFTPMethod()
-        console.log("the files brings from ftp are")
-        console.log(filesfromFTP)
+        // const filesfromFTP: string[] = await filesFromFTPMethod()
+        // console.log("the files brings from ftp are")
+        // console.log(filesfromFTP)
 
-        await uploadAutomaticFiles(filterFiles, filesfromFTP)
+        // await uploadAutomaticFiles(filterFiles, filesfromFTP)
 
     } catch (error) {
         console.error('Error reading the address:', error);
@@ -581,31 +586,6 @@ export const uploadAutomaticServer = async (ftp_user: string) => {
     }
 }
 
-// const filesFromFTPMethod = async (): Promise<string[]> => {
-//     const archivos: string[] = await listFilesFromFTP('/', '127.0.0.1', 'ftpuser', '123');
-//     return archivos;
-// }
-
-// const FilterFileslocalpath = async (filters: FilterParams): Promise<string[]> => {
-//     try {
-//         const archivosGuardados: string[] = [];
-//         const ruta = join(__dirname, './ArchivosGuardados/');
-//         const archivos = await readdir(ruta);
-
-//         // const pattern = `^[${start}].*\\${finish}$`;  
-//         const pattern = `${filters.option3}`;  // Creates the patern as a string
-//         const regex = new RegExp(pattern, 'i');
-//         const archivosFiltrados = archivos.filter(nombre => regex.test(nombre));
-//         // const archivosFiltrados = archivos.filter(nombre => {
-//         //     // return /^[cC].*\.txt$/i.test(nombre);
-//         // });
-
-//         return archivosFiltrados;
-
-//     } catch (error) {
-//         return [];
-//     }
-// }
 
 const uploadAutomaticFiles = async (filterFiles: string[], filesfromFTP: string[]) => {
     // console.log(filterFiles.length)
@@ -631,9 +611,10 @@ const uploadAutomaticFiles = async (filterFiles: string[], filesfromFTP: string[
             const user = 'ftpuser'
             const password = '123'
 
-            const date: Date = new Date()
-
-            console.log("the date is ", date)
+            // const date: Date = new Date()
+            // console.log("the date is ", date)
+            const DatesSQL = getBoliviaDateAsSQLString();
+            console.log("Valid date for SQL:", DatesSQL);
 
             try {
                 await uploadFileToFTP(

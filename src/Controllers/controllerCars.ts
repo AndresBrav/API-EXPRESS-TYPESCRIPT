@@ -340,12 +340,13 @@ const CuploadServerDB = async (req: AuthenticatedRequest, res: Response) => {
     }
 }
 
-const CuploadAutomaticServer = async(req:AuthenticatedRequest,res:Response) => {
+const CuploadAutomaticServer = async (req: AuthenticatedRequest, res: Response) => {
+    const { ftp_user } = req.body
     try {
-        await uploadAutomaticServer()
+        await uploadAutomaticServer(ftp_user)
         res.end()
     } catch (error) {
-        
+
     }
 }
 
@@ -401,5 +402,5 @@ export {
     CaddDetailCar,
     CuploadServerDB,
     CuploadAutomaticServer
-    
+
 }
