@@ -353,7 +353,8 @@ const CuploadAutomaticServer = async (req: AuthenticatedRequest, res: Response) 
 
 const CdownloadAutomaticServer = async (req:AuthenticatedRequest,res:Response) =>{
     try {
-        await downloadAutomaticServer()
+        const {ftp_user} = req.body
+        await downloadAutomaticServer(ftp_user)
         res.send("let's download the files from ftp")
     } catch (error) {
         

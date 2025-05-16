@@ -576,7 +576,7 @@ export const uploadAutomaticServer = async (ftp_user: string) => {
         console.log(filterFiles)
 
 
-        const filesfromFTP: string[] = await filesFromFTPMethod(remote_path,host,user,password)
+        const filesfromFTP: string[] = await filesFromFTPMethod(remote_path, host, user, password)
         console.log("the files brings from ftp are")
         console.log(filesfromFTP)
 
@@ -631,17 +631,7 @@ const uploadAutomaticFiles = async (filterFiles: string[], filesfromFTP: string[
             const user = userdb
             const password = passworddb
 
-            /* const date: Date = new Date()
-            console.log("the date is ", date) */
-            // const DatesSQL = getBoliviaDateAsSQLString();
-            // console.log("Valid date for SQL:", DatesSQL);
-            // Obtener la hora actual en UTC
-            // const date = new Date();
-            // Ajustar la hora a la zona horaria de Bolivia (UTC-4)
-            // const offset = -4 * 60; // UTC-4 en minutos
             const boliviaTime: Date = getBoliviaDate()
-
-            // console.log(boliviaTime);
 
 
             const name_file = element
@@ -677,14 +667,27 @@ const uploadAutomaticFiles = async (filterFiles: string[], filesfromFTP: string[
     }
 }
 
-export const downloadAutomaticServer = async () => {
+export const downloadAutomaticServer = async (ftp_user: string) => {
+
+    // consulsts data base
+    const data = await Ftp.findOne({
+        where: { user: ftp_user },
+        raw: true
+    })
+    // console.log("the data is ", data)
+    const host = data.host
+    const user = data.user
+    const password = data.password
+    const transferMode = data.transferMode
+    const downloaPath = data.downloadPath
+
     await downloadFileFromFTP(
-        '/Carro.txt',     // Route of file in the FTP
-        '../downloadsFromFTP',               //  local folder where it will be saved
-        '127.0.0.1',                 // Host FTP
-        'ftpuser',                  // User
-        '123',                      // Password
-        'binary'                    // transferMode
+        '/Carro6.txt',     // Route of file in the FTP
+        downloaPath,               //  local folder where it will be saved
+        host,                 // Host FTP
+        user,                  // User
+        password,                      // Password
+        transferMode                    // transferMode
     );
 }
 

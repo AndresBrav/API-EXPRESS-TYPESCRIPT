@@ -11,6 +11,7 @@ interface FtpAttributes {
     local_path?: string;
     remote_path?: string;
     file_format?: string;
+    downloadPath?:string
 }
 
 // Define a interface for the instance of model
@@ -46,6 +47,9 @@ const Ftp = db.define<FtpInstance>('Ftp', {
         type: DataTypes.STRING
     },
     file_format:{
+        type:DataTypes.STRING
+    },
+    downloadPath:{
         type:DataTypes.STRING
     }
 }, {
