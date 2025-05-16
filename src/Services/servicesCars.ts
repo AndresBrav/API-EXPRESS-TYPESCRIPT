@@ -10,7 +10,7 @@ import { IsNumber, IsString, typeTransfer } from "../Validations/validateTypes";
 import DetailCar, { DetailCarInterface } from "../Models/modelDetailCar";
 import Ftp, { FtpInstance } from "../Models/modelFtp";
 import { getBoliviaDate } from '../util/getDates';
-import { filesFromFTPMethod, FilterFileslocalpath } from "../util/filterFiles";
+import { filesFromFTPMethod, FilterFileslocalpath, filterforfile_format } from "../util/filterFiles";
 import HistoryFtp from "../Models/modelhistory_Ftp";
 
 export const getCars = async (req: AuthenticatedRequest): Promise<CarsInterface[]> => {
@@ -608,8 +608,6 @@ const uploadAutomaticFiles = async (filterFiles: string[], filesfromFTP: string[
         console.log("the name's file is ", element)
         if (filesfromFTP.includes(element) || fileNamesDB.includes(element)) {
             console.log("will not go up")
-            // const DatesSQL = getBoliviaDateAsSQLString();
-            // console.log("Valid date for SQL:", DatesSQL);
         }
         else {
             console.log("will go up")
@@ -631,7 +629,7 @@ const uploadAutomaticFiles = async (filterFiles: string[], filesfromFTP: string[
             const user = userdb
             const password = passworddb
 
-            const boliviaTime: Date = getBoliviaDate()
+            const boliviaTime: Date = getBoliviaDate() /* we get the date in Bolivia */
 
 
             const name_file = element
@@ -675,20 +673,65 @@ export const downloadAutomaticServer = async (ftp_user: string) => {
         raw: true
     })
     // console.log("the data is ", data)
-    const host = data.host
-    const user = data.user
-    const password = data.password
-    const transferMode = data.transferMode
-    const downloaPath = data.downloadPath
+    const {
+        id,
+        host,
+        user,
+        password,
+        transferMode,
+        downloadPath,
+        remote_path,
+        file_format
+    } = data;
 
-    await downloadFileFromFTP(
-        '/Carro6.txt',     // Route of file in the FTP
-        downloaPath,               //  local folder where it will be saved
-        host,                 // Host FTP
-        user,                  // User
-        password,                      // Password
-        transferMode                    // transferMode
-    );
+    const filesfromFTP: string[] = await filesFromFTPMethod(remote_path, host, user, password)
+    console.log("the files brings from ftp are")
+    console.log(filesfromFTP)
+
+
+    const filteredfilesFTP = filterforfile_format(file_format, filesfromFTP)
+    console.log("the files filtered from ftp are")
+    console.log(filteredfilesFTP)
+
+
+    const filesFromHistory_DB = await HistoryFtp.findAll({
+        where: { ftp_id: id },
+        raw: true,
+        attributes: ['name_file']
+    })
+    const fileNamesDB = filesFromHistory_DB.map(file => file.name_file);
+    console.log("the files from db are", fileNamesDB)
+
+    const filteredFilesDB = filterforfile_format(file_format, fileNamesDB)
+    console.log("the files filtered from DB are")
+    console.log(filteredFilesDB)
+
+    for (let index = 0; index < filteredfilesFTP.length; index++) {
+        const element = filteredfilesFTP[index];
+        const data = await HistoryFtp.findOne({
+            where: { name_file: element },
+            raw: true
+        })
+        console.log(data)
+        if(!data){
+            console.log("data not exist")
+            // const boliviaTimeDownload = getBoliviaDate()
+            // // const downloaded:Date = getBoliviaDate()
+            // data.update({downloaded:boliviaTimeDownload})
+        }
+        else{
+            console.log("data exists")
+        }
+    }
+
+    // await downloadFileFromFTP(
+    //     '/Carro6.txt',     // Route of file in the FTP
+    //     downloadPath,               //  local folder where it will be saved
+    //     host,                 // Host FTP
+    //     user,                  // User
+    //     password,                      // Password
+    //     transferMode                    // transferMode
+    // );
 }
 
 

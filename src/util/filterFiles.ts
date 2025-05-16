@@ -33,3 +33,11 @@ export const FilterFileslocalpath = async (filter: string, local_path: string): 
         return [];
     }
 }
+
+
+export const filterforfile_format = (file_format: string, array: string[]): string[] => {
+    const pattern = `${file_format}`;
+    const regex = new RegExp(pattern, 'i');
+    const filteredfiles = array.filter(name => regex.test(name));
+    return filteredfiles;
+}
