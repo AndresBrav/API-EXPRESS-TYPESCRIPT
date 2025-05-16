@@ -9,10 +9,7 @@ import { downloadFileFromFTP, listFilesFromFTP, uploadFileToFTP } from "./basic-
 import { IsNumber, IsString, typeTransfer } from "../Validations/validateTypes";
 import DetailCar, { DetailCarInterface } from "../Models/modelDetailCar";
 import Ftp, { FtpInstance } from "../Models/modelFtp";
-import { readdir } from 'fs/promises';
-import { join } from 'path';
-import { FilterOptions, FilterParams } from "../Validations/filterTypesPath";
-import { getBoliviaDateAsSQLString } from '../util/getDates';
+import { getBoliviaDate } from '../util/getDates';
 import { filesFromFTPMethod, FilterFileslocalpath } from "../util/filterFiles";
 import HistoryFtp from "../Models/modelhistory_Ftp";
 
@@ -567,14 +564,19 @@ export const uploadAutomaticServer = async (ftp_user: string) => {
         console.log("the data is ", data)
         const id = data.id  /* we get the id */
         const file_format = data.file_format    /* we get the file_format ^[cC].*\.txt$ */
-        const local_path = data.local_path /* we get de local path ../ArchivosGuardados/ */
+        const local_path = data.local_path /* we get the local path ../ArchivosGuardados/ */
+        const remote_path = data.remote_path /* we get the remote path / */
+        const host = data.host  /* 127.0.0.1 */
+        const user = data.user
+        const password = data.password
+
 
         const filterFiles: string[] = await FilterFileslocalpath(file_format, local_path)
         console.log("the filtered files are ")
         console.log(filterFiles)
 
 
-        const filesfromFTP: string[] = await filesFromFTPMethod()
+        const filesfromFTP: string[] = await filesFromFTPMethod(remote_path,host,user,password)
         console.log("the files brings from ftp are")
         console.log(filesfromFTP)
 
@@ -629,14 +631,22 @@ const uploadAutomaticFiles = async (filterFiles: string[], filesfromFTP: string[
             const user = userdb
             const password = passworddb
 
-            const date: Date = new Date()
-            console.log("the date is ", date)
-            const DatesSQL = getBoliviaDateAsSQLString();
-            console.log("Valid date for SQL:", DatesSQL);
+            /* const date: Date = new Date()
+            console.log("the date is ", date) */
+            // const DatesSQL = getBoliviaDateAsSQLString();
+            // console.log("Valid date for SQL:", DatesSQL);
+            // Obtener la hora actual en UTC
+            // const date = new Date();
+            // Ajustar la hora a la zona horaria de Bolivia (UTC-4)
+            // const offset = -4 * 60; // UTC-4 en minutos
+            const boliviaTime: Date = getBoliviaDate()
+
+            // console.log(boliviaTime);
+
 
             const name_file = element
-            const uploaded = date
-            const downloaded = date
+            const uploaded = boliviaTime
+            const downloaded = boliviaTime
             const ftp_id = id
 
             try {
@@ -669,12 +679,12 @@ const uploadAutomaticFiles = async (filterFiles: string[], filesfromFTP: string[
 
 export const downloadAutomaticServer = async () => {
     await downloadFileFromFTP(
-        '/Carro.txt',     // Ruta del archivo en el FTP
-        '../downloadsFromFTP',               // Carpeta local donde se guardará
+        '/Carro.txt',     // Route of file in the FTP
+        '../downloadsFromFTP',               //  local folder where it will be saved
         '127.0.0.1',                 // Host FTP
-        'ftpuser',                  // Usuario
-        '123',                      // Contraseña
-        'binary'                    // Modo de transferencia
+        'ftpuser',                  // User
+        '123',                      // Password
+        'binary'                    // transferMode
     );
 }
 

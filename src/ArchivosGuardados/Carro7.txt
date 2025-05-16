@@ -1,0 +1,3 @@
+Detalle de Carro
+
+ ID: 4 - Nombre: VW4 - Descripcion: Auto chico - Precio: 10000 - Stock: 5000

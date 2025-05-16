@@ -1,5 +1,6 @@
 import { Client } from 'basic-ftp';
 import * as path from 'path';
+
 export async function uploadFileToFTP(
     localFilePath: string,
     remoteFilePath: string,
@@ -114,9 +115,9 @@ export async function downloadFileFromFTP(
         const localFilePath = path.join(localDirPath, fileName);
 
         await client.downloadTo(localFilePath, remoteFilePath);
-        console.log(`Archivo descargado correctamente en: ${localFilePath}`);
+        console.log(`file downloaded correctly in: ${localFilePath}`);
     } catch (err) {
-        console.error('Error al descargar archivo:', err);
+        console.error('Error downloading file', err);
         throw err;
     } finally {
         client.close();
