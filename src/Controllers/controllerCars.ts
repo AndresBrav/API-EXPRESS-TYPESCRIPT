@@ -344,20 +344,20 @@ const CuploadServerDB = async (req: AuthenticatedRequest, res: Response) => {
 const CuploadAutomaticServer = async (req: AuthenticatedRequest, res: Response) => {
     const { ftp_user } = req.body
     try {
-        await uploadAutomaticServer(ftp_user)
-        res.end()
+        const result: boolean = await uploadAutomaticServer(ftp_user)
+        res.send(result ? "files were uploaded successfully" : "files were not uploaded")
     } catch (error) {
-
+        res.status(404).json({ msg: "resource not found" })
     }
 }
 
-const CdownloadAutomaticServer = async (req:AuthenticatedRequest,res:Response) =>{
+const CdownloadAutomaticServer = async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const {ftp_user} = req.body
+        const { ftp_user } = req.body
         await downloadAutomaticServer(ftp_user)
-        res.send("let's download the files from ftp")
+        res.send("files were downloaded successfully")
     } catch (error) {
-        
+
     }
 }
 

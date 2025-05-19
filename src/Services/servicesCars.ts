@@ -553,56 +553,68 @@ export const uploadListServerDB = async (nombreArchivo: string, ftp_user: string
     }
 }
 
-export const uploadAutomaticServer = async (ftp_user: string) => {
-    try {
-
-        // consulsts data base
-        const data = await Ftp.findOne({
-            where: { user: ftp_user },
-            raw: true
-        })
-        console.log("the data is ", data)
-        const id = data.id  /* we get the id */
-        const file_format = data.file_format    /* we get the file_format ^[cC].*\.txt$ */
-        const local_path = data.local_path /* we get the local path ../ArchivosGuardados/ */
-        const remote_path = data.remote_path /* we get the remote path / */
-        const host = data.host  /* 127.0.0.1 */
-        const user = data.user
-        const password = data.password
-
-
-        const filterFiles: string[] = await FilterFileslocalpath(file_format, local_path)
-        console.log("the filtered files are ")
-        console.log(filterFiles)
+export const uploadAutomaticServer = async (ftp_user: string): Promise<boolean> => {
+    let result: boolean = false;
+    // consulsts data base
+    const data = await Ftp.findOne({
+        where: { user: ftp_user },
+        raw: true
+    })
+    console.log("the data is ", data)
+    const id = data.id  /* we get the id */
+    const file_format = data.file_format    /* we get the file_format ^[cC].*\.txt$ */
+    const local_path = data.local_path /* we get the local path ../ArchivosGuardados/ */
+    const remote_path = data.remote_path /* we get the remote path / */
+    const host = data.host  /* 127.0.0.1 */
+    const user = data.user
+    const password = data.password
 
 
-        const filesfromFTP: string[] = await filesFromFTPMethod(remote_path, host, user, password)
-        console.log("the files brings from ftp are")
-        console.log(filesfromFTP)
+    const filterFiles: string[] = await FilterFileslocalpath(file_format, local_path)
+    console.log("the filtered files are ")
+    console.log(filterFiles)
 
-        const filesFromHistory_DB = await HistoryFtp.findAll({
-            where: { ftp_id: id },
-            raw: true,
-            attributes: ['name_file']
-        })
 
-        // console.log("the files from db are", filesFromHistory_DB)
+    const filesfromFTP: string[] = await filesFromFTPMethod(remote_path, host, user, password)
+    console.log("the files brings from ftp are")
+    console.log(filesfromFTP)
 
-        const fileNamesDB = filesFromHistory_DB.map(file => file.name_file);
+    const filesFromHistory_DB = await HistoryFtp.findAll({
+        where: { ftp_id: id },
+        raw: true,
+        attributes: ['name_file']
+    })
 
-        // console.log("the name of the files are:", fileNames);
+    // console.log("the files from db are", filesFromHistory_DB)
 
-        await uploadAutomaticFiles(filterFiles, filesfromFTP, fileNamesDB, data)
+    const fileNamesDB = filesFromHistory_DB.map(file => file.name_file);
 
-    } catch (error) {
-        console.error('Error reading the address:', error);
-        // return [];
+    // console.log("the name of the files are:", fileNames);
+
+    if (filterFiles.length === 0) {
+        console.log("there is nothing to upload")
+        result = false
     }
+    else {
+        await uploadAutomaticFiles(
+            filterFiles,
+            filesfromFTP,
+            fileNamesDB,
+            data)
+        result = true
+    }
+    return result;
 }
 
 
-const uploadAutomaticFiles = async (filterFiles: string[], filesfromFTP: string[], fileNamesDB: string[], data: FtpInstance) => {
+const uploadAutomaticFiles = async (
+    filterFiles: string[],
+    filesfromFTP: string[],
+    fileNamesDB: string[],
+    data: FtpInstance
+) => {
     // console.log(filterFiles.length)
+
     for (let index = 0; index < filterFiles.length; index++) {
         const element = filterFiles[index];
         console.log("the name's file is ", element)
@@ -663,6 +675,7 @@ const uploadAutomaticFiles = async (filterFiles: string[], filesfromFTP: string[
 
         }
     }
+
 }
 
 export const downloadAutomaticServer = async (ftp_user: string) => {
@@ -761,8 +774,6 @@ export const convertBase64toFile = async (base64Data: string, nombreArchivo: str
             if (!base64Data || !nombreArchivo || !extension) {
                 return reject("Base64, file name or extension not provided.");
             }
-            // console.log("..........verificar ")
-            // console.log(typeof nombreArchivo)
 
             if (!IsString(base64Data)) {
                 return reject("Enter the code base64 as a string")
