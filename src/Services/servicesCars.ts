@@ -708,30 +708,38 @@ export const downloadAutomaticServer = async (ftp_user: string) => {
 
     for (let index = 0; index < filteredfilesFTP.length; index++) {
         const element = filteredfilesFTP[index];
+        // from database
         const data = await HistoryFtp.findOne({
-            where: { name_file: element },
-            raw: true
+            where: { name_file: element }
+            // raw: true
         })
-        console.log(data)
-        if(!data){
+        // console.log(data)
+        if (!data) {
             console.log("data not exist")
-            // const boliviaTimeDownload = getBoliviaDate()
-            // // const downloaded:Date = getBoliviaDate()
-            // data.update({downloaded:boliviaTimeDownload})
+
         }
-        else{
-            console.log("data exists")
+        else {
+            console.log("let's find out")
+            if (filteredfilesFTP.includes(data.name_file)) {
+                console.log("data exists")
+                console.log(data.name_file)
+                const boliviaTimeDownload: Date = getBoliviaDate()
+                await data.update({ downloaded: boliviaTimeDownload }) /* update time of download */
+
+                // download fles to adress
+                await downloadFileFromFTP(
+                    element,                // Route of file in the FTP
+                    downloadPath,           //  local folder where it will be saved
+                    host,                   // Host FTP
+                    user,                   // User
+                    password,               // Password
+                    transferMode            // transferMode
+                );
+            }
+
         }
     }
 
-    // await downloadFileFromFTP(
-    //     '/Carro6.txt',     // Route of file in the FTP
-    //     downloadPath,               //  local folder where it will be saved
-    //     host,                 // Host FTP
-    //     user,                  // User
-    //     password,                      // Password
-    //     transferMode                    // transferMode
-    // );
 }
 
 
