@@ -24,7 +24,12 @@ export const downloadAutomaticFiles = async () => {
         file_format
     } = data;
 
-    const filesfromFTP: string[] = await filesFromFTPMethod(remote_path, host, user, password)
+    const filesfromFTP: string[] = await filesFromFTPMethod(
+        remote_path,
+        host,
+        user,
+        password)
+
     console.log("the files brings from ftp are")
     console.log(filesfromFTP)
 
@@ -45,45 +50,62 @@ export const downloadAutomaticFiles = async () => {
     console.log("the files filtered from DB are")
     console.log(filteredFilesDB)
 
+    console.log("the size of ftp is ", filteredfilesFTP.length)
     for (let index = 0; index < filteredfilesFTP.length; index++) {
         const element = filteredfilesFTP[index];
-        console.log(element)
-        // if(filteredFilesDB.includes(element)){
-        //     console.log("the file already exists")
-        // }
-        // else{
-        //     console.log("we upload to db")
-        // }
-        // from database
-        // const data = await HistoryFtp.findOne({
-        //     where: { name_file: element }
-        //     // raw: true
-        // })
-        // // console.log(data)
-        // if (!data) {
-        //     console.log("data not exist")
+        if (filteredFilesDB.includes(element)) {
+            console.log("the file already exists")
+        }
+        else {
+            // console.log("we upload to db")
+            // console.log(element)
+            // upload data base
+            await uploadDataBase(element, id, downloadPath)
 
-        // }
-        // else {
-        //     console.log("let's find out")
-        //     if (filteredfilesFTP.includes(data.name_file)) {
-        //         console.log("data exists")
-        //         console.log(data.name_file)
-        //         const boliviaTimeDownload: Date = getBoliviaDate()
-        //         await data.update({ downloaded: boliviaTimeDownload }) /* update time of download */
-
-        //         // download fles to adress
-        //         await downloadFileFromFTP(
-        //             element,                // Route of file in the FTP
-        //             downloadPath,           //  local folder where it will be saved
-        //             host,                   // Host FTP
-        //             user,                   // User
-        //             password,               // Password
-        //             transferMode            // transferMode
-        //         );
-        //     }
-
-        // }
+            // download from data base
+            await downloadFtp(
+                element,
+                downloadPath,
+                host,
+                user,
+                password,
+                transferMode)
+        }
     }
+}
 
+export const uploadDataBase = async (name_file: string, id: number, downloadPath: string) => {
+    const boliviaTime: Date = getBoliviaDate()
+    const uploaded = boliviaTime
+    const downloaded = boliviaTime
+    const ftp_id = id
+    // const downloadPath = "../downloadsFromFTP"
+    await HistoryFtp.create(
+        {
+            name_file,
+            uploaded,
+            downloaded,
+            ftp_id,
+            downloadPath
+        }
+    )
+}
+
+export const downloadFtp = async (
+    element: string,
+    downloadPath: string,
+    host: string,
+    user: string,
+    password: string,
+    transferMode: string
+) => {
+    // download fles to adress
+    await downloadFileFromFTP(
+        element,                // Route of file in the FTP
+        downloadPath,           //  local folder where it will be saved
+        host,                   // Host FTP
+        user,                   // User
+        password,               // Password
+        transferMode            // transferMode
+    );
 }

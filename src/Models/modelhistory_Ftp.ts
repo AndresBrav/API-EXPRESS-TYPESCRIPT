@@ -8,6 +8,8 @@ interface HistoryFtpAttributes {
     uploaded?: Date;
     downloaded?: Date;
     ftp_id?: number;
+    downloadPath?:string;
+    state?:string
 }
 
 // Define a interface for the instance of model
@@ -35,6 +37,12 @@ const HistoryFtp = db.define<HistoryFtpInstance>('Ftp', {
     },
     ftp_id: {
         type: DataTypes.INTEGER /* foreign key */
+    },
+    downloadPath:{
+        type: DataTypes.STRING
+    },
+    state:{
+        type:DataTypes.STRING
     }
 }, {
     createdAt: false, // So that you do not have the createdAt column
