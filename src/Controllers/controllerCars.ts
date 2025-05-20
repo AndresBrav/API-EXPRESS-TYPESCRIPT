@@ -15,7 +15,7 @@ import {
     addDetailCar,
     uploadAutomaticServer,
     downloadAutomaticServer
-} from "../Services/servicesCars";
+} from "../Services/cars/servicesCars";
 import { AuthenticatedRequest } from "../Middlewares/tokenValidator";
 import { Request, Response } from "express";
 import User from "../Models/modelUser";
@@ -299,7 +299,13 @@ const CuploadServer = async (req: AuthenticatedRequest, res: Response) => {
 
     //run the upload
     try {
-        await uploadListServer(nombreArchivo, TipoTransferencia, host, user, password);
+        await uploadListServer(
+            nombreArchivo,
+            TipoTransferencia,
+            host,
+            user,
+            password
+        );
         res.send({
             msg: "it was uploaded to the server"
         })

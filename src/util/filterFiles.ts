@@ -19,8 +19,8 @@ export const filesFromFTPMethod = async (
 
 export const FilterFileslocalpath = async (filter: string, local_path: string): Promise<string[]> => {
     try {
-        const route = join(__dirname, `${local_path}`);
-        const files = await readdir(route);
+        // const route = join(__dirname, `${local_path}`);
+        const files = await readdir(local_path);
         // const pattern = `^[${start}].*\\${finish}$`;  
         const pattern = `${filter}`;  // Creates the patern as a string
         // const pattern = `^[cC].*\.txt$`;  // Creates the patern as a string

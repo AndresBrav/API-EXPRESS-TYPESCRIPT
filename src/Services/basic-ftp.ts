@@ -36,7 +36,7 @@ export async function uploadFileToFTP(
         console.log('File uploaded successfully');
     } catch (err) {
         console.error('Error uploading file:', err);
-        throw err; // Propaga el error para que el controlador lo maneje
+        throw err; // Propagates the error to be handled by the controller
     } finally {
         client.close();
     }
