@@ -5,7 +5,7 @@ import { readFile } from 'fs/promises';
 export const returnB64fromFile = async (nombreArchivo: string): Promise<string | null> => {
     try {
         // Relative path to the file
-        const localFilePath = path.resolve(__dirname, '../ArchivosGuardados/', nombreArchivo);
+        const localFilePath = path.join(process.cwd(), 'src', 'ArchivosGuardados',nombreArchivo);;
 
         // read te file async way
         const data = await readFile(localFilePath);

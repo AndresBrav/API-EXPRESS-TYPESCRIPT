@@ -1,3 +1,0 @@
-Detalle de Carro
-
- ID: 3 - Nombre: VW3 - Descripcion: Auto grande - Precio: 20000 - Stock: 20000

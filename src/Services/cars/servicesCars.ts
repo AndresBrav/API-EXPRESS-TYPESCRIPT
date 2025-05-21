@@ -301,7 +301,8 @@ export const saveCarFile = async (
             if (!cars.length) return reject('No cars were found for the user');
 
             let nombreDelArchivo = '';
-            const folderPath = path.join(__dirname, '../ArchivosGuardados');
+            // const folderPath = path.join(__dirname, '../ArchivosGuardados');
+            const folderPath = path.join(process.cwd(), 'src', 'ArchivosGuardados');
             if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath);
 
             if (tipoGuardado === 'txt') {
@@ -376,7 +377,8 @@ export const saveOneCarFile = async (id: string, tipoGuardado: 'pdf' | 'txt'): P
             const exist = await carExists(id)
 
             let nombreDelArchivo = "";
-            const folderPath = path.join(__dirname, "../ArchivosGuardados");
+            // const folderPath = path.join(__dirname, "../ArchivosGuardados");
+            const folderPath = path.join(process.cwd(), 'src', 'ArchivosGuardados');
             if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath);
 
             if (tipoGuardado === "txt" && exist) {
@@ -646,7 +648,7 @@ const uploadAutomaticFiles = async (
             // const absoluteFilePath = path.resolve(__dirname, localFilePath);
 
             const absoluteFilePath = path.join(process.cwd(), 'src', local_path, element);
-            
+
             const remoteFilePath = `${remote_path}${element}`;
             const transferMode = transferModedb
             const host = hostdb
@@ -798,7 +800,8 @@ export const convertBase64toFile = async (base64Data: string, nombreArchivo: str
             }
 
             // create the folder  'ArchivosConvertidosDeBase64' if does not exist
-            const folderPath = path.join(__dirname, "../ArchivosConvertidosDeBase64");
+            // const folderPath = path.join(__dirname, "../ArchivosConvertidosDeBase64");
+            const folderPath = path.join(process.cwd(), 'src', 'ArchivosConvertidosDeBase64');
             if (!fs.existsSync(folderPath)) {
                 fs.mkdirSync(folderPath);
             }
