@@ -33,11 +33,12 @@ const CgetCars = async (req: AuthenticatedRequest, res: Response) => {
 
 const CgetOneCar = async (req: AuthenticatedRequest, res: Response) => {
     const { id } = req.params
+    const loginUser = req.DatosToken?.u
 
     const car: CarsInterface = await getOneCar(id);
 
-    const exist: boolean = await carExists(id)
-    // console.log(`does the car exists ? ${existe}`);
+    const exist: boolean = await carExists(id,loginUser)
+    console.log(`does the car exists ? ${exist}`);
     try {
         if (exist) {
             res.json(car);
@@ -276,7 +277,7 @@ const CsaveOnePdf = async (req: AuthenticatedRequest, res: Response) => {
         let existValue = idsCars.includes(Number(id));
 
         if (existValue) {
-            const base64Data = await saveOneCarFile(id, tipoGuardado) //guarda el pdf de un carro en la direccion 
+            const base64Data = await saveOneCarFile(id, tipoGuardado,loginUser) //guarda el pdf de un carro en la direccion 
             res.json({
                 msg: " we arrived here check that it has saved the car",
                 fileB64: base64Data

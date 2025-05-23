@@ -38,8 +38,26 @@ export const getOneCar = async (id: string) => {
     }
 }
 
-export const carExists = async (id) => {
-    const car = await Car.findByPk(id);
+export const carExists = async (id: string, loginUser: string) => {
+    const idUser = await User.findOne({
+        where: { login: loginUser },
+        attributes: ["id"],
+        raw: true  // <- return simple object
+    });
+
+    // Extract only id
+    const userId = idUser ? idUser.id : null;
+
+    // const car = await Car.findByPk(id);
+    const car = await Car.findOne({
+        where: {
+            id: id,
+            user_id: userId
+        }
+    });
+
+    console.log("the car is",car)
+
     return !!car; // Returns true if it exists, false if not
 };
 
@@ -369,12 +387,12 @@ export const saveCarFile = async (
     });
 };
 
-export const saveOneCarFile = async (id: string, tipoGuardado: 'pdf' | 'txt'): Promise<string> => {
+export const saveOneCarFile = async (id: string, tipoGuardado: 'pdf' | 'txt',loginUser:string): Promise<string> => {
     return new Promise(async (resolve, reject) => {
         try {
             console.log("the save type is : " + tipoGuardado);
             const carro = await Car.findByPk(id);
-            const exist = await carExists(id)
+            const exist = await carExists(id,loginUser)
 
             let nombreDelArchivo = "";
             // const folderPath = path.join(__dirname, "../ArchivosGuardados");
