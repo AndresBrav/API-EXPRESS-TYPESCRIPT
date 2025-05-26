@@ -1,0 +1,6 @@
+1. ID: 1 - Nombre: VW1 - Descripción: Auto medio - Precio: 15000 - Stock: 10000
+2. ID: 2 - Nombre: VW2 - Descripción: Auto chico - Precio: 10000 - Stock: 5000
+3. ID: 3 - Nombre: VW3 - Descripción: Auto grande - Precio: 20000 - Stock: 20000
+4. ID: 4 - Nombre: VW4 - Descripción: Auto chico - Precio: 10000 - Stock: 5000
+5. ID: 5 - Nombre: VW5 - Descripción: Auto grande - Precio: 20000 - Stock: 20000
+6. ID: 6 - Nombre: VW6 - Descripción: Auto chico - Precio: 10000 - Stock: 5000
