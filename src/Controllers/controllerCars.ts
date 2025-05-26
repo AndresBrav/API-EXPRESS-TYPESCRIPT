@@ -14,7 +14,8 @@ import {
     getDetailsCars,
     addDetailCar,
     uploadAutomaticServer,
-    downloadAutomaticServer
+    downloadAutomaticServer,
+    listFiles
 } from "../Services/cars/servicesCars";
 import { AuthenticatedRequest } from "../Middlewares/tokenValidator";
 import { Request, Response } from "express";
@@ -401,6 +402,17 @@ const CconvertBase64toFile = async (req: AuthenticatedRequest, res: Response) =>
     }
 }
 
+const ClistFiles = async(req:AuthenticatedRequest,res:Response) =>{
+    try {
+        const files:string[] =await listFiles()
+        res.json({
+            msg:"the files that exist in the directory are",
+            files:files
+        })
+    } catch (error) {
+    }
+}
+
 
 
 
@@ -419,5 +431,6 @@ export {
     CaddDetailCar,
     CuploadServerDB,
     CuploadAutomaticServer,
-    CdownloadAutomaticServer
+    CdownloadAutomaticServer,
+    ClistFiles
 }

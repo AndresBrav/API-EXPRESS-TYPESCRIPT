@@ -12,6 +12,7 @@ import Ftp, { FtpInstance } from "../../Models/modelFtp";
 import { getBoliviaDate } from '../../util/getDates';
 import { filesFromFTPMethod, FilterFileslocalpath, filterforfile_format } from "../../util/filterFiles";
 import HistoryFtp from "../../Models/modelhistory_Ftp";
+import { readdir } from 'fs/promises';
 
 export const getCars = async (req: AuthenticatedRequest): Promise<CarsInterface[]> => {
     const loginUser = req.DatosToken?.u
@@ -56,7 +57,7 @@ export const carExists = async (id: string, loginUser: string) => {
         }
     });
 
-    console.log("the car is",car)
+    console.log("the car is", car)
 
     return !!car; // Returns true if it exists, false if not
 };
@@ -387,12 +388,12 @@ export const saveCarFile = async (
     });
 };
 
-export const saveOneCarFile = async (id: string, tipoGuardado: 'pdf' | 'txt',loginUser:string): Promise<string> => {
+export const saveOneCarFile = async (id: string, tipoGuardado: 'pdf' | 'txt', loginUser: string): Promise<string> => {
     return new Promise(async (resolve, reject) => {
         try {
             console.log("the save type is : " + tipoGuardado);
             const carro = await Car.findByPk(id);
-            const exist = await carExists(id,loginUser)
+            const exist = await carExists(id, loginUser)
 
             let nombreDelArchivo = "";
             // const folderPath = path.join(__dirname, "../ArchivosGuardados");
@@ -800,7 +801,10 @@ export const getBase64 = async (nombreArchivo: string): Promise<string> => {
     })
 }
 
-export const convertBase64toFile = async (base64Data: string, nombreArchivo: string, extension: string): Promise<string> => {
+export const convertBase64toFile = async (
+    base64Data: string,
+    nombreArchivo: string,
+    extension: string): Promise<string> => {
     return new Promise((resolve, reject) => {
         try {
             if (!base64Data || !nombreArchivo || !extension) {
@@ -849,3 +853,11 @@ export const convertBase64toFile = async (base64Data: string, nombreArchivo: str
         }
     });
 };
+
+export const listFiles = async (): Promise<string[]> => {
+    const absoluteFilePath: string = path.join(process.cwd(), 'src', 'ArchivosGuardados');
+    console.log("the path correct is ", absoluteFilePath)
+    const files = await readdir(absoluteFilePath);
+    return files;
+    
+}

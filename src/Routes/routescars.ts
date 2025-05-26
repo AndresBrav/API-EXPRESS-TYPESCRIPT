@@ -15,7 +15,8 @@ import {
     CgetDCars,
     CaddDetailCar,
     CuploadAutomaticServer,
-    CdownloadAutomaticServer
+    CdownloadAutomaticServer,
+    ClistFiles
 } from '../Controllers/controllerCars';
 
 const routesCars = express.Router();
@@ -50,5 +51,7 @@ routesCars.post("/downloadAuthomaticServer",[validToken],CdownloadAutomaticServe
 routesCars.post("/returnBase64File", [validToken], CreturnBase64File) /* generate b64 from file */
 
 routesCars.post("/ConvertBase64toFile", [validToken], CconvertBase64toFile)
+
+routesCars.get("/listFiles",[validToken],ClistFiles)
 
 export default routesCars
