@@ -1,3 +1,0 @@
-Detalle de Carro
-
- ID: 5 - Nombre: VW5 - Descripcion: Auto grande - Precio: 20000 - Stock: 20000
