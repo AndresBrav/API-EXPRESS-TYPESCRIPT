@@ -9,7 +9,8 @@ import {
     delUser,
     addUser,
     updateUser,
-    validateData
+    validateData,
+    verificateLoginAdmin
 } from '../Services/servicesUsers';
 import { addUserBD } from '../types/user.types';
 import ResError from '../util/resError';
@@ -73,49 +74,64 @@ const CdelUser = async (req: AuthenticatedRequest, res: Response) => {
 };
 
 const CaddUser = async (req: AuthenticatedRequest, res: Response) => {
-    try {
-        const { login, clave, sts, tipo } = req.body;
-        const correctData: boolean = validateData(login, clave, sts, tipo); //let's verify that everything is correct
-        if (correctData) {
-            const user: addUserBD = { login, clave, sts, tipo };
+    const loginUser = req.DatosToken?.u;
+    const isAdmin: boolean = await verificateLoginAdmin(loginUser);
 
-            const added = await addUser(user);
-            // const added = true
+    if (isAdmin) {
+        try {
+            const { login, clave, sts, tipo } = req.body;
+            const correctData: boolean = validateData(login, clave, sts, tipo); //let's verify that everything is correct
+            if (correctData) {
+                const user: addUserBD = { login, clave, sts, tipo };
 
-            if (added) {
-                res.json({
-                    msg: 'user was succefully added'
-                });
+                const added = await addUser(user);
+                // const added = true
+
+                if (added) {
+                    res.json({
+                        msg: 'user was succefully added'
+                    });
+                }
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(400).json({ msg: error.message });
             }
         }
-    } catch (error) {
-        if (error instanceof Error) {
-            res.status(400).json({ msg: error.message });
-        }
+    } else {
+        res.json({ msg: 'you do not have permission to add users' });
     }
 };
 
 const CupdateUser = async (req: AuthenticatedRequest, res: Response) => {
-    const { id } = req.params;
-    const { login, clave, sts, tipo } = req.body;
+    const loginUser = req.DatosToken?.u;
+    const isAdmin: boolean = await verificateLoginAdmin(loginUser);
 
-    const resp: ResError | ResSuccess = await updateUser(id, login, clave, sts, tipo);
+    if (isAdmin) {
+        const { id } = req.params;
+        const { login, clave, sts, tipo } = req.body;
 
-    if (resp instanceof Error) {
-        // throw resp
-        res.status(resp.statuscode)
-            .json({
-                msg: 'user was not updated',
-                resp: resp.response()
-            })
-            .end();
-    } else {
-        res.status(resp.statuscode)
-            .json({
-                msg: 'user was updated',
-                resp: resp.response()
-            })
-            .end();
+        const resp: ResError | ResSuccess = await updateUser(id, login, clave, sts, tipo);
+
+        if (resp instanceof Error) {
+            // throw resp
+            res.status(resp.statuscode)
+                .json({
+                    msg: 'user was not updated',
+                    resp: resp.response()
+                })
+                .end();
+        } else {
+            res.status(resp.statuscode)
+                .json({
+                    msg: 'user was updated',
+                    resp: resp.response()
+                })
+                .end();
+        }
+    }
+    else{
+        res.json({msg:'you do not have permissions to update  user'})
     }
 };
 

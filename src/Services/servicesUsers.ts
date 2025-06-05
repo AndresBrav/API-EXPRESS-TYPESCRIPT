@@ -139,3 +139,17 @@ export const validateData = (login: string, clave: string, sts: string, tipo: st
         throw new Error('enter de data correctly');
     }
 };
+
+export const verificateLoginAdmin = async (loginUser: string): Promise<boolean> => {
+    const tipo = await User.findOne({
+        where: { login: loginUser },
+        attributes: ['tipo'],
+        raw: true //  return a simple object
+    });
+
+    if (tipo.tipo == 'admin') {
+        return true;
+    } else {
+        return false;
+    }
+};
