@@ -58,7 +58,8 @@ const CgetOneUser = async (req: AuthenticatedRequest, res: Response) => {
 
 const CdelUser = async (req: AuthenticatedRequest, res: Response) => {
     const { id } = req.params;
-    const isDeleted = await delUser(id);
+    const loginUser = req.DatosToken?.u;
+    const isDeleted = await delUser(id, loginUser);
 
     if (isDeleted) {
         res.json({
@@ -66,7 +67,7 @@ const CdelUser = async (req: AuthenticatedRequest, res: Response) => {
         });
     } else {
         res.json({
-            msg: `the user with id:  ${id} does not exist`
+            msg: `you don't have permissions to delete the user`
         });
     }
 };

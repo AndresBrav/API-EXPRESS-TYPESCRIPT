@@ -51,13 +51,23 @@ export const UserExists = async (id) => {
     return !!user; // Returns true if exists, false if not
 };
 
-export const delUser = async (id: string): Promise<boolean> => {
-    const user: UsersInstance = await User.findByPk(id);
-    if (user) {
-        await user.destroy();
-        return true;
+export const delUser = async (id: string, loginUser: string): Promise<boolean | null> => {
+    const tipo = await User.findOne({
+        where: { login: loginUser },
+        attributes: ['tipo'],
+        raw: true //  return a simple object
+    });
+
+    if (tipo.tipo == 'admin') {
+        const user: UsersInstance = await User.findByPk(id);
+        if (user) {
+            await user.destroy();
+            return true;
+        } else {
+            return false;
+        }
     } else {
-        return false;
+        return null;
     }
 };
 
