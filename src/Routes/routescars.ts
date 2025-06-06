@@ -9,13 +9,10 @@ import {
     CsaveFile,
     CsaveOnePdf,
     CuploadServer,
-    CuploadServerDB,
     CreturnBase64File,
     CconvertBase64toFile,
     CgetDCars,
     CaddDetailCar,
-    CuploadAutomaticServer,
-    CdownloadAutomaticServer,
     ClistFiles
 } from '../Controllers/controllerCars';
 
@@ -34,24 +31,18 @@ routesCars.put('/updateCar/:id', [validToken], CupdateCar);
 /* more details from cars */
 routesCars.get('/getAllDetailsCar', [validToken], CgetDCars);
 
-routesCars.post('/addDetailsCar',[validToken],CaddDetailCar)
+routesCars.post('/addDetailsCar', [validToken], CaddDetailCar);
 
-routesCars.post('/savePdf/list', [validToken], CsaveFile)
+routesCars.post('/savePdf/list', [validToken], CsaveFile);
 
-routesCars.post('/saveOnePdf/list/:id', [validToken], CsaveOnePdf)
+routesCars.post('/saveOnePdf/list/:id', [validToken], CsaveOnePdf);
 
-routesCars.post("/uploadListServer", [validToken], CuploadServer)
+routesCars.post('/uploadListServer', [validToken], CuploadServer);
 
-routesCars.post("/uploadListServerDB", [validToken], CuploadServerDB)
+routesCars.post('/returnBase64File', [validToken], CreturnBase64File); /* generate b64 from file */
 
-routesCars.post("/uploadAuthomaticServer",[validToken],CuploadAutomaticServer)
+routesCars.post('/ConvertBase64toFile', [validToken], CconvertBase64toFile);
 
-routesCars.post("/downloadAuthomaticServer",[validToken],CdownloadAutomaticServer)
+routesCars.get('/listFiles', [validToken], ClistFiles);
 
-routesCars.post("/returnBase64File", [validToken], CreturnBase64File) /* generate b64 from file */
-
-routesCars.post("/ConvertBase64toFile", [validToken], CconvertBase64toFile)
-
-routesCars.get("/listFiles",[validToken],ClistFiles)
-
-export default routesCars
+export default routesCars;

@@ -1,0 +1,6 @@
+1. ID: 1 - Nombre: Volkswagen Passat 1 - Descripción: Auto medio - Precio: 15000 - Stock: 10000
+2. ID: 2 - Nombre: volkswagen id1 - Descripción: Auto chico - Precio: 10000 - Stock: 5000
+3. ID: 3 - Nombre: VW3 - Descripción: Auto grande - Precio: 20000 - Stock: 20000
+4. ID: 4 - Nombre: VW4 - Descripción: Auto chico - Precio: 10000 - Stock: 5000
+5. ID: 17 - Nombre: mclaren - Descripción: formula1 - Precio: 458412 - Stock: 123355
+6. ID: 24 - Nombre: ferrari - Descripción: formula1 - Precio: 200000 - Stock: 100

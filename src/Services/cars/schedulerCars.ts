@@ -1,5 +1,5 @@
 import Ftp from "../../Models/modelFtp";
-import HistoryFtp from "../../Models/modelhistory_Ftp";
+import HistoryFtp from "../../Models/modelProcess_ftp";
 import { filesFromFTPMethod, filterforfile_format } from "../../util/filterFiles";
 import { getBoliviaDate } from "../../util/getDates";
 import { downloadFileFromFTP } from "../basic-ftp";

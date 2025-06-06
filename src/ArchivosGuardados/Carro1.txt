@@ -1,0 +1,3 @@
+Detalle de Carro
+
+ ID: 1 - Nombre: Volkswagen Passat 1 - Descripcion: Auto medio - Precio: 15000 - Stock: 10000

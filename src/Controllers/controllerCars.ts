@@ -8,13 +8,13 @@ import {
     saveCarFile,
     saveOneCarFile,
     uploadListServer,
-    uploadListServerDB,
+    // uploadListServerDB,
     getBase64,
     convertBase64toFile,
     getDetailsCars,
     addDetailCar,
-    uploadAutomaticServer,
-    downloadAutomaticServer,
+    // uploadAutomaticServer,
+    // downloadAutomaticServer,
     listFiles
 } from "../Services/cars/servicesCars";
 import { AuthenticatedRequest } from "../Middlewares/tokenValidator";
@@ -333,42 +333,6 @@ const CuploadServer = async (req: AuthenticatedRequest, res: Response) => {
     }
 }
 
-const CuploadServerDB = async (req: AuthenticatedRequest, res: Response) => {
-    const { nombreArchivo, ftp_user } = req.body
-
-    //run the upload
-    try {
-        await uploadListServerDB(nombreArchivo, ftp_user);
-        res.send({
-            msg: "it was uploaded to the server"
-        })
-    } catch (error) {
-        if (error instanceof Error) {
-            res.status(400).json({ msg: error.message })
-        }
-    }
-}
-
-const CuploadAutomaticServer = async (req: AuthenticatedRequest, res: Response) => {
-    const { ftp_user } = req.body
-    try {
-        const result: boolean = await uploadAutomaticServer(ftp_user)
-        res.send(result ? "files were uploaded successfully" : "files were not uploaded")
-    } catch (error) {
-        res.status(404).json({ msg: "resource not found" })
-    }
-}
-
-const CdownloadAutomaticServer = async (req: AuthenticatedRequest, res: Response) => {
-    try {
-        const { ftp_user } = req.body
-        await downloadAutomaticServer(ftp_user)
-        res.send("files were downloaded successfully")
-    } catch (error) {
-
-    }
-}
-
 const CreturnBase64File = async (req: AuthenticatedRequest, res: Response) => {
 
     try {
@@ -429,8 +393,5 @@ export {
     CconvertBase64toFile,
     CgetDCars,
     CaddDetailCar,
-    CuploadServerDB,
-    CuploadAutomaticServer,
-    CdownloadAutomaticServer,
     ClistFiles
 }
