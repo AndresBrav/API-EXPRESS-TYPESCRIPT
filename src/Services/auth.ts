@@ -3,6 +3,8 @@ import { loginUserModel } from '../Models/auth'
 import { respCode, respPhrase } from "../util/httpResponse";
 import ResError from "../util/resError";
 import ResSuccess from "../util/resSuccess";
+import { encrypt, decrypt } from "../util/encrypt";
+
 export const loginUserService = async (loginA: string, claveA: string): Promise<any> => {
     try {
         //*************- Call database Model *************//
@@ -16,11 +18,12 @@ export const loginUserService = async (loginA: string, claveA: string): Promise<
             if (verifPassword) {
                 if (result.rows[0].STS == 'VIG') {
                   const token = await newJWT(result.rows[0].LOGIN, result.rows[0].TIPO);
+                  const tokenEncrypt = encrypt(token)
                   const data = {
-                    token: token
+                    token: tokenEncrypt
                   }
 
-                  console.log(token)
+                  // console.log(token)
 
                 return new ResSuccess(respCode.OK, respPhrase.OK.auth1, data); //data is the authorization code
                 }
