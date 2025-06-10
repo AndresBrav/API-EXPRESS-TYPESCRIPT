@@ -1,111 +1,108 @@
-import Ftp from "../../Models/modelFtp";
-import HistoryFtp from "../../Models/modelProcess_ftp";
-import { filesFromFTPMethod, filterforfile_format } from "../../util/filterFiles";
-import { getBoliviaDate } from "../../util/getDates";
-import { downloadFileFromFTP } from "../basic-ftp";
-
+import HistoryFtp from '../../Models/modelProcess_ftp';
+import { filesFromFTPMethod, filterforfile_format } from '../../util/filterFiles';
+import { getBoliviaDate } from '../../util/getDates';
+import { downloadFileFromFTP } from '../basic-ftp';
+import Ftp from '../../Models/modelFtp';
+import Process_ftp from '../../Models/modelProcess_ftp';
 
 export const downloadAutomaticFiles = async () => {
-    const ftp_user: string = 'ftpuser'
+    const ftp_user: string = 'ftpuser';
+    const file_for: string = '.txt';
+    await downloadFiles(1, ftp_user, file_for); /* we are going to download files .txt */
+};
+
+const downloadFiles = async (ftp_id: number, ftp_user: string, file_for: string) => {
     // consulsts data base
     const data = await Ftp.findOne({
-        where: { user: ftp_user },
+        where: { user: ftp_user, file_format: file_for },
         raw: true
-    })
-    // console.log("the data is ", data)
+    });
+    // console.log('the data is ', data);
+
     const {
-        id,
-        host,
+        ftp_path,
+        host_ip,
         user,
         password,
-        transferMode,
-        downloadPath,
-        remote_path,
-        file_format
+        type_file,
+        transfer_mode,
+        file_format,
+        local_directory
     } = data;
 
-    const filesfromFTP: string[] = await filesFromFTPMethod(
-        remote_path,
-        host,
-        user,
-        password)
+    /* filter files from FTP */
 
-    console.log("the files brings from ftp are")
-    console.log(filesfromFTP)
+    const filesfromFTP: string[] = await filesFromFTPMethod(ftp_path, host_ip, user, password);
+    // console.log('the files that come from ftp are : ');
+    // console.log(filesfromFTP);
 
-    const filteredfilesFTP = filterforfile_format(file_format, filesfromFTP)
-    console.log("the files filtered from ftp are")
-    console.log(filteredfilesFTP)
+    const filteredfilesFTP = filterforfile_format(type_file, filesfromFTP);
+    console.log('the files filtered from ftp are');
+    console.log(filteredfilesFTP);
 
-
-    const filesFromHistory_DB = await HistoryFtp.findAll({
-        where: { ftp_id: id },
+    /* Filter Files from Data Base ............................*/
+    const filesFromDB = await Process_ftp.findAll({
+        where: { ftp_id: ftp_id },
         raw: true,
-        attributes: ['name_file']
-    })
-    const fileNamesDB = filesFromHistory_DB.map(file => file.name_file);
-    console.log("the files from db are", fileNamesDB)
+        attributes: ['file_name']
+    });
 
-    const filteredFilesDB = filterforfile_format(file_format, fileNamesDB)
-    console.log("the files filtered from DB are")
-    console.log(filteredFilesDB)
+    const filesDB = filesFromDB.map((file) => file.file_name);
+    // console.log('the files bringing from database are .');
+    // console.log(filesDB);
 
-    console.log("the size of ftp is ", filteredfilesFTP.length)
+    const filteredFilesDB = filterforfile_format(type_file, filesDB);
+    console.log('the files filtered from DB are');
+    console.log(filteredFilesDB);
+
     for (let index = 0; index < filteredfilesFTP.length; index++) {
         const element = filteredfilesFTP[index];
         if (filteredFilesDB.includes(element)) {
-            console.log("the file already exists")
-        }
-        else {
-            // console.log("we upload to db")
-            // console.log(element)
-            // upload data base
-            await uploadDataBase(element, id, downloadPath)
-
+            console.log('the file already exists');
+        } else {
             // download from data base
-            await downloadFtp(
+            const { size, lastModified } = await downloadFileFromFTP(
                 element,
-                downloadPath,
-                host,
+                local_directory,
+                host_ip,
                 user,
                 password,
-                transferMode)
+                transfer_mode
+            );
+            const filesize: string = size + ' kb';
+            // upload to database
+            const boliviaTime: Date = getBoliviaDate();
+            /* upload to database */
+            await uploadDataBase(
+                ftp_id,
+                element,
+                file_format /* .txt */,
+                filesize,
+                lastModified,
+                boliviaTime,
+                1 /* state */
+            );
         }
     }
-}
+};
 
-export const uploadDataBase = async (name_file: string, id: number, downloadPath: string) => {
-    const boliviaTime: Date = getBoliviaDate()
-    const uploaded = boliviaTime
-    const downloaded = boliviaTime
-    const ftp_id = id
-    // const downloadPath = "../downloadsFromFTP"
-    await HistoryFtp.create(
-        {
-            name_file,
-            uploaded,
-            downloaded,
-            ftp_id,
-            downloadPath
-        }
-    )
-}
-
-export const downloadFtp = async (
-    element: string,
-    downloadPath: string,
-    host: string,
-    user: string,
-    password: string,
-    transferMode: string
+export const uploadDataBase = async (
+    ftp_id: number,
+    file_name: string,
+    file_type: string,
+    file_size: string,
+    file_date_creation: Date,
+    file_download: Date,
+    state: number
 ) => {
-    // download fles to adress
-    await downloadFileFromFTP(
-        element,                // Route of file in the FTP
-        downloadPath,           //  local folder where it will be saved
-        host,                   // Host FTP
-        user,                   // User
-        password,               // Password
-        transferMode            // transferMode
-    );
-}
+    // we are going to upload to Data Base
+    Process_ftp.create({
+        ftp_id,
+        file_name,
+        file_type,
+        file_size,
+        file_date_creation,
+        file_download,
+        state
+    });
+};

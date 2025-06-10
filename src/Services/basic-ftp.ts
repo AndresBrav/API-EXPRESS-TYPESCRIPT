@@ -14,9 +14,9 @@ export async function uploadFileToFTP(
     console.log(`the type of transfer being made is ${transferMode}`);
     try {
         await client.access({
-            host: host, /* 127.0.0.1 */
-            user: user, /* userftp */
-            password: password, /* 123 */
+            host: host /* 127.0.0.1 */,
+            user: user /* userftp */,
+            password: password /* 123 */,
             secure: true,
             port: 21,
             secureOptions: {
@@ -66,9 +66,7 @@ export async function listFilesFromFTP(
         const list = await client.list(remoteDir);
 
         // Filtrar solo archivos (ignorar carpetas)
-        const fileNames = list
-            .filter(item => item.isFile)
-            .map(file => file.name);
+        const fileNames = list.filter((item) => item.isFile).map((file) => file.name);
 
         return fileNames;
     } catch (err) {
@@ -79,15 +77,14 @@ export async function listFilesFromFTP(
     }
 }
 
-
 export async function downloadFileFromFTP(
-    remoteFilePath: string,
-    localDirPath: string,
+    remoteFilePath: string /* name of the file /Carro1.txt */,
+    localDirPath: string /* ../downloadsFromFTP/TXT */,
     host: string,
     user: string = 'null',
     password: string = 'null',
     transferMode: string = 'binary'
-): Promise<void> {
+): Promise<{ size: number; lastModified: Date | null }> {
     const client = new Client();
     client.ftp.verbose = true;
 
@@ -114,8 +111,20 @@ export async function downloadFileFromFTP(
         const fileName = path.basename(remoteFilePath);
         const localFilePath = path.join(localDirPath, fileName);
 
+        // get and print the file size
+        const size = await client.size(remoteFilePath);
+        // console.log('............................the file size is .....');
+        // console.log(`File size: ${size} bytes`);
+
+        // get last modified date ...................
+        const lastModified = await client.lastMod(remoteFilePath);
+        // console.log('the last date is .....');
+        // console.log(lastModified);
+
+        // download the file
         await client.downloadTo(localFilePath, remoteFilePath);
         console.log(`file downloaded correctly in: ${localFilePath}`);
+        return { size, lastModified };
     } catch (err) {
         console.error('Error downloading file', err);
         throw err;
