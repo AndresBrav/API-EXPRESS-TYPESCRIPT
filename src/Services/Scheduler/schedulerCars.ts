@@ -1,43 +1,10 @@
-import HistoryFtp from '../../Models/modelProcess_ftp';
 import { filesFromFTPMethod, filterforfile_format } from '../../util/filterFiles';
 import { getBoliviaDate } from '../../util/getDates';
 import { downloadFileFromFTP } from '../basic-ftp';
 import Ftp from '../../Models/modelFtp';
 import Process_ftp from '../../Models/modelProcess_ftp';
+import { FileConfig, configs } from '../../util/filterOptions';
 
-type FileConfig = {
-    ftp_id: number;
-    ftp_user: string;
-    file_format: string;
-    type_file_filter: string;
-};
-
-const configs: FileConfig[] = [
-    {
-        ftp_id: 1,
-        ftp_user: 'ftpuser',
-        file_format: '.txt',
-        type_file_filter: '^c.*.txt$'
-    },
-    {
-        ftp_id: 3,
-        ftp_user: 'ftpuser',
-        file_format: '.txt',
-        type_file_filter: '^l.*.txt$'
-    },
-    {
-        ftp_id: 2,
-        ftp_user: 'ftpuser',
-        file_format: '.pdf',
-        type_file_filter: '^c.*.pdf$'
-    },
-    {
-        ftp_id: 4,
-        ftp_user: 'ftpuser',
-        file_format: '.pdf',
-        type_file_filter: '^l.*.pdf$'
-    }
-];
 
 export const downloadAutomaticFiles = async () => {
     const filefilter1: FileConfig = configs[0];

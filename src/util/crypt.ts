@@ -52,20 +52,10 @@ export const newJWT = (
 
 export const validJWT = (token): any => {
   try {
-    // const { iat, exp, ...data } = jwt.verify(token, process.env.SECRETKEY as string);
-    // console.log("los datos que vienen son .......")
-    // console.log(token)
-    // const data = jwt.verify(token, process.env.SECRETKEY as string)
+    
     const decoded = jwt.verify(token, process.env.SECRETKEY as string)
-    // console.log("los datos de decoded es .....")
-    // console.log(decoded)
-
-    // Si quieres modificar algo o separar campos
     const { iat, exp, ...rest } = decoded as any;
-    // console.log("los datos de data son .....")
     const data = { iat, exp, ...rest };
-    // console.log(data)
-    // const data = "hola";
     return data;
   } catch (error) {
     throw new Error('Invalid Token');

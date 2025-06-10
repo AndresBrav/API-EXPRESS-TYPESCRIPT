@@ -7,7 +7,7 @@ import CarsRoutes from "../Routes/routescars";
 import LoginRoutes from "../Routes/auth";
 import morgan from "morgan";
 import db from "../db/conexion";
-import "../Tasks/scheduler"; //import the scheduler.ts
+import "../Jobs/scheduler"; //import the scheduler.ts
 
 class ApiServer {
   private usersPath: string;

@@ -1,6 +1,5 @@
 import cron from 'node-cron';
-import { downloadAutomaticFiles } from '../Services/cars/schedulerCars';
-
+import { downloadAutomaticFiles } from '../Services/Scheduler/schedulerCars';
 // cron.schedule('* * * * *', async () => {
 //     downloadAutomaticFiles()    /* download from ftp */
 // });
