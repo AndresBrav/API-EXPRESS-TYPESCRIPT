@@ -5,16 +5,86 @@ import { downloadFileFromFTP } from '../basic-ftp';
 import Ftp from '../../Models/modelFtp';
 import Process_ftp from '../../Models/modelProcess_ftp';
 
-export const downloadAutomaticFiles = async () => {
-    const ftp_user: string = 'ftpuser';
-    const file_for: string = '.txt';
-    await downloadFiles(1, ftp_user, file_for); /* we are going to download files .txt */
+type FileConfig = {
+    ftp_id: number;
+    ftp_user: string;
+    file_format: string;
+    type_file_filter: string;
 };
 
-const downloadFiles = async (ftp_id: number, ftp_user: string, file_for: string) => {
+const configs: FileConfig[] = [
+    {
+        ftp_id: 1,
+        ftp_user: 'ftpuser',
+        file_format: '.txt',
+        type_file_filter: '^c.*.txt$'
+    },
+    {
+        ftp_id: 3,
+        ftp_user: 'ftpuser',
+        file_format: '.txt',
+        type_file_filter: '^l.*.txt$'
+    },
+    {
+        ftp_id: 2,
+        ftp_user: 'ftpuser',
+        file_format: '.pdf',
+        type_file_filter: '^c.*.pdf$'
+    },
+    {
+        ftp_id: 4,
+        ftp_user: 'ftpuser',
+        file_format: '.pdf',
+        type_file_filter: '^l.*.pdf$'
+    }
+];
+
+export const downloadAutomaticFiles = async () => {
+    const filefilter1: FileConfig = configs[0];
+    const filefilter2: FileConfig = configs[1];
+    const filefilter3: FileConfig = configs[2];
+    const filefilter4: FileConfig = configs[3];
+
+    /* we are going to download files .txt */
+    // await downloadFiles(1, ftp_user, file_forTXT, type_filefilterC);
+    await downloadFiles(
+        filefilter1.ftp_id,
+        filefilter1.ftp_user,
+        filefilter1.file_format,
+        filefilter1.type_file_filter
+    );
+
+    await downloadFiles(
+        filefilter2.ftp_id,
+        filefilter2.ftp_user,
+        filefilter2.file_format,
+        filefilter2.type_file_filter
+    );
+
+    await downloadFiles(
+        filefilter3.ftp_id,
+        filefilter3.ftp_user,
+        filefilter3.file_format,
+        filefilter3.type_file_filter
+    );
+
+    await downloadFiles(
+        filefilter4.ftp_id,
+        filefilter4.ftp_user,
+        filefilter4.file_format,
+        filefilter4.type_file_filter
+    );
+};
+
+const downloadFiles = async (
+    ftp_id: number,
+    ftp_user: string,
+    file_for: string,
+    type_filefilter: string
+) => {
     // consulsts data base
     const data = await Ftp.findOne({
-        where: { user: ftp_user, file_format: file_for },
+        where: { user: ftp_user, file_format: file_for, type_file: type_filefilter },
         raw: true
     });
     // console.log('the data is ', data);
