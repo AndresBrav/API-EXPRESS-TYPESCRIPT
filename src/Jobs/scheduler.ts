@@ -1,10 +1,12 @@
 import cron from 'node-cron';
 import { downloadAutomaticFiles } from '../Services/Scheduler/schedulerCars';
-// cron.schedule('* * * * *', async () => {
-//     downloadAutomaticFiles()    /* download from ftp */
-// });
+import { processedAuthomaticFiles } from '../Services/Scheduler/processedFiles';
+
+// cron.schedule('*/10 * * * * *', async () => {
+//     /* download from ftp */
+//     downloadAutomaticFiles();
+// }); 
 
 cron.schedule('*/10 * * * * *', async () => {
-    // console.log("first step")
-    downloadAutomaticFiles(); /* download from ftp */
+    processedAuthomaticFiles();
 });
