@@ -7,40 +7,10 @@ import { FileConfig, configs } from '../../util/filterOptions';
 import { FtpConfig } from '../../Models/FtpConfig';
 
 export const downloadAutomaticFiles = async () => {
-    const filefilter1: FileConfig = configs[0];
-    const filefilter2: FileConfig = configs[1];
-    const filefilter3: FileConfig = configs[2];
-    const filefilter4: FileConfig = configs[3];
-
-    /* we are going to download files .txt */
-    // await downloadFiles(1, ftp_user, file_forTXT, type_filefilterC);
-    await downloadFiles(
-        filefilter1.ftp_id,
-        filefilter1.ftp_user,
-        filefilter1.file_format,
-        filefilter1.type_file_filter
-    );
-
-    await downloadFiles(
-        filefilter2.ftp_id,
-        filefilter2.ftp_user,
-        filefilter2.file_format,
-        filefilter2.type_file_filter
-    );
-
-    await downloadFiles(
-        filefilter3.ftp_id,
-        filefilter3.ftp_user,
-        filefilter3.file_format,
-        filefilter3.type_file_filter
-    );
-
-    await downloadFiles(
-        filefilter4.ftp_id,
-        filefilter4.ftp_user,
-        filefilter4.file_format,
-        filefilter4.type_file_filter
-    );
+    for (const i of configs) {
+        /* go through arrangement */
+        await downloadFiles(i.ftp_id, i.ftp_user, i.file_format, i.type_file_filter);
+    }
 };
 
 const downloadFiles = async (
