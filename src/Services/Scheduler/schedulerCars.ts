@@ -4,7 +4,7 @@ import { downloadFileFromFTP } from '../basic-ftp';
 import Ftp from '../../Models/modelFtp';
 import Process_ftp from '../../Models/modelProcess_ftp';
 import { FileConfig, configs } from '../../util/filterOptions';
-
+import { FtpConfig } from '../../Models/FtpConfig';
 
 export const downloadAutomaticFiles = async () => {
     const filefilter1: FileConfig = configs[0];
@@ -49,49 +49,28 @@ const downloadFiles = async (
     file_for: string,
     type_filefilter: string
 ) => {
-    // consulsts data base
-    const data = await Ftp.findOne({
-        where: { user: ftp_user, file_format: file_for, type_file: type_filefilter },
-        raw: true
-    });
-    // console.log('the data is ', data);
+    // return FTP config
+    const instanceFTP: FtpConfig = await ReturnFTPconfig(ftp_user, file_for, type_filefilter);
 
-    const {
-        ftp_path,
-        host_ip,
-        user,
-        password,
-        type_file,
-        transfer_mode,
-        file_format,
-        local_directory
-    } = data;
-
-    /* filter files from FTP */
-
-    const filesfromFTP: string[] = await filesFromFTPMethod(ftp_path, host_ip, user, password);
-    // console.log('the files that come from ftp are : ');
-    // console.log(filesfromFTP);
-
-    const filteredfilesFTP = filterforfile_format(type_file, filesfromFTP);
+    // from ftp
+    const filteredfiles_from_FTP = await FilterFTP(instanceFTP);
     console.log('the files filtered from ftp are');
-    console.log(filteredfilesFTP);
+    console.log(filteredfiles_from_FTP);
 
-    /* Filter Files from Data Base ............................*/
-    const filesFromDB = await Process_ftp.findAll({
-        where: { ftp_id: ftp_id },
-        raw: true,
-        attributes: ['file_name']
-    });
-
-    const filesDB = filesFromDB.map((file) => file.file_name);
-    // console.log('the files bringing from database are .');
-    // console.log(filesDB);
-
-    const filteredFilesDB = filterforfile_format(type_file, filesDB);
+    // from database
+    const filteredfiles_from_DataBase = await filterDataBase(ftp_id, type_filefilter);
     console.log('the files filtered from DB are');
-    console.log(filteredFilesDB);
+    console.log(filteredfiles_from_DataBase);
 
+    await compareFiles(filteredfiles_from_FTP, filteredfiles_from_DataBase, instanceFTP, ftp_id);
+};
+
+export const compareFiles = async (
+    filteredfilesFTP: string[],
+    filteredFilesDB: string[],
+    instanceFTP: FtpConfig,
+    ftp_id: number
+) => {
     for (let index = 0; index < filteredfilesFTP.length; index++) {
         const element = filteredfilesFTP[index];
         if (filteredFilesDB.includes(element)) {
@@ -100,11 +79,11 @@ const downloadFiles = async (
             // download from data base
             const { size, lastModified } = await downloadFileFromFTP(
                 element,
-                local_directory,
-                host_ip,
-                user,
-                password,
-                transfer_mode
+                instanceFTP.local_directory,
+                instanceFTP.host_ip,
+                instanceFTP.user,
+                instanceFTP.password,
+                instanceFTP.transfer_mode
             );
             const filesize: string = size + ' kb';
             // upload to database
@@ -113,7 +92,7 @@ const downloadFiles = async (
             await uploadDataBase(
                 ftp_id,
                 element,
-                file_format /* .txt */,
+                instanceFTP.file_format /* .txt */,
                 filesize,
                 lastModified,
                 boliviaTime,
@@ -121,6 +100,61 @@ const downloadFiles = async (
             );
         }
     }
+};
+
+const ReturnFTPconfig = async (
+    ftp_user: string,
+    file_for: string,
+    type_filefilter: string
+): Promise<FtpConfig> => {
+    // consulsts data base
+    const data = await Ftp.findOne({
+        where: { user: ftp_user, file_format: file_for, type_file: type_filefilter },
+        raw: true
+    });
+
+    if (!data) throw new Error('No FTP configuration found');
+
+    const ftpConfig = new FtpConfig(
+        data.ftp_path,
+        data.host_ip,
+        data.user,
+        data.password,
+        data.type_file,
+        data.transfer_mode,
+        data.file_format,
+        data.local_directory
+    );
+
+    return ftpConfig;
+};
+
+export const FilterFTP = async (ftpConfig: FtpConfig): Promise<string[]> => {
+    /* filter files from FTP */
+    const filesfromFTP: string[] = await filesFromFTPMethod(
+        ftpConfig.ftp_path,
+        ftpConfig.host_ip,
+        ftpConfig.user,
+        ftpConfig.password
+    );
+
+    console.log('the files that come from ftp are : ');
+    console.log(filesfromFTP);
+
+    const filteredfilesFTP = filterforfile_format(ftpConfig.type_file, filesfromFTP);
+    return filteredfilesFTP;
+};
+
+export const filterDataBase = async (ftp_id: number, type_file: string): Promise<string[]> => {
+    const filesFromDB = await Process_ftp.findAll({
+        where: { ftp_id: ftp_id },
+        raw: true,
+        attributes: ['file_name']
+    });
+
+    const filesDB = filesFromDB.map((file) => file.file_name);
+    const filteredFilesDB = filterforfile_format(type_file, filesDB);
+    return filteredFilesDB;
 };
 
 export const uploadDataBase = async (
