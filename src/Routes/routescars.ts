@@ -13,7 +13,8 @@ import {
     CconvertBase64toFile,
     CgetDCars,
     CaddDetailCar,
-    ClistFiles
+    ClistFiles,
+    CgetStates
 } from '../Controllers/controllerCars';
 
 const routesCars = express.Router();
@@ -44,5 +45,7 @@ routesCars.post('/returnBase64File', [validToken], CreturnBase64File); /* genera
 routesCars.post('/ConvertBase64toFile', [validToken], CconvertBase64toFile);
 
 routesCars.get('/listFiles', [validToken], ClistFiles);
+
+routesCars.get('/getstates',[validToken],CgetStates)
 
 export default routesCars;

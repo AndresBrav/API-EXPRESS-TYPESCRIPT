@@ -32,6 +32,9 @@
     "morgan": "^1.10.0",
     "mysql2": "^3.14.0",
     "node-cron": "^4.0.5",
+    "pdf-lib": "^1.17.1",
+    "pdf-parse": "^1.1.1",
+    "pdfjs-dist": "^5.3.31",
     "pdfkit": "^0.17.0",
     "sequelize": "^6.37.7",
     "sequelize-cli": "^6.6.2"
