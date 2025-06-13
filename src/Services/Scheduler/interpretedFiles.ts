@@ -32,7 +32,7 @@ type FileItem = {
     file_type: string;
 };
 
-export const processedAuthomaticFiles = async () => {
+export const interpretedAuthomaticFiles = async () => {
     for (const i of ftp_idArray) {
         // console.log(i.ftp_id);
         const ftp_id: number = i.ftp_id;
