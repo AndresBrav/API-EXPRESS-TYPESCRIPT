@@ -12,6 +12,7 @@ import { processedAuthomticFiles } from '../Services/Scheduler/processedFiles';
 //     await interpretedAuthomaticFiles();
 // });
 
-cron.schedule('*/10 * * * * *', async () => {
+// every 5 minutes
+cron.schedule('*/5 * * * *', async () => {
     await processedAuthomticFiles();
 });

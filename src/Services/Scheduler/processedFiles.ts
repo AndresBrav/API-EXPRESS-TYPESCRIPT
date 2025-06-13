@@ -1,5 +1,7 @@
 import Process_ftp, { ProcessFtpInstance } from '../../Models/modelProcess_ftp';
 import Ftp, { FtpInstance } from '../../Models/modelFtp';
+import { readFile, writeFile } from 'fs/promises';
+import path from 'path';
 
 type ftp_ids = {
     ftp_id: number;
@@ -34,8 +36,8 @@ export const processedAuthomticFiles = async () => {
         ); /* 1 id ftp */
         console.log(interpreted_directory, processed_directory);
 
-        // // Go through  Arrangment
-        // await goThroughArrangment(files, local_directory, interpreted_directory);
+        // Go through  Arrangment
+        await goThroughArrangment(files, interpreted_directory, processed_directory);
     }
 };
 
@@ -61,7 +63,83 @@ const getDirectories = async (
         attributes: ['interpreted_directory', 'processed_directory']
     });
 
-    console.log('we are goint to processed files');
+    // console.log('we are goint to processed files');
     const { interpreted_directory, processed_directory } = ftp;
     return { interpreted_directory, processed_directory };
+};
+
+const goThroughArrangment = async (
+    files: FileItem[],
+    interpreted_directory: string,
+    processed_directory: string
+) => {
+    for (let i = 0; i < files.length; i++) {
+        try {
+            const fileName = files[i].file_name;
+            const idFile = files[i].id;
+            const file_type: string = files[i].file_type;
+
+            if (file_type === '.txt') {
+                // download file in interpreted folder
+                await downloadProcessedFile(interpreted_directory, processed_directory, fileName);
+                // change the state 2 in dataBase
+                await changeStateDB(idFile, fileName);
+            } else {
+                // if (file_type === '.pdf') {
+                //     await downloadInterpretedFilePDF(
+                //         local_directory,
+                //         interpreted_directory,
+                //         fileName
+                //     );
+                // }
+            }
+        } catch (error) {
+            console.error('Error reading file:', error);
+        }
+    }
+};
+
+
+const downloadProcessedFile = async (
+    interpreted_directory: string,
+    processed_directory: string,
+    fileName: string
+) => {
+    const fullInputPath = path.join(interpreted_directory, fileName);
+    const fullOutputPath = path.join(processed_directory, fileName);
+
+    const contenido = await readFile(fullInputPath, { encoding: 'utf-8' });
+
+    const lineas = contenido.split(/\r?\n/).map((linea) => {
+        if (!linea.trim()) return '';
+
+        // Eliminar numeración inicial tipo "1." o "12."
+        linea = linea.replace(/^\d+\.\s*/, '');
+
+        // Procesar línea con ID, eliminar Nombre, conservar Precio y Stock
+        if (linea.includes('ID:')) {
+            return linea.replace(
+                /(ID:\s*\d+)\s*-.*?- (Precio:.*?)\s*- (Stock:.*)/i,
+                '$1 - $2 - $3'
+            );
+        }
+
+        return linea;
+    });
+
+    await writeFile(fullOutputPath, lineas.join('\n'), { encoding: 'utf-8' });
+
+    console.log(`✅ File processed successfully: ${fileName}`);
+    console.log(`📍 Saved in: ${fullOutputPath}`);
+};
+
+const changeStateDB = async (idFile: number, fileName: string) => {
+    const ChangeState = await Process_ftp.findOne({
+        where: {
+            id: idFile,
+            file_name: fileName
+        }
+    });
+    ChangeState.state = 3;
+    ChangeState.save();
 };
