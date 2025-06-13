@@ -7,6 +7,6 @@ import { processedAuthomaticFiles } from '../Services/Scheduler/processedFiles';
 //     await downloadAutomaticFiles();
 // });
 
-// cron.schedule('*/10 * * * * *', async () => {
-//     await processedAuthomaticFiles();
-// });
+cron.schedule('*/10 * * * * *', async () => {
+    await processedAuthomaticFiles();
+});

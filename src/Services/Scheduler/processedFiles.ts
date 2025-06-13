@@ -8,7 +8,6 @@ import path from 'path';
 import fs from 'fs/promises';
 import pdfParse from 'pdf-parse';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
-const ftp_idkey = 1; /* ftp_id */
 
 type ftp_ids = {
     ftp_id: number;
@@ -41,13 +40,13 @@ export const processedAuthomaticFiles = async () => {
         console.log(files);
 
         // bring directories from Data Base
-        const { local_directory, interpreted_directory } = await getDirectories(
+        const { local_directory, processed_directory } = await getDirectories(
             ftp_id
         ); /* 1 id ftp */
-        console.log(local_directory, interpreted_directory);
+        console.log(local_directory, processed_directory);
 
         // Go through  Arrangment
-        await goThroughArrangment(files, local_directory, interpreted_directory);
+        await goThroughArrangment(files, local_directory, processed_directory);
     }
 };
 
@@ -66,22 +65,22 @@ export const consultDataBaseStates = async (ftp_id: number, state: number): Prom
 
 const getDirectories = async (
     ftp_id: number
-): Promise<{ local_directory: string; interpreted_directory: string }> => {
+): Promise<{ local_directory: string; processed_directory: string }> => {
     const ftp: FtpInstance = await Ftp.findOne({
         where: { id: ftp_id },
         raw: true,
-        attributes: ['local_directory', 'interpreted_directory']
+        attributes: ['local_directory', 'processed_directory']
     });
 
     console.log('we are goint to processed files');
-    const { local_directory, interpreted_directory } = ftp;
-    return { local_directory, interpreted_directory };
+    const { local_directory, processed_directory } = ftp;
+    return { local_directory, processed_directory };
 };
 
 const goThroughArrangment = async (
     files: FileItem[],
     local_directory: string,
-    interpreted_directory: string
+    processed_directory: string
 ) => {
     for (let i = 0; i < files.length; i++) {
         try {
@@ -91,16 +90,12 @@ const goThroughArrangment = async (
 
             if (file_type === '.txt') {
                 // download file in interpreted folder
-                await downloadInterpretedFile(local_directory, interpreted_directory, fileName);
+                await downloadProcessedFile(local_directory, processed_directory, fileName);
                 // change the state 2 in dataBase
                 await changeStateDB(idFile, fileName);
             } else {
                 if (file_type === '.pdf') {
-                    await downloadInterpretedFilePDF(
-                        local_directory,
-                        interpreted_directory,
-                        fileName
-                    );
+                    await downloadProcessedFilePDF(local_directory, processed_directory, fileName);
                 }
             }
         } catch (error) {
@@ -109,13 +104,13 @@ const goThroughArrangment = async (
     }
 };
 
-const downloadInterpretedFile = async (
+const downloadProcessedFile = async (
     local_directory: string,
-    interpreted_directory: string,
+    processed_directory: string,
     fileName: string
 ) => {
     const fullInputPath = path.join(local_directory, fileName); // ✅ Route of the file
-    const fullOutputPath = path.join(interpreted_directory, fileName); // ✅ Destino del nuevo archivo
+    const fullOutputPath = path.join(processed_directory, fileName); // ✅ Destino del nuevo archivo
     const contenido = await readFile(fullInputPath, { encoding: 'utf-8' });
     const lineas = contenido
         .split(/\r?\n/) // Soporta archivos con \r\n (Windows) o \n (Linux)
@@ -130,14 +125,14 @@ const downloadInterpretedFile = async (
     console.log(`Saved in: ${fullOutputPath}`);
 };
 
-const downloadInterpretedFilePDF = async (
+const downloadProcessedFilePDF = async (
     local_directory: string,
-    interpreted_directory: string,
+    processed_directory: string,
     fileName: string
 ) => {
     // try {
     //     const fullInputPath = path.join(local_directory, fileName);
-    //     const fullOutputPath = path.join(interpreted_directory, fileName);
+    //     const fullOutputPath = path.join(processed_directory, fileName);
     //     await fs.access(fullInputPath);
     //     const dataBuffer = await fs.readFile(fullInputPath);
     //     // Verificar que sea un PDF
