@@ -3,7 +3,6 @@ import Ftp from '../../Models/modelFtp';
 import path from 'path';
 import { readdir, readFile as fsReadFile } from 'fs/promises'; // ✅ Renombramos readFile
 import { getBoliviaDate } from '../../util/getDates';
-import { CaaRecord } from 'dns';
 
 type CarData = {
     id: number;
@@ -20,10 +19,13 @@ export const reloadDataBase = async () => {
         return;
     }
 
-    const list: CarData[] = await readFile(processed_directory, files);
+    console.log(files);
 
-    await uploadFilesDB(list);
-    console.log(list);
+    for (let i: number = 0; i < files.length; i++) {
+        const fileName = files[i];
+        const list: CarData[] = await readFile(processed_directory, fileName);
+        await uploadFilesDB(list);
+    }
 };
 
 const getDirectory = async (): Promise<string> => {
@@ -51,8 +53,8 @@ const readDirectory = async (processed_directory: string): Promise<string[]> => 
     }
 };
 
-const readFile = async (processed_directory: string, files: string[]): Promise<CarData[]> => {
-    const fileName = files[0];
+const readFile = async (processed_directory: string, fileName: string): Promise<CarData[]> => {
+    // const fileName = fileName;
     const fullInputPath = path.join(processed_directory, fileName);
     const contenido = await fsReadFile(fullInputPath, { encoding: 'utf-8' });
 
