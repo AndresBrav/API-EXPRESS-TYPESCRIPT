@@ -19,7 +19,7 @@ export const reloadDataBase = async () => {
         return;
     }
 
-    console.log(files);
+    // console.log(files);
 
     for (let i: number = 0; i < files.length; i++) {
         const fileName = files[i];
@@ -43,7 +43,7 @@ const getDirectory = async (): Promise<string> => {
 
 const readDirectory = async (processed_directory: string): Promise<string[]> => {
     const absoluteFilePath = path.resolve(processed_directory);
-    console.log('The correct path is:', absoluteFilePath);
+    // console.log('The correct path is:', absoluteFilePath);
     try {
         const files = await readdir(absoluteFilePath);
         return files;
@@ -78,13 +78,32 @@ const readFile = async (processed_directory: string, fileName: string): Promise<
 };
 
 const uploadFilesDB = async (list: CarData[]) => {
-    for (const i of list) {
-        const date = getBoliviaDate();
-        const newFile: DetailFileProcessedInterface = await FilesProcessed.create({
-            id_car: i.id,
-            precio: i.precio,
-            stock: i.stock,
-            dateupload: date
+    const filesDB = await FilesProcessed.findAll({
+        raw: true
+    });
+    // console.log(filesDB);
+    // console.log(list);
+
+    for (const item of list) {
+        // We search if an object with the same id, price and stock exists in the first array.
+        const Exists = filesDB.some((otro) => {
+            return (
+                otro.id_car === item.id && otro.precio === item.precio && otro.stock === item.stock
+            );
         });
+
+        // Show the result 
+        if (Exists) {
+            console.log(`already exists: id=${item.id}`);
+        } else {
+            const date = getBoliviaDate();
+            const newFile: DetailFileProcessedInterface = await FilesProcessed.create({
+                id_car: item.id,
+                precio: item.precio,
+                stock: item.stock,
+                dateupload: date
+            });
+            // console.log(`not exists: id=${item.id}`);
+        }
     }
 };
