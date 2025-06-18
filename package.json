@@ -36,6 +36,8 @@
     "pdf-parse": "^1.1.1",
     "pdfjs-dist": "^5.3.31",
     "pdfkit": "^0.17.0",
+    "pg": "^8.16.0",
+    "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.7",
     "sequelize-cli": "^6.6.2"
   }
