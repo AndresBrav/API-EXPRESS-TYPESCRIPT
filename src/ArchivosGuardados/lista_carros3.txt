@@ -1,0 +1,5 @@
+1. ID: 7 - Nombre: Audi XLR - Descripción: Auto grande - Precio: 20000 - Stock: 20000
+2. ID: 8 - Nombre: Audi A8 - Descripción: Auto chico - Precio: 10000 - Stock: 5000
+3. ID: 9 - Nombre: Audi - Descripción: Auto grande - Precio: 20000 - Stock: 20000
+4. ID: 10 - Nombre: Ferrari - Descripción: Auto chico - Precio: 10000 - Stock: 5000
+5. ID: 11 - Nombre: Ferrari - Descripción: Auto grande - Precio: 20000 - Stock: 20000

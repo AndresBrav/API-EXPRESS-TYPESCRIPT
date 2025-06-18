@@ -26,8 +26,8 @@ class ApiServer {
   }
 
   private middlewares(): void {
-    // this.app.use(cors({ origin: 'http://localhost:5173' }));
-    this.app.use(cors({ origin: "http://localhost:3000" }));
+    this.app.use(cors({ origin: 'http://localhost:5173' }));
+    // this.app.use(cors({ origin: "http://localhost:3000" }));
     this.app.use(express.json());
     this.app.use(morgan("dev"));
     // this.app.use(express.static('public'));

@@ -9,16 +9,31 @@ import { reloadDataBase } from '../Services/Scheduler/loadFiles';
 //     await downloadAutomaticFiles();
 // });
 
+cron.schedule('*/5 * * * *', async () => {
+    /* download from ftp */
+    await downloadAutomaticFiles();
+});
+
+// every 10 minutes
+cron.schedule('*/5 * * * *', async () => {
+    await interpretedAuthomaticFiles();
+});
+
 // // every 3 hours
 // cron.schedule('0 */3 * * *', async () => {
 //     await interpretedAuthomaticFiles();
 // });
 
-// // every 5 minutes
-// cron.schedule('*/5 * * * *', async () => {
-//     await processedAuthomticFiles();
-// });
+// every 15 minutes
+cron.schedule('*/5 * * * *', async () => {
+    await processedAuthomticFiles();
+});
 
-cron.schedule('*/10 * * * * *',async () => {
-    await reloadDataBase()
-})
+// cron.schedule('*/10 * * * * *',async () => {
+//     await reloadDataBase()
+// })
+
+// every 20 minutes
+cron.schedule('*/5 * * * *', async () => {
+    await reloadDataBase();
+});
