@@ -25,7 +25,7 @@ cron.schedule('*/5 * * * *', async () => {
 // });
 
 // every 15 minutes
-cron.schedule('*/5 * * * *', async () => {
+cron.schedule('*/10 * * * * *', async () => {
     await processedAuthomticFiles();
 });
 
@@ -34,6 +34,6 @@ cron.schedule('*/5 * * * *', async () => {
 // })
 
 // every 20 minutes
-cron.schedule('*/5 * * * *', async () => {
-    await reloadDataBase();
-});
+// cron.schedule('*/5 * * * *', async () => {
+//     await reloadDataBase();
+// });

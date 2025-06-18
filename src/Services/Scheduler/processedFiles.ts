@@ -99,6 +99,38 @@ const goThroughArrangment = async (
     }
 };
 
+// const downloadProcessedFile = async (
+//     interpreted_directory: string,
+//     processed_directory: string,
+//     fileName: string
+// ) => {
+//     const fullInputPath = path.join(interpreted_directory, fileName);
+//     const fullOutputPath = path.join(processed_directory, fileName);
+
+//     const contenido = await readFile(fullInputPath, { encoding: 'utf-8' });
+
+//     const lineas = contenido.split(/\r?\n/).map((linea) => {
+//         if (!linea.trim()) return '';
+
+//         // Eliminar numeración inicial tipo "1." o "12."
+//         linea = linea.replace(/^\d+\.\s*/, '');
+
+//         // Procesar línea con ID, eliminar Nombre, conservar Precio y Stock
+//         if (linea.includes('ID:')) {
+//             return linea.replace(
+//                 /(ID:\s*\d+)\s*-.*?- (Precio:.*?)\s*- (Stock:.*)/i,
+//                 '$1 - $2 - $3'
+//             );
+//         }
+
+//         return linea;
+//     });
+
+//     await writeFile(fullOutputPath, lineas.join('\n'), { encoding: 'utf-8' });
+
+//     console.log(`✅ File processed successfully: ${fileName}`);
+//     console.log(`📍 Saved in: ${fullOutputPath}`);
+// };
 
 const downloadProcessedFile = async (
     interpreted_directory: string,
@@ -110,27 +142,30 @@ const downloadProcessedFile = async (
 
     const contenido = await readFile(fullInputPath, { encoding: 'utf-8' });
 
-    const lineas = contenido.split(/\r?\n/).map((linea) => {
-        if (!linea.trim()) return '';
+    const lineasProcesadas = contenido
+        .split(/\r?\n/)
+        .map((linea) => {
+            if (!linea.trim()) return '';
+            // Eliminar numeración inicial tipo "1." o "12."
+            linea = linea.replace(/^\d+\.\s*/, '');
 
-        // Eliminar numeración inicial tipo "1." o "12."
-        linea = linea.replace(/^\d+\.\s*/, '');
-
-        // Procesar línea con ID, eliminar Nombre, conservar Precio y Stock
-        if (linea.includes('ID:')) {
-            return linea.replace(
-                /(ID:\s*\d+)\s*-.*?- (Precio:.*?)\s*- (Stock:.*)/i,
-                '$1 - $2 - $3'
+            // Extraer ID, Precio y Stock usando expresión regular
+            const match = linea.match(
+                /ID:\s*(\d+)\s*-\s*Nombre:.*?-\s*Precio:\s*(\d+)\s*-\s*Stock:\s*(\d+)/i
             );
-        }
+            if (match) {
+                const [, id, precio, stock] = match;
+                return `${id},${precio},${stock}`;
+            }
 
-        return linea;
-    });
+            return '';
+        })
+        .filter(Boolean); // Eliminar líneas vacías
 
-    await writeFile(fullOutputPath, lineas.join('\n'), { encoding: 'utf-8' });
+    await writeFile(fullOutputPath, lineasProcesadas.join('\n'), { encoding: 'utf-8' });
 
-    console.log(`✅ File processed successfully: ${fileName}`);
-    console.log(`📍 Saved in: ${fullOutputPath}`);
+    console.log(`✅ Archivo procesado correctamente: ${fileName}`);
+    console.log(`📍 Guardado en: ${fullOutputPath}`);
 };
 
 const changeStateDB = async (idFile: number, fileName: string) => {
