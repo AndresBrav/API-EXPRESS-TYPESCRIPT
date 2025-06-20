@@ -24,7 +24,7 @@ module.exports = {
             },
             dateupload: {
                 type: Sequelize.DATE,
-                allowNull: false
+                allowNull: true
             }
         });
     },
