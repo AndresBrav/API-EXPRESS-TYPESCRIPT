@@ -468,17 +468,9 @@ export const uploadListServer = async (
     user: string,
     password: string
 ) => {
-    //Relative path to the file
-    // const localFilePath = `../ArchivosGuardados/${nombreArchivo}`;
-
-    //Convert relative path to the absoluted path
-    // const absoluteFilePath = path.resolve(__dirname, localFilePath);
     const absoluteFilePath = path.join(process.cwd(), 'src', 'ArchivosGuardados', nombreArchivo);
-    //console.log("the absoluted path is : " + absoluteFilePath);
     const remoteFilePath = `/${nombreArchivo}`;
-    //const transferMode = 'binary';
     const transferMode = TipoTransferencia;
-    // console.log(`now ..........the transfer type is ${TipoTransferencia}`);
     if (
         IsString(nombreArchivo) &&
         typeTransfer(TipoTransferencia) &&
